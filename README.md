@@ -93,6 +93,8 @@ maieutix/
 - **python-decouple** - Gestion des variables d'environnement
 - **psycopg[binary]** - Adaptateur PostgreSQL moderne (version 3)
 - **PostgreSQL** - Base de données pour développement et production
+- **Gunicorn** - Serveur WSGI pour la production
+- **Nginx** - Serveur web et proxy inverse
 
 ## Notes importantes
 
@@ -144,6 +146,73 @@ DB_PASSWORD=mot-de-passe-securise
 DB_HOST=localhost
 DB_PORT=5432
 ```
+
+## Déploiement avec Docker
+
+### Prérequis
+- Docker et Docker Compose installés
+
+### Déploiement rapide
+```bash
+# Cloner le projet
+git clone <url-du-repo>
+cd maieutix
+
+# Déployer en production
+docker-compose up -d --build
+
+# Accéder à l'application
+# http://localhost (via Nginx)
+# http://localhost/admin/ (Interface admin)
+```
+
+### Commandes Docker essentielles
+```bash
+# Démarrer les services
+docker-compose up -d --build
+
+# Voir les logs
+docker-compose logs -f
+docker-compose logs -f web    # Logs Django uniquement
+docker-compose logs -f db     # Logs PostgreSQL uniquement
+
+# Arrêter les services
+docker-compose down
+
+# Redémarrer un service
+docker-compose restart web
+
+# Accéder aux conteneurs
+docker-compose exec web bash     # Conteneur Django
+docker-compose exec db psql -U maieutix_user maieutix_prod  # Base de données
+
+# Sauvegarder la base de données
+docker-compose exec db pg_dump -U maieutix_user maieutix_prod > backup.sql
+
+# Supprimer tout (attention: données perdues!)
+docker-compose down -v
+```
+
+### Configuration Docker
+- **services** : Django + PostgreSQL + Nginx
+- **volumes** : Données persistantes (DB, static, media)
+- **networks** : Communication sécurisée entre conteneurs
+- **healthchecks** : Surveillance automatique des services
+
+### Variables importantes (docker-compose.yml)
+```yaml
+environment:
+  - SECRET_KEY=your-secret-key-change-in-production
+  - DEBUG=False
+  - ALLOWED_HOSTS=localhost,127.0.0.1
+  - POSTGRES_PASSWORD=maieutix_password
+```
+
+### Services exposés
+- **Port 80** : Application complète (Nginx + Django)
+- **Page d'accueil** : `http://localhost/` (Hello World)
+- **Administration** : `http://localhost/admin/` (admin/admin123)
+- **Volumes persistants** : Base de données, fichiers media et static
 
 ## Application Core
 
