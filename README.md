@@ -46,10 +46,19 @@ maieutix/
    pip install -r requirements.txt
    ```
 
-4. **Configurer les variables d'environnement**
+4. **Configurer PostgreSQL et les variables d'environnement**
    ```bash
-   # Le fichier .env contient déjà les variables par défaut pour le développement
-   # Modifiez les valeurs selon vos besoins
+   # Installer PostgreSQL (sur macOS avec Homebrew)
+   brew install postgresql
+   brew services start postgresql
+   
+   # Créer la base de données et l'utilisateur
+   createdb mydb_dev
+   psql mydb_dev -c "CREATE USER myuser_dev WITH PASSWORD 'password_dev';"
+   psql mydb_dev -c "GRANT ALL PRIVILEGES ON DATABASE mydb_dev TO myuser_dev;"
+   psql mydb_dev -c "ALTER USER myuser_dev CREATEDB;"
+   
+   # Le fichier .env contient déjà les variables configurées
    ```
 
 5. **Appliquer les migrations**
@@ -60,11 +69,13 @@ maieutix/
 6. **Créer un superutilisateur**
    ```bash
    python manage.py createsuperuser
+   # Ou utiliser le superutilisateur par défaut : admin / admin123
    ```
 
 7. **Lancer le serveur de développement**
    ```bash
    python manage.py runserver
+   # Accéder à http://127.0.0.1:8000/admin/
    ```
 
 ## Commandes utiles
@@ -78,10 +89,26 @@ maieutix/
 
 ## Technologies utilisées
 
-- **Django 5.0** - Framework web Python
+- **Django 5.2.5** - Framework web Python (dernière version)
 - **python-decouple** - Gestion des variables d'environnement
-- **SQLite** - Base de données par défaut (développement)
-- **PostgreSQL** - Base de données recommandée pour la production
+- **psycopg[binary]** - Adaptateur PostgreSQL moderne (version 3)
+- **PostgreSQL** - Base de données pour développement et production
+
+## Notes importantes
+
+### Environnement virtuel
+Le projet nécessite un environnement virtuel Python propre. En cas de problème avec psycopg, recréez l'environnement :
+```bash
+rm -rf venv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Base de données
+- Le projet utilise PostgreSQL en développement et production
+- psycopg[binary] (version 3) est utilisé pour une meilleure compatibilité
+- Un superutilisateur par défaut est disponible : `admin` / `admin123`
 
 ## Configuration des environnements
 
