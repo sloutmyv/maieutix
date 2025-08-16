@@ -31,6 +31,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - ALLOWED_HOSTS=localhost,127.0.0.1,web
+      - TIME_ZONE=Pacific/Noumea
     depends_on:
       db:
         condition: service_healthy

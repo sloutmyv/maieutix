@@ -130,11 +130,21 @@ L'application `core` contient les fonctionnalités principales du projet avec un
 
 ```
 core/
-├── models/domaine.py          # Logique de données
-├── views/domaine.py           # Logique métier et interaction
-├── admin/domaine.py           # Configuration interface d'administration
-└── templates/core/domaine/    # Interface utilisateur
+├── models/
+│   ├── __init__.py           # Import centralisé des modèles
+│   └── cabinet.py            # Modèle Cabinet (singleton)
+├── admin/
+│   ├── __init__.py           # Import centralisé des admins
+│   └── cabinet.py            # Interface admin Cabinet
+├── templates/core/           # Templates Django
+└── static/core/              # CSS/JS personnalisés
 ```
+
+### Fonctionnalités
+- **Cabinet** : Modèle singleton (un seul cabinet par application)
+- **Architecture modulaire** : Séparation models/admin par domaine
+- **Interface moderne** : Tailwind CSS + HTMX + Alpine.js
+- **Timezone** : UTC+11 (Pacific/Noumea)
 
 ### Développement
 - **Design** : Interface sobre et épurée

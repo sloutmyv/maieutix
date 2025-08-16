@@ -219,3 +219,5 @@ htmlcov/
 *.pem
 *.key
 ssl/
+
+docs

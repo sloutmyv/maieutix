@@ -90,7 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = config('LANGUAGE_CODE', default='fr-fr')
-TIME_ZONE = config('TIME_ZONE', default='Europe/Paris')
+TIME_ZONE = config('TIME_ZONE', default='Pacific/Noumea')
 USE_I18N = True
 USE_TZ = True
 

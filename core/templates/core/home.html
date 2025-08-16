@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Accueil - Maieutix{% endblock %}
+
+{% block content %}
+<div class="text-center" x-data="{ message: 'Hello World' }">
+    <!-- Hero Section -->
+    <div class="py-20">
+        <h1 class="text-6xl font-bold text-primary mb-4" x-text="message"></h1>
+        <p class="text-xl text-accent mb-8">
+            Bienvenue sur Maieutix - Votre plateforme de gestion
+        </p>
+        
+        <!-- Interactive Button with HTMX -->
+        <button 
+            class="btn-primary mr-4"
+            hx-get="/admin/"
+            hx-trigger="click"
+            hx-target="body"
+            hx-swap="outerHTML"
+        >
+            Accéder à l'administration
+        </button>
+        
+        <!-- Alpine.js Demo Button -->
+        <button 
+            class="btn-secondary"
+            @click="message = message === 'Hello World' ? 'Bonjour Monde!' : 'Hello World'"
+        >
+            Changer la langue
+        </button>
+    </div>
+    
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-3 gap-8 mt-16">
+        <div class="card">
+            <div class="w-12 h-12 bg-primary rounded-lg mx-auto mb-4 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Rapide</h3>
+            <p class="text-accent">Interface moderne avec HTMX pour des interactions fluides</p>
+        </div>
+        
+        <div class="card">
+            <div class="w-12 h-12 bg-highlight rounded-lg mx-auto mb-4 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Modulaire</h3>
+            <p class="text-accent">Architecture organisée par domaines métier</p>
+        </div>
+        
+        <div class="card">
+            <div class="w-12 h-12 bg-warning rounded-lg mx-auto mb-4 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Fiable</h3>
+            <p class="text-accent">Basé sur Django avec PostgreSQL et Docker</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

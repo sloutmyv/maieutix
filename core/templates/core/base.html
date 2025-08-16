@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Maieutix{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2D4B73',
+                        'secondary': '#253C59',
+                        'accent': '#99B4BF',
+                        'highlight': '#D9BA23',
+                        'warning': '#BF8D30',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/custom.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-primary">
+    <!-- Navigation -->
+    <nav class="nav px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-primary">
+                <a href="/">Maieutix</a>
+            </h1>
+            
+            <div class="flex space-x-6">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/admin/" class="nav-link">Administration</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="mt-16 border-t border-accent py-6">
+        <div class="max-w-7xl mx-auto px-6 text-center text-accent">
+            <p>&copy; 2025 Maieutix. Tous droits réservés.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="{% static 'core/js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

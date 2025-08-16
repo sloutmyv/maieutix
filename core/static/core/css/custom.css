@@ -1,0 +1,78 @@
+/* Custom Maieutix Styles */
+
+/* Color Theme Variables */
+:root {
+  --color-primary: #2D4B73;      /* Voyages-1 - Bleu foncé principal */
+  --color-secondary: #253C59;    /* Voyages-2 - Bleu très foncé */
+  --color-accent: #99B4BF;       /* Voyages-3 - Bleu clair/gris */
+  --color-highlight: #D9BA23;    /* Voyages-4 - Jaune doré */
+  --color-warning: #BF8D30;      /* Voyages-5 - Orange/brun */
+}
+
+/* Base styles */
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--color-primary);
+  background-color: #fafafa;
+}
+
+/* Utility classes for color theme */
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
+.text-accent { color: var(--color-accent); }
+.text-highlight { color: var(--color-highlight); }
+.text-warning { color: var(--color-warning); }
+
+.bg-primary { background-color: var(--color-primary); }
+.bg-secondary { background-color: var(--color-secondary); }
+.bg-accent { background-color: var(--color-accent); }
+.bg-highlight { background-color: var(--color-highlight); }
+.bg-warning { background-color: var(--color-warning); }
+
+.border-primary { border-color: var(--color-primary); }
+.border-secondary { border-color: var(--color-secondary); }
+.border-accent { border-color: var(--color-accent); }
+.border-highlight { border-color: var(--color-highlight); }
+.border-warning { border-color: var(--color-warning); }
+
+/* Clean and sober design components */
+.card {
+  @apply bg-white shadow-sm border border-gray-200 rounded-lg p-6;
+}
+
+.btn-primary {
+  @apply bg-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity;
+  background-color: var(--color-primary);
+}
+
+.btn-secondary {
+  @apply bg-accent text-primary px-4 py-2 rounded-md hover:opacity-90 transition-opacity;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+/* Form styles */
+.form-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  border-color: var(--color-accent);
+}
+
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(45, 75, 115, 0.1);
+}
+
+/* Navigation */
+.nav {
+  @apply bg-white shadow-sm border-b;
+  border-color: var(--color-accent);
+}
+
+.nav-link {
+  @apply text-primary hover:text-secondary transition-colors;
+  color: var(--color-primary);
+}
+
+.nav-link:hover {
+  color: var(--color-secondary);
+}
