@@ -132,16 +132,20 @@ L'application `core` contient les fonctionnalités principales du projet avec un
 core/
 ├── models/
 │   ├── __init__.py           # Import centralisé des modèles
-│   └── cabinet.py            # Modèle Cabinet (singleton)
+│   ├── cabinet.py            # Modèle Cabinet (singleton)
+│   └── sagefemme.py          # Modèle SageFemme (gestion des professionnels)
 ├── admin/
 │   ├── __init__.py           # Import centralisé des admins
-│   └── cabinet.py            # Interface admin Cabinet
+│   ├── cabinet.py            # Interface admin Cabinet
+│   └── sagefemme.py          # Interface admin SageFemme
 ├── admin.py                  # Point d'entrée admin (import du package)
 ├── tests/                    # Tests organisés par domaine
 │   ├── models/
-│   │   └── test_cabinet.py   # Tests modèle Cabinet
+│   │   ├── test_cabinet.py   # Tests modèle Cabinet
+│   │   └── test_sagefemme.py # Tests modèle SageFemme
 │   ├── admin/
-│   │   └── test_cabinet.py   # Tests admin Cabinet
+│   │   ├── test_cabinet.py   # Tests admin Cabinet
+│   │   └── test_sagefemme.py # Tests admin SageFemme
 │   └── views/
 │       └── test_home.py      # Tests vues
 ├── templates/core/           # Templates Django
@@ -150,10 +154,20 @@ core/
 
 ### Fonctionnalités
 - **Cabinet** : Modèle singleton (un seul cabinet par application)
+- **Sages-femmes** : Gestion complète des professionnels (gérants, collaborateurs, remplaçants)
 - **Architecture modulaire** : Séparation models/admin/tests par domaine
-- **Tests complets** : 23 tests unitaires (models, admin, views)
+- **Tests complets** : 46 tests unitaires (models, admin, views)
 - **Interface moderne** : Tailwind CSS + HTMX + Alpine.js
 - **Timezone** : UTC+11 (Pacific/Noumea)
+
+### Modèle SageFemme
+- **Informations personnelles** : Nom, prénom, titre, contact
+- **Informations professionnelles** : CAFAT, RIDET, RIB, banque
+- **Adresse optionnelle** : Rue, code postal, ville
+- **Situation** : Gérant, collaborateur, remplaçant
+- **Logique remplaçant** : Gestion des remplacements avec validations métier
+- **Options remplaçant** : État récapitulatif et bons de dépôt communs
+- **Statut actif/inactif** : Gestion de l'état des professionnels
 
 ### Développement
 - **Design** : Interface sobre et épurée
