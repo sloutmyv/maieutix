@@ -1,0 +1,137 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Feuille de Soins - Maieutix{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- En-tête -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-primary mb-2">Feuille de Soins</h1>
+        <p class="text-accent">Gestion des consultations et des soins</p>
+    </div>
+    
+    <!-- Actions rapides -->
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <div class="card hover:shadow-lg transition-shadow cursor-pointer" 
+             hx-get="/feuille-soins/nouvelle/"
+             hx-target="#main-content"
+             hx-swap="innerHTML">
+            <div class="w-12 h-12 bg-primary rounded-lg mb-4 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-primary mb-2">Nouvelle Consultation</h3>
+            <p class="text-accent text-sm">Créer une nouvelle feuille de soins</p>
+        </div>
+        
+        <div class="card hover:shadow-lg transition-shadow cursor-pointer"
+             hx-get="/feuille-soins/recherche/"
+             hx-target="#main-content"
+             hx-swap="innerHTML">
+            <div class="w-12 h-12 bg-highlight rounded-lg mb-4 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-primary mb-2">Rechercher</h3>
+            <p class="text-accent text-sm">Rechercher dans les consultations</p>
+        </div>
+        
+        <div class="card hover:shadow-lg transition-shadow cursor-pointer"
+             hx-get="/feuille-soins/historique/"
+             hx-target="#main-content"
+             hx-swap="innerHTML">
+            <div class="w-12 h-12 bg-warning rounded-lg mb-4 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-primary mb-2">Historique</h3>
+            <p class="text-accent text-sm">Consulter l'historique des soins</p>
+        </div>
+    </div>
+    
+    <!-- Contenu principal -->
+    <div id="main-content" class="bg-white rounded-lg shadow-sm border border-accent p-6">
+        <!-- Tableau de bord des consultations récentes -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-primary mb-4">Consultations Récentes</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead>
+                        <tr class="border-b border-accent">
+                            <th class="text-left py-3 px-4 text-primary font-medium">Date</th>
+                            <th class="text-left py-3 px-4 text-primary font-medium">Patiente</th>
+                            <th class="text-left py-3 px-4 text-primary font-medium">Type</th>
+                            <th class="text-left py-3 px-4 text-primary font-medium">Statut</th>
+                            <th class="text-right py-3 px-4 text-primary font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Exemple de ligne -->
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-accent">15/08/2025</td>
+                            <td class="py-3 px-4 text-primary font-medium">Marie Dupont</td>
+                            <td class="py-3 px-4 text-accent">Consultation prénatale</td>
+                            <td class="py-3 px-4">
+                                <span class="inline-flex px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                    Complète
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-right">
+                                <button class="text-primary hover:text-highlight text-sm font-medium">
+                                    Voir
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-accent">14/08/2025</td>
+                            <td class="py-3 px-4 text-primary font-medium">Sophie Martin</td>
+                            <td class="py-3 px-4 text-accent">Suivi grossesse</td>
+                            <td class="py-3 px-4">
+                                <span class="inline-flex px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
+                                    En cours
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-right">
+                                <button class="text-primary hover:text-highlight text-sm font-medium">
+                                    Continuer
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-accent">13/08/2025</td>
+                            <td class="py-3 px-4 text-primary font-medium">Léa Dubois</td>
+                            <td class="py-3 px-4 text-accent">Consultation postnatale</td>
+                            <td class="py-3 px-4">
+                                <span class="inline-flex px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                    Complète
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-right">
+                                <button class="text-primary hover:text-highlight text-sm font-medium">
+                                    Voir
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Message si aucune consultation -->
+        <div class="text-center py-8" style="display: none;" id="no-consultations">
+            <div class="w-16 h-16 bg-accent bg-opacity-20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-primary mb-2">Aucune consultation récente</h3>
+            <p class="text-accent mb-4">Commencez par créer votre première feuille de soins</p>
+            <button class="btn-primary">Nouvelle Consultation</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

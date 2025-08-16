@@ -40,7 +40,7 @@ cd maieutix
 docker-compose up -d --build
 
 # Accéder à l'application
-# http://localhost/ (Page d'accueil Hello World)
+# http://localhost/ (Feuille de Soins - page d'accueil)
 # http://localhost/admin/ (Interface admin - admin/admin123)
 ```
 
@@ -120,7 +120,7 @@ environment:
 
 ### Services exposés
 - **Port 80** : Application complète (Nginx + Django)
-- **Page d'accueil** : `http://localhost/` (Hello World)
+- **Page d'accueil** : `http://localhost/` (Feuille de Soins)
 - **Administration** : `http://localhost/admin/` (admin/admin123)
 - **Volumes persistants** : Base de données, fichiers media et static
 
@@ -130,11 +130,18 @@ L'application `core` contient les fonctionnalités principales du projet avec un
 
 ```
 core/
-├── models/
+├── models/                   # Logique de données
 │   ├── __init__.py           # Import centralisé des modèles
 │   ├── cabinet.py            # Modèle Cabinet (singleton)
 │   └── sagefemme.py          # Modèle SageFemme (gestion des professionnels)
-├── admin/
+├── views/                    # Logique métier et interaction
+│   ├── __init__.py           # Import centralisé des vues
+│   ├── feuille_soins.py      # Gestion des consultations
+│   ├── patients.py           # Gestion des patientes
+│   ├── outils.py             # Fonctionnalités utilitaires
+│   ├── statistiques.py       # Analyses et rapports
+│   └── administration.py     # Gestion administrative
+├── admin/                    # Configuration interface d'administration
 │   ├── __init__.py           # Import centralisé des admins
 │   ├── cabinet.py            # Interface admin Cabinet
 │   └── sagefemme.py          # Interface admin SageFemme
@@ -148,14 +155,37 @@ core/
 │   │   └── test_sagefemme.py # Tests admin SageFemme
 │   └── views/
 │       └── test_home.py      # Tests vues
-├── templates/core/           # Templates Django
+├── templates/core/           # Interface utilisateur
+│   ├── base.html             # Template de base avec navbar
+│   ├── feuille_soins.html    # Page principale des consultations
+│   ├── patients/             # Templates des patientes
+│   ├── outils/               # Templates des outils
+│   ├── statistiques/         # Templates des analyses
+│   └── administration/       # Templates d'administration
 └── static/core/              # CSS/JS personnalisés
 ```
 
 ### Fonctionnalités
+
+#### Interface Utilisateur
+- **Navigation** : Navbar avec menus Feuille de Soins, Patients, Outils, Statistiques, Administration
+- **Page d'accueil** : Feuille de Soins (tableau de bord des consultations)
+- **Design** : Interface sobre et épurée avec palette de couleurs cohérente
+- **Interactivité** : Dropdown menu Administration avec Alpine.js
+- **Responsive** : Adapté aux différents écrans
+
+#### URLs Disponibles
+- `http://localhost/` → Feuille de Soins (page d'accueil)
+- `http://localhost/feuille-soins/` → Gestion des consultations
+- `http://localhost/patients/` → Gestion des patientes  
+- `http://localhost/outils/` → Outils et utilitaires
+- `http://localhost/statistiques/` → Analyses et rapports
+- `http://localhost/administration/sages-femmes/` → Gestion des sages-femmes
+
+#### Fonctionnalités Métier
 - **Cabinet** : Modèle singleton (un seul cabinet par application)
 - **Sages-femmes** : Gestion complète des professionnels (gérants, collaborateurs, remplaçants)
-- **Architecture modulaire** : Séparation models/admin/tests par domaine
+- **Architecture modulaire** : Séparation models/views/admin/tests par domaine
 - **Tests complets** : 46 tests unitaires (models, admin, views)
 - **Interface moderne** : Tailwind CSS + HTMX + Alpine.js
 - **Timezone** : UTC+11 (Pacific/Noumea)
