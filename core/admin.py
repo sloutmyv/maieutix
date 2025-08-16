@@ -1,2 +1,2 @@
-# Import all admin from the admin package
+# Import all admin configurations
 from .admin import *

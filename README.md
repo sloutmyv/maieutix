@@ -136,17 +136,27 @@ core/
 ├── admin/
 │   ├── __init__.py           # Import centralisé des admins
 │   └── cabinet.py            # Interface admin Cabinet
+├── admin.py                  # Point d'entrée admin (import du package)
+├── tests/                    # Tests organisés par domaine
+│   ├── models/
+│   │   └── test_cabinet.py   # Tests modèle Cabinet
+│   ├── admin/
+│   │   └── test_cabinet.py   # Tests admin Cabinet
+│   └── views/
+│       └── test_home.py      # Tests vues
 ├── templates/core/           # Templates Django
 └── static/core/              # CSS/JS personnalisés
 ```
 
 ### Fonctionnalités
 - **Cabinet** : Modèle singleton (un seul cabinet par application)
-- **Architecture modulaire** : Séparation models/admin par domaine
+- **Architecture modulaire** : Séparation models/admin/tests par domaine
+- **Tests complets** : 23 tests unitaires (models, admin, views)
 - **Interface moderne** : Tailwind CSS + HTMX + Alpine.js
 - **Timezone** : UTC+11 (Pacific/Noumea)
 
 ### Développement
 - **Design** : Interface sobre et épurée
 - **Palette de couleurs** : Thème Voyages (#2D4B73, #253C59, #99B4BF, #D9BA23, #BF8D30)
+- **Tests** : `docker-compose exec web python manage.py test core.tests`
 - **Guide complet** : Voir `CLAUDE.md` pour les détails de développement
