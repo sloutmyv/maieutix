@@ -139,8 +139,8 @@ class SageFemmeModelTest(TestCase):
 
     def test_verbose_names(self):
         """Test des noms verbeux du modèle"""
-        self.assertEqual(SageFemme._meta.verbose_name, 'Sage-femme')
-        self.assertEqual(SageFemme._meta.verbose_name_plural, 'Sages-femmes')
+        self.assertEqual(SageFemme._meta.verbose_name, '2. Sage-femme')
+        self.assertEqual(SageFemme._meta.verbose_name_plural, '2. Sages-femmes')
 
 
 class SageFemmeRemplacantTest(TestCase):

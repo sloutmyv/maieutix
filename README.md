@@ -185,8 +185,9 @@ core/
 #### Fonctionnalités Métier
 - **Cabinet** : Modèle singleton (un seul cabinet par application)
 - **Sages-femmes** : Gestion complète des professionnels (gérants, collaborateurs, remplaçants)
+- **Périodes d'activité** : Gestion automatique du statut d'activité des sages-femmes
 - **Architecture modulaire** : Séparation models/views/admin/tests par domaine
-- **Tests complets** : 46 tests unitaires (models, admin, views)
+- **Tests complets** : 80+ tests unitaires (models, admin, views)
 - **Interface moderne** : Tailwind CSS + HTMX + Alpine.js
 - **Timezone** : UTC+11 (Pacific/Noumea)
 
@@ -198,9 +199,51 @@ core/
 - **Logique remplaçant** : Gestion des remplacements avec validations métier
 - **Options remplaçant** : État récapitulatif et bons de dépôt communs
 - **Statut actif/inactif** : Gestion de l'état des professionnels
+- **Périodes d'activité** : Statut automatique basé sur les périodes d'activité
+
+### Modèle PeriodeActivite
+- **Date de début obligatoire** : Début de la période d'activité
+- **Date de fin facultative** : Si vide, période considérée comme en cours
+- **Logique d'activité** : Inactive si date de fin dépassée
+- **Validation stricte** : Une seule période ouverte par sage-femme
+- **Anti-chevauchement** : Aucune période ne peut se chevaucher
+- **Statut automatique** : Calcul en temps réel de l'état d'activité
+- **Interface admin** : Gestion complète avec statuts colorés
 
 ### Développement
 - **Design** : Interface sobre et épurée
 - **Palette de couleurs** : Thème Voyages (#2D4B73, #253C59, #99B4BF, #D9BA23, #BF8D30)
 - **Tests** : `docker-compose exec web python manage.py test core.tests`
+- **Validation métier** : Règles strictes pour les périodes d'activité
+- **Admin interface** : "2.1 Périodes d'activité" avec gestion des statuts
 - **Guide complet** : Voir `CLAUDE.md` pour les détails de développement
+
+## Gestion des Périodes d'Activité
+
+### Règles Métier
+- **Période unique ouverte** : Une seule période sans date de fin par sage-femme
+- **Validation anti-chevauchement** : Aucune période ne peut se chevaucher
+- **Statut automatique** : 
+  - **Active** : Date début ≤ aujourd'hui ET (pas de date fin OU date fin ≥ aujourd'hui)
+  - **Inactive** : Date fin < aujourd'hui
+  - **À venir** : Date début > aujourd'hui
+
+### Interface Admin
+- Accès via `http://localhost/admin/` → "2.1 Périodes d'activité"
+- Statuts colorés : ✓ Active, ⏳ À venir, ✗ Terminée
+- Gestion inline dans les fiches sages-femmes
+- Messages d'erreur explicites pour les violations de règles
+
+### Utilisation
+```python
+# Créer une période d'activité
+sage_femme.ajouter_periode_activite(
+    date_debut=date.today(),
+    date_fin=None,  # Période ouverte
+    commentaire="Début d'activité"
+)
+
+# Vérifier le statut
+print(sage_femme.statut_activite)  # "Active (en cours)"
+print(sage_femme.est_actuellement_active)  # True
+```

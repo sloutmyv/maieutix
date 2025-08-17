@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class SageFemme(models.Model):
@@ -117,3 +118,78 @@ class SageFemme(models.Model):
         if self.rue and self.code_postal and self.ville:
             return f"{self.rue}, {self.code_postal} {self.ville}"
         return "Adresse non renseignée"
+    
+    # Méthodes pour la gestion des périodes d'activité
+    @property
+    def periode_activite_actuelle(self):
+        """
+        Retourne la période d'activité actuellement active
+        """
+        return self.periodes_activite.filter(
+            date_debut__lte=timezone.now().date()
+        ).filter(
+            models.Q(date_fin__isnull=True) | 
+            models.Q(date_fin__gte=timezone.now().date())
+        ).first()
+    
+    @property
+    def est_actuellement_active(self):
+        """
+        Détermine si la sage-femme est actuellement active selon ses périodes d'activité
+        """
+        return self.periode_activite_actuelle is not None
+    
+    @property
+    def statut_activite(self):
+        """
+        Retourne le statut d'activité basé sur les périodes d'activité
+        """
+        if not self.is_active:
+            return "Inactive (désactivée)"
+        
+        periode_actuelle = self.periode_activite_actuelle
+        if periode_actuelle:
+            return periode_actuelle.statut_display
+        
+        # Vérifier s'il y a des périodes futures
+        periode_future = self.periodes_activite.filter(
+            date_debut__gt=timezone.now().date()
+        ).first()
+        
+        if periode_future:
+            return f"Inactive (reprend le {periode_future.date_debut})"
+        
+        return "Aucune période d'activité définie"
+    
+    def ajouter_periode_activite(self, date_debut, date_fin=None, commentaire=""):
+        """
+        Ajoute une nouvelle période d'activité
+        """
+        from .periode_activite import PeriodeActivite
+        
+        periode = PeriodeActivite(
+            sage_femme=self,
+            date_debut=date_debut,
+            date_fin=date_fin,
+            commentaire=commentaire
+        )
+        periode.full_clean()
+        periode.save()
+        return periode
+    
+    def get_periodes_actives(self):
+        """
+        Retourne les périodes d'activité actives (en cours ou futures)
+        """
+        return self.periodes_activite.filter(
+            models.Q(date_fin__isnull=True) | 
+            models.Q(date_fin__gte=timezone.now().date())
+        )
+    
+    def get_periodes_passees(self):
+        """
+        Retourne les périodes d'activité terminées
+        """
+        return self.periodes_activite.filter(
+            date_fin__lt=timezone.now().date()
+        )

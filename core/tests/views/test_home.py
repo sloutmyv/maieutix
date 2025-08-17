@@ -13,14 +13,14 @@ class HomeViewTest(TestCase):
         response = self.client.get('/')
         
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Hello World')
-        self.assertContains(response, 'Bienvenue sur Maieutix')
+        self.assertContains(response, 'Feuille de Soins')
+        self.assertContains(response, 'Gestion des consultations')
     
     def test_home_view_template_used(self):
         """Test that correct template is used"""
         response = self.client.get('/')
         
-        self.assertTemplateUsed(response, 'core/home.html')
+        self.assertTemplateUsed(response, 'core/feuille_soins.html')
         self.assertTemplateUsed(response, 'core/base.html')
     
     def test_home_view_context(self):
@@ -39,8 +39,11 @@ class HomeViewTest(TestCase):
         """Test navigation links are present"""
         response = self.client.get('/')
         
-        self.assertContains(response, 'href="/"')         # Home link
-        self.assertContains(response, 'href="/admin/"')   # Admin link
+        self.assertContains(response, 'href="/"')                     # Home link
+        self.assertContains(response, 'href="/admin/"')               # Admin link
+        self.assertContains(response, 'href="/feuille-soins/"')       # Feuille de soins
+        self.assertContains(response, 'href="/patients/"')            # Patients
+        self.assertContains(response, 'href="/statistiques/"')        # Statistiques
     
     def test_home_view_responsive_design(self):
         """Test responsive design elements are present"""

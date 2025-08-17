@@ -76,6 +76,7 @@ class SageFemmeAdminTest(TestCase):
             'nom_complet_display',
             'titre',
             'situation',
+            'statut_activite_display',
             'telephone',
             'email',
             'is_active',
@@ -128,7 +129,7 @@ class SageFemmeAdminTest(TestCase):
         fieldsets = self.admin.fieldsets
         
         # Vérifier le nombre de sections
-        self.assertEqual(len(fieldsets), 6)
+        self.assertEqual(len(fieldsets), 7)  # 7 fieldsets incluant le nouveau 'Statut'
         
         # Vérifier les titres des sections
         section_titles = [fieldset[0] for fieldset in fieldsets]

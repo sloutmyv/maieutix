@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.forms import ModelForm
+from django.utils.html import format_html
 from core.models.sagefemme import SageFemme
+from .periode_activite import PeriodeActiviteInline
 
 
 class SageFemmeAdminForm(ModelForm):
@@ -38,11 +40,13 @@ class SageFemmeAdminForm(ModelForm):
 @admin.register(SageFemme)
 class SageFemmeAdmin(admin.ModelAdmin):
     form = SageFemmeAdminForm
+    inlines = [PeriodeActiviteInline]
     
     list_display = [
         'nom_complet_display',
         'titre',
         'situation',
+        'statut_activite_display',
         'telephone',
         'email',
         'is_active',
@@ -105,6 +109,31 @@ class SageFemmeAdmin(admin.ModelAdmin):
         return obj.nom_complet
     nom_complet_display.short_description = "Nom complet"
     nom_complet_display.admin_order_field = 'nom'
+    
+    def statut_activite_display(self, obj):
+        """Affichage du statut d'activité avec couleur"""
+        statut = obj.statut_activite
+        
+        if obj.est_actuellement_active:
+            color = "green"
+            icon = "✓"
+        elif "reprend le" in statut:
+            color = "orange"
+            icon = "⏳"
+        elif "désactivée" in statut:
+            color = "red"
+            icon = "✗"
+        else:
+            color = "gray"
+            icon = "?"
+        
+        return format_html(
+            '<span style="color: {}; font-weight: bold;">{} {}</span>',
+            color,
+            icon,
+            statut
+        )
+    statut_activite_display.short_description = "Statut activité"
     
     def get_form(self, request, obj=None, **kwargs):
         """Personnalisation du formulaire selon le contexte"""
