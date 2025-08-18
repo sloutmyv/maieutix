@@ -22,7 +22,7 @@ class SageFemmeModelTest(TestCase):
             'ridet': 'RIDET123456',
             'rib': 'FR1234567890123456789012345',
             'banque': 'BCI',
-            'situation': 'gerant'
+            'situation': 'titulaire'
         }
 
     def test_creation_sage_femme_valide(self):
@@ -31,7 +31,7 @@ class SageFemmeModelTest(TestCase):
         
         self.assertEqual(sage_femme.nom, 'Dupont')
         self.assertEqual(sage_femme.prenom, 'Marie')
-        self.assertEqual(sage_femme.situation, 'gerant')
+        self.assertEqual(sage_femme.situation, 'titulaire')
         self.assertTrue(sage_femme.is_active)
         self.assertIsNotNone(sage_femme.created_at)
         self.assertIsNotNone(sage_femme.updated_at)
@@ -39,7 +39,7 @@ class SageFemmeModelTest(TestCase):
     def test_str_representation(self):
         """Test de la représentation string du modèle"""
         sage_femme = SageFemme.objects.create(**self.sage_femme_data)
-        expected = "Dupont Marie (Gérant)"
+        expected = "Dupont Marie (Titulaire)"
         self.assertEqual(str(sage_femme), expected)
 
     def test_nom_complet_property(self):
@@ -89,11 +89,22 @@ class SageFemmeModelTest(TestCase):
 
     def test_choix_situation_valides(self):
         """Test des choix valides pour le champ situation"""
-        situations_valides = ['gerant', 'collaborateur', 'remplacant']
+        # Créer un titulaire qui servira de référence pour les remplaçants
+        titulaire = SageFemme.objects.create(**self.sage_femme_data)
+        
+        situations_valides = ['titulaire', 'collaborateur', 'remplacant']
         
         for situation in situations_valides:
             data = self.sage_femme_data.copy()
             data['situation'] = situation
+            data['email'] = f'test_{situation}@example.com'  # Email unique
+            data['numero_cafat'] = f'{situation}123456789'  # CAFAT unique
+            data['ridet'] = f'RIDET{situation}123456'  # RIDET unique
+            
+            if situation == 'remplacant':
+                # Les remplaçants ont besoin d'un remplacement_de
+                data['remplacement_de'] = titulaire
+            
             sage_femme = SageFemme.objects.create(**data)
             self.assertEqual(sage_femme.situation, situation)
 
@@ -149,17 +160,17 @@ class SageFemmeRemplacantTest(TestCase):
     def setUp(self):
         """Configuration pour les tests de remplaçants"""
         # Créer un gérant
-        self.gerant = SageFemme.objects.create(
-            nom='Gerant',
+        self.titulaire = SageFemme.objects.create(
+            nom='Titulaire',
             prenom='Pierre',
-            titre='Sage-femme gérant',
+            titre='Sage-femme titulaire',
             telephone='687111111',
-            email='pierre.gerant@test.nc',
+            email='pierre.titulaire@test.nc',
             numero_cafat='111111111',
             ridet='RIDET111111',
             rib='FR1111111111111111111111111',
             banque='BCI',
-            situation='gerant'
+            situation='titulaire'
         )
         
         # Créer un collaborateur
@@ -189,13 +200,13 @@ class SageFemmeRemplacantTest(TestCase):
             rib='FR3333333333333333333333333',
             banque='BCI',
             situation='remplacant',
-            remplacement_de=self.gerant,
+            remplacement_de=self.titulaire,
             etat_recapitulatif_commun=True,
             bons_depot_communs=True
         )
         
         self.assertEqual(remplacant.situation, 'remplacant')
-        self.assertEqual(remplacant.remplacement_de, self.gerant)
+        self.assertEqual(remplacant.remplacement_de, self.titulaire)
         self.assertTrue(remplacant.etat_recapitulatif_commun)
         self.assertTrue(remplacant.bons_depot_communs)
 
@@ -219,23 +230,23 @@ class SageFemmeRemplacantTest(TestCase):
         
         self.assertIn('remplacement_de', context.exception.message_dict)
 
-    def test_gerant_avec_remplacement_de(self):
-        """Test qu'un gérant ne peut pas avoir de remplacement_de"""
+    def test_titulaire_avec_remplacement_de(self):
+        """Test qu'un titulaire ne peut pas avoir de remplacement_de"""
         with self.assertRaises(ValidationError) as context:
-            gerant = SageFemme(
-                nom='Gerant2',
+            titulaire = SageFemme(
+                nom='Titulaire2',
                 prenom='Paul',
-                titre='Sage-femme gérant',
+                titre='Sage-femme titulaire',
                 telephone='687444444',
-                email='paul.gerant@test.nc',
+                email='paul.titulaire@test.nc',
                 numero_cafat='444444444',
                 ridet='RIDET444444',
                 rib='FR4444444444444444444444444',
                 banque='BCI',
-                situation='gerant',
-                remplacement_de=self.gerant  # Ne devrait pas être permis
+                situation='titulaire',
+                remplacement_de=self.titulaire  # Ne devrait pas être permis
             )
-            gerant.full_clean()
+            titulaire.full_clean()
         
         self.assertIn('remplacement_de', context.exception.message_dict)
 
@@ -253,7 +264,7 @@ class SageFemmeRemplacantTest(TestCase):
                 rib='FR5555555555555555555555555',
                 banque='BCI',
                 situation='collaborateur',
-                remplacement_de=self.gerant  # Ne devrait pas être permis
+                remplacement_de=self.titulaire  # Ne devrait pas être permis
             )
             collaborateur.full_clean()
         
@@ -273,7 +284,7 @@ class SageFemmeRemplacantTest(TestCase):
             rib='FR3333333333333333333333333',
             banque='BCI',
             situation='remplacant',
-            remplacement_de=self.gerant
+            remplacement_de=self.titulaire
         )
         
         # Tenter de créer un remplaçant du remplaçant
@@ -297,29 +308,29 @@ class SageFemmeRemplacantTest(TestCase):
 
     def test_save_nettoie_champs_remplacant(self):
         """Test que save() nettoie les champs spécifiques aux remplaçants pour les non-remplaçants"""
-        # Créer un gérant avec des champs de remplaçant (ne devrait pas être permis)
-        gerant = SageFemme(
-            nom='Gerant3',
+        # Créer un titulaire avec des champs de remplaçant (ne devrait pas être permis)
+        titulaire = SageFemme(
+            nom='Titulaire3',
             prenom='Marc',
-            titre='Sage-femme gérant',
+            titre='Sage-femme titulaire',
             telephone='687777777',
-            email='marc.gerant@test.nc',
+            email='marc.titulaire@test.nc',
             numero_cafat='777777777',
             ridet='RIDET777777',
             rib='FR7777777777777777777777777',
             banque='BCI',
-            situation='gerant',
-            remplacement_de=self.gerant,  # Sera nettoyé
+            situation='titulaire',
+            remplacement_de=self.titulaire,  # Sera nettoyé
             etat_recapitulatif_commun=True,  # Sera nettoyé
             bons_depot_communs=True  # Sera nettoyé
         )
         
-        gerant.save()
+        titulaire.save()
         
         # Vérifier que les champs ont été nettoyés
-        self.assertIsNone(gerant.remplacement_de)
-        self.assertFalse(gerant.etat_recapitulatif_commun)
-        self.assertFalse(gerant.bons_depot_communs)
+        self.assertIsNone(titulaire.remplacement_de)
+        self.assertFalse(titulaire.etat_recapitulatif_commun)
+        self.assertFalse(titulaire.bons_depot_communs)
 
     def test_champs_remplacant_par_defaut_false(self):
         """Test que les champs spécifiques aux remplaçants sont False par défaut"""
@@ -333,7 +344,7 @@ class SageFemmeRemplacantTest(TestCase):
             ridet='RIDET000000',
             rib='FR0000000000000000000000000',
             banque='BCI',
-            situation='gerant'
+            situation='titulaire'
         )
         
         self.assertFalse(sage_femme.etat_recapitulatif_commun)

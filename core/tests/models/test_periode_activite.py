@@ -24,7 +24,7 @@ class PeriodeActiviteModelTest(TestCase):
             ridet="67890",
             rib="123456789",
             banque="Test Bank",
-            situation="gerant"
+            situation="titulaire"
         )
         
         self.aujourd_hui = timezone.now().date()

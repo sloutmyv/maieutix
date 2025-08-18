@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class SageFemme(models.Model):
     SITUATION_CHOICES = [
-        ('gerant', 'Gérant'),
+        ('titulaire', 'Titulaire'),
         ('collaborateur', 'Collaborateur'), 
         ('remplacant', 'Remplaçant'),
     ]
@@ -43,7 +43,7 @@ class SageFemme(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        limit_choices_to={'situation__in': ['gerant', 'collaborateur']},
+        limit_choices_to={'situation__in': ['titulaire', 'collaborateur']},
         verbose_name="Remplacement de",
         help_text="Sage-femme remplacée (seulement pour les remplaçants)"
     )
@@ -91,7 +91,7 @@ class SageFemme(models.Model):
                 })
         
         # Si ce n'est pas un remplaçant, les champs spécifiques doivent être vides/false
-        elif self.situation in ['gerant', 'collaborateur']:
+        elif self.situation in ['titulaire', 'collaborateur']:
             if self.remplacement_de:
                 raise ValidationError({
                     'remplacement_de': 'Seuls les remplaçants peuvent avoir ce champ renseigné.'

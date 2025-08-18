@@ -18,7 +18,7 @@ class SageFemmeAdminForm(ModelForm):
         # Personnalisation du champ remplacement_de
         if 'remplacement_de' in self.fields:
             self.fields['remplacement_de'].queryset = SageFemme.objects.filter(
-                situation__in=['gerant', 'collaborateur'],
+                situation__in=['titulaire', 'collaborateur'],
                 is_active=True
             ).exclude(pk=self.instance.pk if self.instance.pk else None)
     
@@ -31,8 +31,8 @@ class SageFemmeAdminForm(ModelForm):
         if situation == 'remplacant' and not remplacement_de:
             self.add_error('remplacement_de', 'Ce champ est obligatoire pour un remplaçant.')
         
-        if situation in ['gerant', 'collaborateur'] and remplacement_de:
-            self.add_error('remplacement_de', 'Ce champ doit être vide pour un gérant ou collaborateur.')
+        if situation in ['titulaire', 'collaborateur'] and remplacement_de:
+            self.add_error('remplacement_de', 'Ce champ doit être vide pour un titulaire ou collaborateur.')
         
         return cleaned_data
 
@@ -49,7 +49,6 @@ class SageFemmeAdmin(admin.ModelAdmin):
         'statut_activite_display',
         'telephone',
         'email',
-        'is_active',
         'updated_at'
     ]
     
@@ -70,7 +69,7 @@ class SageFemmeAdmin(admin.ModelAdmin):
         'ridet'
     ]
     
-    list_editable = ['is_active']
+    list_editable = []
     
     ordering = ['nom', 'prenom']
     

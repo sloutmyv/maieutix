@@ -195,7 +195,7 @@ core/
 - **Informations personnelles** : Nom, prénom, titre, contact
 - **Informations professionnelles** : CAFAT, RIDET, RIB, banque
 - **Adresse optionnelle** : Rue, code postal, ville
-- **Situation** : Gérant, collaborateur, remplaçant
+- **Situation** : Titulaire, collaborateur, remplaçant
 - **Logique remplaçant** : Gestion des remplacements avec validations métier
 - **Options remplaçant** : État récapitulatif et bons de dépôt communs
 - **Statut actif/inactif** : Gestion de l'état des professionnels

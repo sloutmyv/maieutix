@@ -24,17 +24,17 @@ class SageFemmeAdminTest(TestCase):
         )
         
         # Créer des sages-femmes de test
-        self.gerant = SageFemme.objects.create(
+        self.titulaire = SageFemme.objects.create(
             nom='Gerant',
             prenom='Pierre',
             titre='Sage-femme gérant',
             telephone='687111111',
-            email='pierre.gerant@test.nc',
+            email='pierre.titulaire@test.nc',
             numero_cafat='111111111',
             ridet='RIDET111111',
             rib='FR1111111111111111111111111',
             banque='BCI',
-            situation='gerant'
+            situation='titulaire'
         )
         
         self.collaborateur = SageFemme.objects.create(
@@ -61,7 +61,7 @@ class SageFemmeAdminTest(TestCase):
             rib='FR3333333333333333333333333',
             banque='BCI',
             situation='remplacant',
-            remplacement_de=self.gerant,
+            remplacement_de=self.titulaire,
             etat_recapitulatif_commun=True,
             bons_depot_communs=True
         )
@@ -117,7 +117,7 @@ class SageFemmeAdminTest(TestCase):
 
     def test_nom_complet_display_method(self):
         """Test de la méthode nom_complet_display"""
-        result = self.admin.nom_complet_display(self.gerant)
+        result = self.admin.nom_complet_display(self.titulaire)
         self.assertEqual(result, "Pierre Gerant")
         
         # Vérifier les attributs de la méthode
@@ -191,7 +191,7 @@ class SageFemmeAdminTest(TestCase):
     def test_admin_change_view(self):
         """Test de la vue de modification"""
         self.client.login(username='admin', password='admin123')
-        url = reverse('admin:core_sagefemme_change', args=[self.gerant.pk])
+        url = reverse('admin:core_sagefemme_change', args=[self.titulaire.pk])
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
@@ -221,7 +221,7 @@ class SageFemmeAdminTest(TestCase):
         url = reverse('admin:core_sagefemme_changelist')
         
         # Filtrer par gérant
-        response = self.client.get(url, {'situation': 'gerant'})
+        response = self.client.get(url, {'situation': 'titulaire'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Pierre Gerant')
         self.assertNotContains(response, 'Julie Collaborateur')
@@ -235,8 +235,8 @@ class SageFemmeAdminTest(TestCase):
     def test_admin_filter_by_active_status(self):
         """Test du filtrage par statut actif"""
         # Désactiver une sage-femme
-        self.gerant.is_active = False
-        self.gerant.save()
+        self.titulaire.is_active = False
+        self.titulaire.save()
         
         self.client.login(username='admin', password='admin123')
         url = reverse('admin:core_sagefemme_changelist')
@@ -253,17 +253,17 @@ class SageFemmeAdminFormTest(TestCase):
 
     def setUp(self):
         """Configuration pour les tests de formulaire"""
-        self.gerant = SageFemme.objects.create(
+        self.titulaire = SageFemme.objects.create(
             nom='Gerant',
             prenom='Pierre',
             titre='Sage-femme gérant',
             telephone='687111111',
-            email='pierre.gerant@test.nc',
+            email='pierre.titulaire@test.nc',
             numero_cafat='111111111',
             ridet='RIDET111111',
             rib='FR1111111111111111111111111',
             banque='BCI',
-            situation='gerant'
+            situation='titulaire'
         )
         
         self.collaborateur = SageFemme.objects.create(
@@ -287,7 +287,7 @@ class SageFemmeAdminFormTest(TestCase):
         queryset = form.fields['remplacement_de'].queryset
         situations = list(queryset.values_list('situation', flat=True))
         
-        self.assertIn('gerant', situations)
+        self.assertIn('titulaire', situations)
         self.assertIn('collaborateur', situations)
         self.assertNotIn('remplacant', situations)
 
@@ -311,7 +311,7 @@ class SageFemmeAdminFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('remplacement_de', form.errors)
 
-    def test_form_validation_gerant_avec_remplacement_de(self):
+    def test_form_validation_titulaire_avec_remplacement_de(self):
         """Test de validation : gérant avec remplacement_de"""
         form_data = {
             'nom': 'Test',
@@ -323,8 +323,8 @@ class SageFemmeAdminFormTest(TestCase):
             'ridet': 'RIDET000000',
             'rib': 'FR0000000000000000000000000',
             'banque': 'BCI',
-            'situation': 'gerant',
-            'remplacement_de': self.gerant.pk
+            'situation': 'titulaire',
+            'remplacement_de': self.titulaire.pk
         }
         
         form = SageFemmeAdminForm(data=form_data)
@@ -344,7 +344,7 @@ class SageFemmeAdminFormTest(TestCase):
             'rib': 'FR0000000000000000000000000',
             'banque': 'BCI',
             'situation': 'remplacant',
-            'remplacement_de': self.gerant.pk,
+            'remplacement_de': self.titulaire.pk,
             'etat_recapitulatif_commun': True,
             'bons_depot_communs': False
         }
@@ -355,12 +355,12 @@ class SageFemmeAdminFormTest(TestCase):
     def test_form_exclude_self_from_remplacement_de(self):
         """Test que le formulaire exclut l'instance courante du queryset remplacement_de"""
         # Simuler la modification d'une sage-femme existante
-        form = SageFemmeAdminForm(instance=self.gerant)
+        form = SageFemmeAdminForm(instance=self.titulaire)
         
         queryset = form.fields['remplacement_de'].queryset
         
         # Le gérant ne doit pas pouvoir se remplacer lui-même
-        self.assertNotIn(self.gerant, queryset)
+        self.assertNotIn(self.titulaire, queryset)
         self.assertIn(self.collaborateur, queryset)
 
     def test_form_email_unique_validation(self):
@@ -370,7 +370,7 @@ class SageFemmeAdminFormTest(TestCase):
             'prenom': 'Test',
             'titre': 'Test',
             'telephone': '687000000',
-            'email': self.gerant.email,  # Email déjà utilisé
+            'email': self.titulaire.email,  # Email déjà utilisé
             'numero_cafat': '000000000',
             'ridet': 'RIDET000000',
             'rib': 'FR0000000000000000000000000',
