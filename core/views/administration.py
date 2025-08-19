@@ -11,7 +11,7 @@ from django import forms
 from django.forms import ModelForm
 from django.views.decorators.http import require_http_methods
 import json
-from datetime import date
+from datetime import date, datetime
 from core.models.sagefemme import SageFemme
 from core.models.periode_activite import PeriodeActivite
 

@@ -428,6 +428,14 @@ setTimeout(function() {
     }
 }, 100);
 
+// Fonction pour fermer le modal
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+
 
 // Fonction pour supprimer une période d'activité
 function supprimerPeriode(periodeId) {
