@@ -184,8 +184,9 @@ core/
 
 #### Fonctionnalités Métier
 - **Cabinet** : Modèle singleton (un seul cabinet par application)
-- **Sages-femmes** : Gestion complète des professionnels (gérants, collaborateurs, remplaçants)
+- **Sages-femmes** : Gestion complète des professionnels (titulaires, collaborateurs, remplaçants)
 - **Périodes d'activité** : Gestion automatique du statut d'activité des sages-femmes
+- **Interface d'administration** : Interface optimisée avec terminologie mise à jour
 - **Architecture modulaire** : Séparation models/views/admin/tests par domaine
 - **Tests complets** : 80+ tests unitaires (models, admin, views)
 - **Interface moderne** : Tailwind CSS + HTMX + Alpine.js
@@ -200,6 +201,7 @@ core/
 - **Options remplaçant** : État récapitulatif et bons de dépôt communs
 - **Statut actif/inactif** : Gestion de l'état des professionnels
 - **Périodes d'activité** : Statut automatique basé sur les périodes d'activité
+- **Interface optimisée** : Terminologie mise à jour (gérant → titulaire)
 
 ### Modèle PeriodeActivite
 - **Date de début obligatoire** : Début de la période d'activité
