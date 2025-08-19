@@ -4,7 +4,6 @@ Tests pour les vues d'administration des sage-femmes.
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.http import JsonResponse
 import json
 from datetime import date, timedelta
 from core.models.sagefemme import SageFemme

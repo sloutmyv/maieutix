@@ -16,26 +16,19 @@ body {
   background-color: #fafafa;
 }
 
-/* Utility classes for color theme */
+/* Utility classes for color theme - USED ONLY */
 .text-primary { color: var(--color-primary); }
 .text-secondary { color: var(--color-secondary); }
 .text-accent { color: var(--color-accent); }
 .text-highlight { color: var(--color-highlight); }
-.text-warning { color: var(--color-warning); }
 
 .bg-primary { background-color: var(--color-primary); }
-.bg-secondary { background-color: var(--color-secondary); }
-.bg-accent { background-color: var(--color-accent); }
 .bg-highlight { background-color: var(--color-highlight); }
 .bg-warning { background-color: var(--color-warning); }
 
-.border-primary { border-color: var(--color-primary); }
-.border-secondary { border-color: var(--color-secondary); }
 .border-accent { border-color: var(--color-accent); }
-.border-highlight { border-color: var(--color-highlight); }
-.border-warning { border-color: var(--color-warning); }
 
-/* Clean and sober design components */
+/* Clean and sober design components - USED ONLY */
 .card {
   @apply bg-white shadow-sm border border-gray-200 rounded-lg p-6;
 }
@@ -45,29 +38,7 @@ body {
   background-color: var(--color-primary);
 }
 
-.btn-secondary {
-  @apply bg-accent text-primary px-4 py-2 rounded-md hover:opacity-90 transition-opacity;
-  background-color: var(--color-accent);
-  color: var(--color-primary);
-}
-
-/* Form styles */
-.form-input {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
-  border-color: var(--color-accent);
-}
-
-.form-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(45, 75, 115, 0.1);
-}
-
-/* Navigation */
-.nav {
-  @apply bg-white shadow-sm border-b;
-  border-color: var(--color-accent);
-}
-
+/* Navigation - USED ONLY */
 .nav-link {
   @apply text-primary hover:text-secondary transition-colors;
   color: var(--color-primary);
@@ -75,108 +46,4 @@ body {
 
 .nav-link:hover {
   color: var(--color-secondary);
-}
-
-/* Alerts and Messages */
-.alert {
-  @apply px-4 py-3 rounded-md;
-}
-
-.alert-success {
-  @apply bg-green-100 text-green-800 border border-green-200;
-}
-
-.alert-error {
-  @apply bg-red-100 text-red-800 border border-red-200;
-}
-
-.alert-warning {
-  @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
-}
-
-.alert-info {
-  @apply bg-blue-100 text-blue-800 border border-blue-200;
-}
-
-/* Table styles */
-.table-hover tbody tr:hover {
-  @apply bg-gray-50;
-}
-
-/* Modal animations */
-.modal-enter {
-  @apply transition-all duration-300 ease-out;
-}
-
-.modal-enter-start {
-  @apply opacity-0 scale-95;
-}
-
-.modal-enter-end {
-  @apply opacity-100 scale-100;
-}
-
-.modal-leave {
-  @apply transition-all duration-200 ease-in;
-}
-
-.modal-leave-start {
-  @apply opacity-100 scale-100;
-}
-
-.modal-leave-end {
-  @apply opacity-0 scale-95;
-}
-
-/* Button variants */
-.btn {
-  @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
-}
-
-.btn-primary {
-  @apply bg-primary text-white hover:bg-primary/90 focus:ring-primary/50;
-  background-color: var(--color-primary);
-}
-
-.btn-secondary {
-  @apply bg-accent text-primary hover:bg-accent/90 focus:ring-accent/50;
-  background-color: var(--color-accent);
-  color: var(--color-primary);
-}
-
-.btn-danger {
-  @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
-}
-
-.btn-success {
-  @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
-}
-
-/* Status badges */
-.badge {
-  @apply inline-flex items-center px-2 py-1 text-xs font-medium rounded-full;
-}
-
-.badge-active {
-  @apply bg-green-100 text-green-800;
-}
-
-.badge-inactive {
-  @apply bg-red-100 text-red-800;
-}
-
-.badge-pending {
-  @apply bg-yellow-100 text-yellow-800;
-}
-
-.badge-titulaire {
-  @apply bg-blue-100 text-blue-800;
-}
-
-.badge-collaborateur {
-  @apply bg-green-100 text-green-800;
-}
-
-.badge-remplacant {
-  @apply bg-yellow-100 text-yellow-800;
 }

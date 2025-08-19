@@ -17,21 +17,3 @@ def outils_view(request):
     return render(request, 'core/outils/index.html', context)
 
 
-def calculatrice_view(request):
-    """
-    Vue pour les outils de calcul
-    """
-    context = {
-        'page_title': 'Calculatrice'
-    }
-    return render(request, 'core/outils/calculatrice.html', context)
-
-
-def references_view(request):
-    """
-    Vue pour les références médicales
-    """
-    context = {
-        'page_title': 'Références Médicales'
-    }
-    return render(request, 'core/outils/references.html', context)

@@ -50,31 +50,3 @@ def feuille_soins_view(request):
     return render(request, 'core/feuille_soins.html', context)
 
 
-def nouvelle_consultation_view(request):
-    """
-    Vue pour créer une nouvelle consultation
-    """
-    context = {
-        'page_title': 'Nouvelle Consultation'
-    }
-    return render(request, 'core/feuille_soins/nouvelle.html', context)
-
-
-def recherche_consultation_view(request):
-    """
-    Vue pour rechercher dans les consultations
-    """
-    context = {
-        'page_title': 'Recherche Consultations'
-    }
-    return render(request, 'core/feuille_soins/recherche.html', context)
-
-
-def historique_consultation_view(request):
-    """
-    Vue pour l'historique des consultations
-    """
-    context = {
-        'page_title': 'Historique Consultations'
-    }
-    return render(request, 'core/feuille_soins/historique.html', context)

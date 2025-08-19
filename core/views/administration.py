@@ -9,11 +9,9 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.db.models import Q
 from django import forms
 from django.forms import ModelForm
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 import json
-from datetime import datetime, date
+from datetime import date
 from core.models.sagefemme import SageFemme
 from core.models.periode_activite import PeriodeActivite
 
@@ -413,21 +411,3 @@ def terminer_periode_activite_view(request, pk):
         return JsonResponse({'success': False, 'error': str(e)})
 
 
-def administration_cabinet_view(request):
-    """
-    Vue pour la gestion du cabinet
-    """
-    context = {
-        'page_title': 'Administration - Cabinet'
-    }
-    return render(request, 'core/administration/cabinet.html', context)
-
-
-def parametres_view(request):
-    """
-    Vue pour les paramètres généraux
-    """
-    context = {
-        'page_title': 'Paramètres'
-    }
-    return render(request, 'core/administration/parametres.html', context)

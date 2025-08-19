@@ -203,19 +203,3 @@ class SageFemme(models.Model):
         periode.save()
         return periode
     
-    def get_periodes_actives(self):
-        """
-        Retourne les périodes d'activité actives (en cours ou futures)
-        """
-        return self.periodes_activite.filter(
-            models.Q(date_fin__isnull=True) | 
-            models.Q(date_fin__gte=timezone.now().date())
-        )
-    
-    def get_periodes_passees(self):
-        """
-        Retourne les périodes d'activité terminées
-        """
-        return self.periodes_activite.filter(
-            date_fin__lt=timezone.now().date()
-        )

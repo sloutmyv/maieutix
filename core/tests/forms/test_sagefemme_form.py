@@ -2,7 +2,6 @@
 Tests pour les formulaires des sage-femmes.
 """
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 from core.views.administration import SageFemmeForm
 from core.models.sagefemme import SageFemme
 

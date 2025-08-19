@@ -163,8 +163,4 @@ class SageFemmeAdmin(admin.ModelAdmin):
         
         super().save_model(request, obj, form, change)
     
-    class Media:
-        js = ('admin/js/sagefemme_admin.js',)
-        css = {
-            'all': ('admin/css/sagefemme_admin.css',)
-        }
+    # Media class removed - referenced files don't exist

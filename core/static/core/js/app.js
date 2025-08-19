@@ -62,25 +62,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Utility functions
-window.Maieutix.utils = {
-    // Show notification
-    notify: function(message, type = 'info') {
-        console.log(`[${type.toUpperCase()}] ${message}`);
-        if (window.showNotification) {
-            window.showNotification(message, type);
-        }
-    },
-    
-    // Confirm dialog
-    confirm: function(message, callback) {
-        if (confirm(message)) {
-            callback();
-        }
-    },
-    
-    // Format date
-    formatDate: function(date) {
-        return new Intl.DateTimeFormat('fr-FR').format(new Date(date));
-    }
-};
+// Utility functions - keep only essential ones
+window.Maieutix.utils = {};
