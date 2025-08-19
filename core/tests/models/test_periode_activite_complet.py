@@ -67,7 +67,9 @@ class PeriodeActiviteModelTest(TestCase):
                 date_debut=self.today,
                 commentaire='Test'
             )
-        
+    
+    def test_date_debut_obligatoire(self):
+        """Test que date_debut est obligatoire"""
         # date_debut obligatoire
         with self.assertRaises(IntegrityError):
             PeriodeActivite.objects.create(

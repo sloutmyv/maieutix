@@ -5,7 +5,7 @@ Logique métier pour la gestion administrative
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.db.models import Q
 from django import forms
 from django.forms import ModelForm
@@ -276,6 +276,8 @@ def sagefemme_delete_view(request, pk):
         
         return HttpResponse("Méthode non autorisée", status=405)
     
+    except Http404:
+        return HttpResponse("Sage-femme introuvable", status=404)
     except Exception as e:
         return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
 
@@ -316,6 +318,8 @@ def ajouter_periode_activite_view(request, pk):
             'message': 'Période d\'activité ajoutée avec succès'
         })
         
+    except Http404:
+        return JsonResponse({'success': False, 'error': 'Sage-femme introuvable'}, status=404)
     except ValueError as e:
         return JsonResponse({'success': False, 'error': 'Format de date invalide'})
     except Exception as e:
@@ -355,6 +359,8 @@ def modifier_periode_activite_view(request, pk):
             'message': 'Période modifiée avec succès'
         })
         
+    except Http404:
+        return JsonResponse({'success': False, 'error': 'Période introuvable'}, status=404)
     except ValueError as e:
         return JsonResponse({'success': False, 'error': 'Format de date invalide'})
     except Exception as e:
@@ -376,6 +382,8 @@ def supprimer_periode_activite_view(request, pk):
             'message': 'Période supprimée avec succès'
         })
         
+    except Http404:
+        return JsonResponse({'success': False, 'error': 'Période introuvable'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
@@ -399,6 +407,8 @@ def terminer_periode_activite_view(request, pk):
             'message': 'Période terminée avec succès'
         })
         
+    except Http404:
+        return JsonResponse({'success': False, 'error': 'Période introuvable'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 

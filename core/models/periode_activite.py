@@ -58,10 +58,10 @@ class PeriodeActivite(models.Model):
         """
         super().clean()
         
-        # Vérifier que la date de fin est postérieure à la date de début
-        if self.date_fin and self.date_debut and self.date_fin <= self.date_debut:
+        # Vérifier que la date de fin n'est pas antérieure à la date de début
+        if self.date_fin and self.date_debut and self.date_fin < self.date_debut:
             raise ValidationError({
-                'date_fin': 'La date de fin doit être postérieure à la date de début.'
+                'date_fin': 'La date de fin ne peut pas être antérieure à la date de début.'
             })
         
         # Vérifications spécifiques à la sage-femme

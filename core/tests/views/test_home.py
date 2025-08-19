@@ -13,14 +13,14 @@ class HomeViewTest(TestCase):
         response = self.client.get('/')
         
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Feuille de Soins')
-        self.assertContains(response, 'Gestion des consultations')
+        self.assertContains(response, 'Maieutix')
+        self.assertContains(response, 'Votre plateforme de gestion')
     
     def test_home_view_template_used(self):
         """Test that correct template is used"""
         response = self.client.get('/')
         
-        self.assertTemplateUsed(response, 'core/feuille_soins.html')
+        self.assertTemplateUsed(response, 'core/home.html')
         self.assertTemplateUsed(response, 'core/base.html')
     
     def test_home_view_context(self):
