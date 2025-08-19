@@ -202,6 +202,9 @@ def sagefemme_update_view(request, pk):
                 sagefemme = form.save()
                 
                 # Traiter les modifications de périodes d'activité
+                periodes_modifiees = []
+                erreurs_periodes = []
+                
                 for key, value in request.POST.items():
                     if key.startswith('debut_'):
                         periode_id = key.replace('debut_', '')
@@ -212,19 +215,37 @@ def sagefemme_update_view(request, pk):
                             date_fin_value = request.POST.get(date_fin_key, '')
                             date_fin = datetime.strptime(date_fin_value, '%Y-%m-%d').date() if date_fin_value else None
                             
+                            # Mettre à jour seulement si on a une date de début valide
                             if date_debut:
                                 periode.date_debut = date_debut
                                 periode.date_fin = date_fin
-                                periode.full_clean()
+                                periode.full_clean()  # Validation métier
                                 periode.save()
-                        except (PeriodeActivite.DoesNotExist, ValueError):
-                            continue
+                                periodes_modifiees.append(periode_id)
+                            else:
+                                erreurs_periodes.append(f"Date de début manquante pour période {periode_id}")
+                        except PeriodeActivite.DoesNotExist:
+                            erreurs_periodes.append(f"Période {periode_id} introuvable")
+                        except ValueError as e:
+                            erreurs_periodes.append(f"Format de date invalide pour période {periode_id}")
+                        except Exception as e:
+                            erreurs_periodes.append(f"Erreur période {periode_id}: {str(e)}")
+                
+                # Préparer le message de notification
+                message_parts = [f"Sage-femme {sagefemme.nom_complet} modifiée avec succès"]
+                if periodes_modifiees:
+                    message_parts.append(f"{len(periodes_modifiees)} période(s) mise(s) à jour")
+                if erreurs_periodes:
+                    message_parts.extend(erreurs_periodes)
+                
+                message = ". ".join(message_parts) + "."
+                notification_type = "success" if not erreurs_periodes else "warning"
                 
                 # Retourner une réponse HTMX pour fermer la modal et afficher notification
                 response = HttpResponse()
                 response.content = f'''
                 <script>
-                    window.showNotification("Sage-femme {sagefemme.nom_complet} modifiée avec succès.", "success");
+                    window.showNotification("{message}", "{notification_type}");
                     document.getElementById('modal-container').innerHTML = '';
                     window.location.reload();
                 </script>
