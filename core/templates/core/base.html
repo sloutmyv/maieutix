@@ -23,8 +23,17 @@
         }
     </script>
     
+    <!-- CSRF Token for HTMX -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script>
+        // Configuration HTMX pour CSRF
+        document.addEventListener('htmx:configRequest', function(event) {
+            event.detail.headers['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        });
+    </script>
     
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -49,7 +58,8 @@
                 <a href="/outils/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Outils</a>
                 <a href="/statistiques/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Statistiques</a>
                 
-                <!-- Menu Administration avec dropdown -->
+                <!-- Menu Administration avec dropdown - Visible pour super admin et titulaires -->
+                {% if user.is_superuser or user_can_access_administration|default:True %}
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="nav-link text-primary hover:text-highlight transition-colors font-medium flex items-center">
                         Administration
@@ -68,11 +78,12 @@
                          x-transition:leave-end="transform opacity-0 scale-95"
                          class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-accent z-10">
                         <div class="py-1">
-                            <a href="/administration/sages-femmes/" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Sages Femmes</a>
+                            <a href="{% url 'administration:administration_sages_femmes' %}" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Sages Femmes</a>
                             <a href="/admin/" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Interface Admin</a>
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -81,6 +92,9 @@
     <main class="max-w-7xl mx-auto px-6 py-8">
         {% block content %}{% endblock %}
     </main>
+    
+    <!-- Système de notifications -->
+    {% include 'core/partials/notifications.html' %}
     
     <!-- Footer -->
     <footer class="mt-16 border-t border-accent py-6">

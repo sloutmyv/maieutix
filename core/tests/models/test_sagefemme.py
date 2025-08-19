@@ -32,7 +32,6 @@ class SageFemmeModelTest(TestCase):
         self.assertEqual(sage_femme.nom, 'Dupont')
         self.assertEqual(sage_femme.prenom, 'Marie')
         self.assertEqual(sage_femme.situation, 'titulaire')
-        self.assertTrue(sage_femme.is_active)
         self.assertIsNotNone(sage_femme.created_at)
         self.assertIsNotNone(sage_femme.updated_at)
 
@@ -126,10 +125,15 @@ class SageFemmeModelTest(TestCase):
             sage_femme = SageFemme(**data)
             sage_femme.full_clean()
 
-    def test_is_active_par_defaut(self):
-        """Test que is_active est True par défaut"""
+    def test_jours_activite_cumules_sans_periode(self):
+        """Test que jours_activite_cumules retourne 0 sans période"""
         sage_femme = SageFemme.objects.create(**self.sage_femme_data)
-        self.assertTrue(sage_femme.is_active)
+        self.assertEqual(sage_femme.jours_activite_cumules, 0)
+    
+    def test_statut_activite_sans_periode(self):
+        """Test que statut_activite retourne 'Inactif' sans période"""
+        sage_femme = SageFemme.objects.create(**self.sage_femme_data)
+        self.assertEqual(sage_femme.statut_activite, "Inactif")
 
     def test_meta_ordering(self):
         """Test de l'ordre par défaut"""
@@ -350,3 +354,173 @@ class SageFemmeRemplacantTest(TestCase):
         self.assertFalse(sage_femme.etat_recapitulatif_commun)
         self.assertFalse(sage_femme.bons_depot_communs)
         self.assertIsNone(sage_femme.remplacement_de)
+
+
+class SageFemmeActiviteTest(TestCase):
+    """Tests pour la logique d'activité des sage-femmes basée sur les périodes"""
+    
+    def setUp(self):
+        """Configuration pour les tests d'activité"""
+        from core.models.periode_activite import PeriodeActivite
+        from datetime import date, timedelta
+        
+        self.sage_femme = SageFemme.objects.create(
+            nom='Test',
+            prenom='Marie',
+            titre='Sage-femme test',
+            telephone='687123456',
+            email='marie.test@example.nc',
+            numero_cafat='123456789',
+            ridet='RIDET123456',
+            rib='FR1234567890123456789012345',
+            banque='BCI',
+            situation='titulaire'
+        )
+        
+        self.today = date.today()
+        self.PeriodeActivite = PeriodeActivite
+    
+    def test_est_actuellement_active_sans_periode(self):
+        """Test qu'une sage-femme sans période n'est pas active"""
+        self.assertFalse(self.sage_femme.est_actuellement_active)
+    
+    def test_est_actuellement_active_avec_periode_en_cours(self):
+        """Test qu'une sage-femme avec période en cours est active"""
+        from datetime import timedelta
+        
+        # Créer une période qui a commencé il y a 30 jours et n'a pas de fin
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=30)
+        )
+        
+        self.assertTrue(self.sage_femme.est_actuellement_active)
+    
+    def test_est_actuellement_active_avec_periode_future(self):
+        """Test qu'une sage-femme avec période future n'est pas active"""
+        from datetime import timedelta
+        
+        # Créer une période qui commencera dans 30 jours
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today + timedelta(days=30)
+        )
+        
+        self.assertFalse(self.sage_femme.est_actuellement_active)
+    
+    def test_est_actuellement_active_avec_periode_terminee(self):
+        """Test qu'une sage-femme avec période terminée n'est pas active"""
+        from datetime import timedelta
+        
+        # Créer une période terminée
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=60),
+            date_fin=self.today - timedelta(days=30)
+        )
+        
+        self.assertFalse(self.sage_femme.est_actuellement_active)
+    
+    def test_jours_activite_cumules_periode_en_cours(self):
+        """Test du calcul des jours cumulés avec période en cours"""
+        from datetime import timedelta
+        
+        # Période commencée il y a 30 jours (sans fin)
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=30)
+        )
+        
+        # 30 jours + aujourd'hui = 31 jours
+        self.assertEqual(self.sage_femme.jours_activite_cumules, 31)
+    
+    def test_jours_activite_cumules_periode_terminee(self):
+        """Test du calcul des jours cumulés avec période terminée"""
+        from datetime import timedelta
+        
+        # Période de 30 jours terminée
+        debut = self.today - timedelta(days=60)
+        fin = self.today - timedelta(days=30)
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=debut,
+            date_fin=fin
+        )
+        
+        # 31 jours (60-30+1)
+        expected_days = (fin - debut).days + 1
+        self.assertEqual(self.sage_femme.jours_activite_cumules, expected_days)
+    
+    def test_jours_activite_cumules_plusieurs_periodes(self):
+        """Test du calcul des jours cumulés avec plusieurs périodes"""
+        from datetime import timedelta
+        
+        # Première période terminée (30 jours)
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=90),
+            date_fin=self.today - timedelta(days=60)
+        )
+        
+        # Deuxième période en cours (20 jours)
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=20)
+        )
+        
+        # 31 jours (première période) + 21 jours (période en cours) = 52 jours
+        self.assertEqual(self.sage_femme.jours_activite_cumules, 52)
+    
+    def test_jours_activite_cumules_ignore_periode_future(self):
+        """Test que les périodes futures ne sont pas comptées"""
+        from datetime import timedelta
+        
+        # Période en cours
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=10)
+        )
+        
+        # Période future (ne doit pas être comptée)
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today + timedelta(days=30)
+        )
+        
+        # Seule la période en cours compte : 11 jours
+        self.assertEqual(self.sage_femme.jours_activite_cumules, 11)
+    
+    def test_statut_activite_avec_periode_en_cours(self):
+        """Test du statut avec période en cours"""
+        from datetime import timedelta
+        
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=30)
+        )
+        
+        self.assertEqual(self.sage_femme.statut_activite, "Actif")
+    
+    def test_statut_activite_avec_periode_future(self):
+        """Test du statut avec période future"""
+        from datetime import timedelta
+        
+        future_date = self.today + timedelta(days=30)
+        self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=future_date
+        )
+        
+        expected = f"Inactif (reprend le {future_date})"
+        self.assertEqual(self.sage_femme.statut_activite, expected)
+    
+    def test_periode_activite_actuelle_avec_periode_en_cours(self):
+        """Test de la propriété periode_activite_actuelle"""
+        from datetime import timedelta
+        
+        periode = self.PeriodeActivite.objects.create(
+            sage_femme=self.sage_femme,
+            date_debut=self.today - timedelta(days=30)
+        )
+        
+        self.assertEqual(self.sage_femme.periode_activite_actuelle, periode)

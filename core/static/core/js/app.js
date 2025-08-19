@@ -19,13 +19,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize HTMX custom configurations if needed
     if (window.htmx) {
-        // HTMX event listeners
+        // HTMX event listeners avec debug amélioré
         document.body.addEventListener('htmx:beforeRequest', function(event) {
-            console.log('HTMX request starting', event.detail);
+            console.log('HTMX request starting:', event.detail.requestConfig.path);
         });
         
         document.body.addEventListener('htmx:afterRequest', function(event) {
-            console.log('HTMX request completed', event.detail);
+            console.log('HTMX request completed:', event.detail.xhr.status, event.detail.requestConfig.path);
+            if (event.detail.xhr.status !== 200) {
+                console.error('HTMX Error:', event.detail.xhr.responseText);
+            }
+        });
+        
+        document.body.addEventListener('htmx:responseError', function(event) {
+            console.error('HTMX Response Error:', event.detail);
+        });
+        
+        document.body.addEventListener('htmx:sendError', function(event) {
+            console.error('HTMX Send Error:', event.detail);
+        });
+
+        // Gestion des événements personnalisés HTMX
+        document.body.addEventListener('closeModal', function(event) {
+            const modalContainer = document.getElementById('modal-container');
+            if (modalContainer) {
+                modalContainer.innerHTML = '';
+            }
+        });
+
+        document.body.addEventListener('refreshTable', function(event) {
+            // Recharger le tableau des sages-femmes
+            const tableContainer = document.getElementById('sagefemmes-table');
+            if (tableContainer) {
+                htmx.trigger(tableContainer, 'refresh');
+            }
         });
     }
     
@@ -40,7 +67,9 @@ window.Maieutix.utils = {
     // Show notification
     notify: function(message, type = 'info') {
         console.log(`[${type.toUpperCase()}] ${message}`);
-        // TODO: Implement proper notification system
+        if (window.showNotification) {
+            window.showNotification(message, type);
+        }
     },
     
     // Confirm dialog

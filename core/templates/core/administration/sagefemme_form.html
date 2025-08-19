@@ -1,0 +1,517 @@
+<!-- Modal pour le formulaire de sage-femme -->
+<div id="sagefemme-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+     onclick="closeModal()">
+    
+    <div class="bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-[85vh] overflow-y-auto" 
+         onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-3 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-900">
+                {% if form.instance.pk %}
+                    Modifier la sage-femme
+                {% else %}
+                    Ajouter une sage-femme
+                {% endif %}
+            </h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form hx-post="{% if form.instance.pk %}{% url 'administration:sagefemme_update' form.instance.pk %}{% else %}{% url 'administration:sagefemme_create' %}{% endif %}"
+              hx-target="#modal-container"
+              hx-swap="innerHTML"
+              class="p-3">
+            
+            {% csrf_token %}
+            
+            <!-- Messages d'erreur généraux -->
+            {% if form.non_field_errors %}
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    {% for error in form.non_field_errors %}
+                        <p class="text-red-600 text-sm">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                
+
+                <!-- Nom -->
+                <div>
+                    <label for="{{ form.nom.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.nom.label }}
+                        {% if form.nom.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.nom }}
+                    {% if form.nom.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.nom.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Prénom -->
+                <div>
+                    <label for="{{ form.prenom.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.prenom.label }}
+                        {% if form.prenom.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.prenom }}
+                    {% if form.prenom.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.prenom.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Titre -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.titre.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.titre.label }}
+                        {% if form.titre.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.titre }}
+                    {% if form.titre.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.titre.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+
+                <!-- Téléphone -->
+                <div>
+                    <label for="{{ form.telephone.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.telephone.label }}
+                        {% if form.telephone.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.telephone }}
+                    {% if form.telephone.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.telephone.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.email.label }}
+                        {% if form.email.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+
+                <!-- Rue -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.rue.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.rue.label }}
+                    </label>
+                    {{ form.rue }}
+                    {% if form.rue.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.rue.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Code postal -->
+                <div>
+                    <label for="{{ form.code_postal.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.code_postal.label }}
+                    </label>
+                    {{ form.code_postal }}
+                    {% if form.code_postal.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.code_postal.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Ville -->
+                <div>
+                    <label for="{{ form.ville.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.ville.label }}
+                    </label>
+                    {{ form.ville }}
+                    {% if form.ville.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.ville.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+
+                <!-- Numéro CAFAT -->
+                <div>
+                    <label for="{{ form.numero_cafat.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.numero_cafat.label }}
+                        {% if form.numero_cafat.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.numero_cafat }}
+                    {% if form.numero_cafat.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.numero_cafat.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- RIDET -->
+                <div>
+                    <label for="{{ form.ridet.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.ridet.label }}
+                        {% if form.ridet.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.ridet }}
+                    {% if form.ridet.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.ridet.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- RIB -->
+                <div>
+                    <label for="{{ form.rib.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.rib.label }}
+                        {% if form.rib.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.rib }}
+                    {% if form.rib.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.rib.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Banque -->
+                <div>
+                    <label for="{{ form.banque.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.banque.label }}
+                        {% if form.banque.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.banque }}
+                    {% if form.banque.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.banque.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+
+                <!-- Situation -->
+                <div>
+                    <label for="{{ form.situation.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.situation.label }}
+                        {% if form.situation.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    <select name="{{ form.situation.name }}" 
+                            id="{{ form.situation.id_for_label }}"
+                            onchange="toggleRemplacementFields(this)"
+                            class="mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                        {% for value, label in form.situation.field.choices %}
+                            <option value="{{ value }}" {% if form.situation.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.situation.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.situation.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Remplacement de -->
+                <div id="remplacement-fields" style="display: none;">
+                    <label for="{{ form.remplacement_de.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.remplacement_de.label }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.remplacement_de }}
+                    {% if form.remplacement_de.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.remplacement_de.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Options pour remplaçants -->
+                <div class="md:col-span-2 mt-3" id="remplacement-options" style="display: none;">
+                    <p class="text-xs font-medium text-gray-700 mb-2">Options pour remplaçants</p>
+                    
+                    <div class="space-y-3">
+                        <!-- État récapitulatif commun -->
+                        <div class="flex items-center">
+                            {{ form.etat_recapitulatif_commun }}
+                            <label for="{{ form.etat_recapitulatif_commun.id_for_label }}" class="ml-2 text-xs text-gray-700">
+                                {{ form.etat_recapitulatif_commun.label }}
+                            </label>
+                        </div>
+
+                        <!-- Bons de dépôt communs -->
+                        <div class="flex items-center">
+                            {{ form.bons_depot_communs }}
+                            <label for="{{ form.bons_depot_communs.id_for_label }}" class="ml-2 text-xs text-gray-700">
+                                {{ form.bons_depot_communs.label }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statut -->
+                <div class="md:col-span-2">
+                    {% if form.instance.pk %}
+                    <div class="flex items-center gap-3 mb-1">
+                        <span class="text-xs font-medium text-gray-700">Statut</span>
+                        {% if form.instance.est_actuellement_active %}
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></span>
+                                Actif
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+                                <span class="w-1.5 h-1.5 bg-red-400 rounded-full mr-1.5"></span>
+                                Inactif
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Périodes d'activité -->
+                <div class="md:col-span-2">
+                    <p class="text-xs font-medium text-gray-700 mb-2">Périodes d'activité</p>
+                    
+                    {% if not form.instance.pk %}
+                    <div class="mb-3 p-2 bg-blue-50 rounded">
+                        <p class="text-xs text-blue-700">Une fois créée, vous pourrez gérer les périodes d'activité de cette sage-femme.</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Liste des périodes existantes pour modification -->
+                    {% if form.instance.pk and form.instance.periodes_activite.all %}
+                    <div class="space-y-1 mb-3">
+                        {% for periode in form.instance.periodes_activite.all %}
+                        <div class="p-2 border border-gray-200 rounded">
+                            <div class="flex items-end gap-2">
+                                <div class="flex-1 grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Date de début</label>
+                                        <input type="date" 
+                                               name="debut_{{ periode.id }}"
+                                               value="{{ periode.date_debut|date:'Y-m-d' }}"
+                                               class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Date de fin (optionnelle)</label>
+                                        <input type="date" 
+                                               name="fin_{{ periode.id }}"
+                                               value="{% if periode.date_fin %}{{ periode.date_fin|date:'Y-m-d' }}{% endif %}"
+                                               class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary">
+                                    </div>
+                                </div>
+                                <button type="button" 
+                                        onclick="supprimerPeriode({{ periode.id }})"
+                                        class="text-red-600 hover:text-red-800 p-1"
+                                        title="Supprimer cette période">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Ajouter nouvelle période -->
+                    {% if form.instance.pk %}
+                    <div class="text-center">
+                        <button type="button" 
+                                onclick="toggleAjoutPeriode()"
+                                id="btn-ajouter-periode"
+                                style="background-color: #2D4B73;"
+                                class="px-4 py-2 text-xs text-white rounded hover:opacity-90">
+                            + Ajouter une période
+                        </button>
+                    </div>
+                    
+                    <div id="form-ajout-periode" style="display: none;" class="border border-dashed border-gray-300 rounded p-3 mt-3">
+                        <h4 class="text-xs font-medium text-gray-700 mb-2">Nouvelle période d'activité</h4>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Date de début *</label>
+                                <input type="date" 
+                                       id="nouvelle_periode_debut"
+                                       value="{{ today|date:'Y-m-d' }}"
+                                       class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Date de fin (optionnelle)</label>
+                                <input type="date" 
+                                       id="nouvelle_periode_fin"
+                                       class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary">
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button type="button" 
+                                    onclick="ajouterPeriode()"
+                                    style="background-color: #2D4B73;"
+                                    class="px-3 py-1 text-xs text-white rounded hover:opacity-90">
+                                Ajouter
+                            </button>
+                            <button type="button" 
+                                    onclick="toggleAjoutPeriode()"
+                                    class="px-3 py-1 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200">
+                                Annuler
+                            </button>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="border border-dashed border-gray-200 rounded p-2 text-center">
+                        <p class="text-xs text-gray-500">Les périodes d'activité seront disponibles après création</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Note sur le statut -->
+                <div class="md:col-span-2 mt-3">
+                    <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <p class="text-xs text-blue-700">
+                            <strong>Statut automatique :</strong> Le statut d'une sage-femme est déterminé automatiquement en fonction de ses périodes d'activité. 
+                            Si la date du jour se trouve dans une période active, elle est considérée comme "Actif", sinon "Inactif".
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-2 mt-4 pt-3 border-t border-gray-200">
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        style="background-color: #2D4B73;"
+                        class="px-3 py-1.5 text-xs font-medium text-white border border-transparent rounded hover:opacity-90 focus:outline-none focus:ring-1 transition-all">
+                    {% if form.instance.pk %}
+                        Modifier
+                    {% else %}
+                        Ajouter
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Fonction pour fermer le modal
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+
+
+function toggleRemplacementFields(select) {
+    const remplacementFields = document.getElementById('remplacement-fields');
+    const remplacementOptions = document.getElementById('remplacement-options');
+    
+    if (select.value === 'remplacant') {
+        remplacementFields.style.display = 'block';
+        remplacementOptions.style.display = 'block';
+    } else {
+        remplacementFields.style.display = 'none';
+        remplacementOptions.style.display = 'none';
+        
+        // Réinitialiser les champs
+        const remplacementField = document.querySelector('[name="remplacement_de"]');
+        const etatRecapField = document.querySelector('[name="etat_recapitulatif_commun"]');
+        const bonsDepotField = document.querySelector('[name="bons_depot_communs"]');
+        
+        if (remplacementField) remplacementField.value = '';
+        if (etatRecapField) etatRecapField.checked = false;
+        if (bonsDepotField) bonsDepotField.checked = false;
+    }
+}
+
+// Initialiser au chargement du modal
+setTimeout(function() {
+    const situationSelect = document.querySelector('[name="situation"]');
+    if (situationSelect) {
+        toggleRemplacementFields(situationSelect);
+    }
+}, 100);
+
+
+// Fonction pour supprimer une période d'activité
+function supprimerPeriode(periodeId) {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette période d'activité ?")) {
+        return;
+    }
+    
+    fetch(`/administration/api/periodes/${periodeId}/supprimer/`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.showNotification("Période supprimée avec succès", "success");
+            window.location.reload();
+        } else {
+            window.showNotification(data.error || "Erreur lors de la suppression", "error");
+        }
+    })
+    .catch(error => {
+        window.showNotification("Erreur lors de la suppression", "error");
+    });
+}
+
+// Fonction pour basculer l'affichage du formulaire d'ajout
+function toggleAjoutPeriode() {
+    const form = document.getElementById('form-ajout-periode');
+    const btn = document.getElementById('btn-ajouter-periode');
+    
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+        btn.style.display = 'none';
+    } else {
+        form.style.display = 'none';
+        btn.style.display = 'block';
+        // Réinitialiser les champs
+        document.getElementById('nouvelle_periode_debut').value = '{{ today|date:'Y-m-d' }}';
+        document.getElementById('nouvelle_periode_fin').value = '';
+    }
+}
+
+// Fonction pour ajouter une période d'activité
+function ajouterPeriode() {
+    const debut = document.getElementById('nouvelle_periode_debut').value;
+    const fin = document.getElementById('nouvelle_periode_fin').value;
+    
+    if (!debut) {
+        window.showNotification("La date de début est obligatoire", "error");
+        return;
+    }
+    
+    // Envoyer la requête AJAX pour ajouter la période
+    const sageFemmeId = {{ form.instance.pk|default:0 }};
+    if (sageFemmeId) {
+        fetch(`/administration/api/sages-femmes/${sageFemmeId}/periodes/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                date_debut: debut,
+                date_fin: fin || null,
+                commentaire: ''
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.showNotification("Période d'activité ajoutée avec succès", "success");
+                // Fermer le formulaire et recharger
+                toggleAjoutPeriode();
+                window.location.reload();
+            } else {
+                window.showNotification(data.error || "Erreur lors de l'ajout de la période", "error");
+            }
+        })
+        .catch(error => {
+            window.showNotification("Erreur lors de l'ajout de la période", "error");
+        });
+    }
+}
+
+</script>

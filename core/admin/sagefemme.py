@@ -18,8 +18,7 @@ class SageFemmeAdminForm(ModelForm):
         # Personnalisation du champ remplacement_de
         if 'remplacement_de' in self.fields:
             self.fields['remplacement_de'].queryset = SageFemme.objects.filter(
-                situation__in=['titulaire', 'collaborateur'],
-                is_active=True
+                situation__in=['titulaire', 'collaborateur']
             ).exclude(pk=self.instance.pk if self.instance.pk else None)
     
     def clean(self):
@@ -54,7 +53,6 @@ class SageFemmeAdmin(admin.ModelAdmin):
     
     list_filter = [
         'situation',
-        'is_active',
         'created_at',
         'updated_at'
     ]
@@ -95,9 +93,6 @@ class SageFemmeAdmin(admin.ModelAdmin):
             'fields': ('etat_recapitulatif_commun', 'bons_depot_communs'),
             'classes': ('collapse',),
             'description': 'Options disponibles uniquement pour les remplaçants'
-        }),
-        ('Statut', {
-            'fields': ('is_active',)
         }),
     )
     

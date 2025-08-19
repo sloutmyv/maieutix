@@ -8,9 +8,12 @@ from django.shortcuts import render
 
 def home_view(request):
     """
-    Vue pour la page d'accueil - redirige vers feuille de soins
+    Vue pour la page d'accueil
     """
-    return feuille_soins_view(request)
+    context = {
+        'page_title': 'Accueil'
+    }
+    return render(request, 'core/home.html', context)
 
 
 def feuille_soins_view(request):

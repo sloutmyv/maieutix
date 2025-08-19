@@ -58,8 +58,7 @@ class SageFemme(models.Model):
         help_text="Cocher si les bons de dépôt sont communs avec le titulaire"
     )
     
-    # Statut
-    is_active = models.BooleanField(default=True, verbose_name="Actif")
+    # Note: Le statut est déterminé automatiquement par les périodes d'activité
     
     # Métadonnées
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
@@ -142,14 +141,11 @@ class SageFemme(models.Model):
     @property
     def statut_activite(self):
         """
-        Retourne le statut d'activité basé sur les périodes d'activité
+        Retourne le statut d'activité basé uniquement sur les périodes d'activité
         """
-        if not self.is_active:
-            return "Inactive (désactivée)"
-        
         periode_actuelle = self.periode_activite_actuelle
         if periode_actuelle:
-            return periode_actuelle.statut_display
+            return "Actif"
         
         # Vérifier s'il y a des périodes futures
         periode_future = self.periodes_activite.filter(
@@ -157,9 +153,39 @@ class SageFemme(models.Model):
         ).first()
         
         if periode_future:
-            return f"Inactive (reprend le {periode_future.date_debut})"
+            return f"Inactif (reprend le {periode_future.date_debut})"
         
-        return "Aucune période d'activité définie"
+        return "Inactif"
+
+    @property
+    def jours_activite_cumules(self):
+        """
+        Calcule le nombre total de jours d'activité cumulés pour cette sage-femme
+        """
+        total_jours = 0
+        aujourd_hui = timezone.now().date()
+        
+        for periode in self.periodes_activite.all():
+            # Date de début de la période
+            debut = periode.date_debut
+            
+            # Date de fin : soit la date de fin de la période, soit aujourd'hui si en cours
+            if periode.date_fin:
+                fin = periode.date_fin
+            else:
+                # Si la période n'a pas de date de fin et qu'elle a commencé, considérer jusqu'à aujourd'hui
+                if debut <= aujourd_hui:
+                    fin = aujourd_hui
+                else:
+                    # Période future, ne pas compter
+                    continue
+            
+            # Calculer les jours pour cette période
+            if debut <= fin:
+                jours_periode = (fin - debut).days + 1  # +1 pour inclure le jour de début
+                total_jours += jours_periode
+        
+        return total_jours
     
     def ajouter_periode_activite(self, date_debut, date_fin=None, commentaire=""):
         """
