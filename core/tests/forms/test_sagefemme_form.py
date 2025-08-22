@@ -84,6 +84,14 @@ class SageFemmeFormTest(TestCase):
     
     def test_form_situations_valides(self):
         """Test avec toutes les situations valides"""
+        # Créer d'abord une sage-femme titulaire pour les remplaçants
+        titulaire = SageFemme.objects.create(
+            nom='Titulaire', prenom='Test', titre='Sage-femme', 
+            telephone='123', email='titulaire@test.nc',
+            numero_cafat='TIT123', ridet='TIT456', rib='TIT789', banque='BCI',
+            situation='titulaire'
+        )
+        
         situations_valides = ['titulaire', 'collaborateur', 'remplacant']
         
         for situation in situations_valides:
@@ -92,6 +100,10 @@ class SageFemmeFormTest(TestCase):
             data['email'] = f'test_{situation}@test.nc'  # Email unique
             data['numero_cafat'] = f'{situation}123456789'  # CAFAT unique
             data['ridet'] = f'0{situation}123.001'  # RIDET unique
+            
+            # Pour les remplaçants, ajouter le champ remplacement_de
+            if situation == 'remplacant':
+                data['remplacement_de'] = titulaire.pk
             
             form = SageFemmeForm(data=data)
             

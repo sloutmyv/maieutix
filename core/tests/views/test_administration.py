@@ -455,10 +455,18 @@ class ErrorHandlingTest(BaseAdministrationTest):
     
     def test_validation_csrf(self):
         """Test de validation CSRF"""
+        # Créer un client avec vérification CSRF activée
+        csrf_client = Client(enforce_csrf_checks=True)
         url = reverse('administration:sagefemme_create')
         
+        # Utiliser des données uniques pour ce test
+        csrf_test_data = self.sage_femme_data.copy()
+        csrf_test_data['email'] = 'csrf_test@test.nc'
+        csrf_test_data['numero_cafat'] = 'CSRF123456789'
+        csrf_test_data['ridet'] = 'CSRF123456'
+        
         # Essayer de poster sans token CSRF
-        response = self.client.post(url, self.sage_femme_data, enforce_csrf_checks=True)
+        response = csrf_client.post(url, csrf_test_data)
         
         # Devrait échouer sans token CSRF approprié
         self.assertIn(response.status_code, [403, 400])

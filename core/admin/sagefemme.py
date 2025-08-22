@@ -48,11 +48,13 @@ class SageFemmeAdmin(admin.ModelAdmin):
         'statut_activite_display',
         'telephone',
         'email',
+        'is_active',
         'updated_at'
     ]
     
     list_filter = [
         'situation',
+        'is_active',
         'created_at',
         'updated_at'
     ]
@@ -67,7 +69,7 @@ class SageFemmeAdmin(admin.ModelAdmin):
         'ridet'
     ]
     
-    list_editable = []
+    list_editable = ['is_active']
     
     ordering = ['nom', 'prenom']
     
@@ -93,6 +95,9 @@ class SageFemmeAdmin(admin.ModelAdmin):
             'fields': ('etat_recapitulatif_commun', 'bons_depot_communs'),
             'classes': ('collapse',),
             'description': 'Options disponibles uniquement pour les remplaçants'
+        }),
+        ('Statut', {
+            'fields': ('is_active',)
         }),
     )
     

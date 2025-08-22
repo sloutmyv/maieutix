@@ -43,14 +43,16 @@ class PeriodeActivite(models.Model):
     )
     
     class Meta:
-        verbose_name = "2.1 Période d'activité"
-        verbose_name_plural = "2.1 Périodes d'activité"
+        verbose_name = "Période d'activité"
+        verbose_name_plural = "Périodes d'activité"
         ordering = ['-date_debut']
         
     def __str__(self):
+        nom_complet = f"{self.sage_femme.prenom} {self.sage_femme.nom}"
+        
         if self.date_fin:
-            return f"{self.sage_femme} - {self.date_debut} au {self.date_fin}"
-        return f"{self.sage_femme} - Depuis le {self.date_debut}"
+            return f"{nom_complet} - Du {self.date_debut.strftime('%d/%m/%Y')} au {self.date_fin.strftime('%d/%m/%Y')}"
+        return f"{nom_complet} - Du {self.date_debut.strftime('%d/%m/%Y')} (en cours)"
     
     def clean(self):
         """
@@ -76,7 +78,7 @@ class PeriodeActivite(models.Model):
                 if not self.date_fin:
                     # Nouvelle période sans fin alors qu'une période ouverte existe
                     raise ValidationError({
-                        '__all__': f'Une période d\'activité ouverte existe déjà depuis le {periode_ouverte.date_debut}. '
+                        '__all__': f'Une période en cours existe déjà depuis le {periode_ouverte.date_debut}. '
                                   'Vous devez d\'abord fermer cette période en définissant une date de fin.'
                     })
                 else:

@@ -60,6 +60,13 @@ class SageFemme(models.Model):
     
     # Note: Le statut est déterminé automatiquement par les périodes d'activité
     
+    # Statut actif/inactif
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Actif",
+        help_text="Indique si la sage-femme est active"
+    )
+    
     # Métadonnées
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")

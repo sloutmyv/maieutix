@@ -10,6 +10,7 @@ from django.db.models import Q
 from django import forms
 from django.forms import ModelForm
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_protect
 import json
 from datetime import date, datetime
 from core.models.sagefemme import SageFemme
@@ -26,7 +27,8 @@ class SageFemmeForm(ModelForm):
             'rue', 'code_postal', 'ville',
             'numero_cafat', 'ridet', 'rib', 'banque',
             'situation', 'remplacement_de',
-            'etat_recapitulatif_commun', 'bons_depot_communs'
+            'etat_recapitulatif_commun', 'bons_depot_communs',
+            'is_active'
         ]
         widgets = {
             'nom': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
@@ -43,7 +45,8 @@ class SageFemmeForm(ModelForm):
             'banque': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'remplacement_de': forms.Select(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'etat_recapitulatif_commun': forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-primary focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50'}),
-            'bons_depot_communs': forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-primary focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50'})
+            'bons_depot_communs': forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-primary focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-primary focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -54,6 +57,39 @@ class SageFemmeForm(ModelForm):
             self.fields['remplacement_de'].queryset = SageFemme.objects.filter(
                 situation__in=['titulaire', 'collaborateur']
             ).exclude(pk=self.instance.pk if self.instance.pk else None)
+    
+    def clean_email(self):
+        """Valide l'unicité de l'email"""
+        email = self.cleaned_data.get('email')
+        if email:
+            queryset = SageFemme.objects.filter(email=email)
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            if queryset.exists():
+                raise forms.ValidationError("Une sage-femme avec cet email existe déjà.")
+        return email
+    
+    def clean_numero_cafat(self):
+        """Valide l'unicité du numéro CAFAT"""
+        numero_cafat = self.cleaned_data.get('numero_cafat')
+        if numero_cafat:
+            queryset = SageFemme.objects.filter(numero_cafat=numero_cafat)
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            if queryset.exists():
+                raise forms.ValidationError("Une sage-femme avec ce numéro CAFAT existe déjà.")
+        return numero_cafat
+    
+    def clean_ridet(self):
+        """Valide l'unicité du RIDET"""
+        ridet = self.cleaned_data.get('ridet')
+        if ridet:
+            queryset = SageFemme.objects.filter(ridet=ridet)
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            if queryset.exists():
+                raise forms.ValidationError("Une sage-femme avec ce RIDET existe déjà.")
+        return ridet
 
 
 def check_titulaire_permission(request):
@@ -120,6 +156,7 @@ def sagefemme_list_view(request):
     return render(request, 'core/administration/partials/sagefemme_table.html', context)
 
 
+@csrf_protect
 def sagefemme_create_view(request):
     """Vue pour créer une sage-femme"""
     try:
@@ -177,7 +214,10 @@ def sagefemme_detail_view(request, pk):
     if not check_titulaire_permission(request):
         return HttpResponse("Non autorisé", status=403)
     
-    sagefemme = get_object_or_404(SageFemme, pk=pk)
+    sagefemme = get_object_or_404(
+        SageFemme.objects.select_related('remplacement_de'), 
+        pk=pk
+    )
     # Précharger les périodes d'activité triées par date de début décroissante
     sagefemme.periodes_activite_all = sagefemme.periodes_activite.all().order_by('-date_debut')
     
