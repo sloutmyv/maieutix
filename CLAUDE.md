@@ -1,43 +1,39 @@
 # Guide de Développement - Maieutix
 
-## Technologies Frontend
+## Core Technologies
 
-### Stack Technique
-```
-Frontend
-├── Tailwind CSS (Styling)
-├── HTMX (AJAX Interactions)
-└── Alpine.js (Client Reactivity)
-```
+### Backend
+- **Django 5.2.5** + **Gunicorn** + **PostgreSQL** + **psycopg[binary] v3**
+- **python-decouple** for environment variables
+- **DEBUG=False** by default (production-like development)
 
-### Palette de Couleurs
-```css
-/* Color Theme */
-.Voyages-1-hex { color: #2D4B73; } /* Bleu foncé principal */
-.Voyages-2-hex { color: #253C59; } /* Bleu très foncé */
-.Voyages-3-hex { color: #99B4BF; } /* Bleu clair/gris */
-.Voyages-4-hex { color: #D9BA23; } /* Jaune doré */
-.Voyages-5-hex { color: #BF8D30; } /* Orange/brun */
-```
+### Frontend
+- **Tailwind CSS** (utility-first styling)
+- **HTMX** (AJAX interactions via HTML attributes)
+- **Alpine.js** (lightweight reactivity)
+
+### Infrastructure
+- **Docker Compose** with 3 services: Django + PostgreSQL + Nginx
+- **Nginx** (reverse proxy + static/media files)
+- **Persistent volumes** for DB, static, media
 
 ### Principe de Design
-- **Design sobre et épuré**
-- Interface minimaliste et intuitive
-- Utilisation cohérente de la palette de couleurs
+- Comprehensive design principles in `/context/design-principles.md`
+- Brand style guide in `/context/style-guide.md`
+- When making visual (front-end, UI/UX) changes, always refer to these files for guidance
 
 ## Architecture Modulaire
-
 Chaque composant métier suit une structure organisée :
 
 ```
 core/
-├── models/
-│   └── domaine.py          # Logique de données
-├── views/
-│   └── domaine.py          # Logique métier et interaction
-├── admin/
-│   └── domaine.py          # Configuration interface d'administration
-└── templates/core/domaine/  # Interface utilisateur
+├── models/domaine.py      # Data logic
+├── views/domaine.py       # Business logic + HTMX responses
+├── admin/domaine.py       # Admin interface
+└── templates/core/domaine/ # UI templates
+    ├── list.html
+    ├── detail.html
+    └── form.html
 ```
 
 ### Conventions de Développement
@@ -46,12 +42,6 @@ core/
 2. **Séparation des responsabilités** : Models, Views, Admin, Templates séparés
 3. **Nommage cohérent** : Utiliser le nom du domaine pour tous les fichiers
 4. **Templates** : Organisation hiérarchique dans templates/core/
-
-### Technologies à Intégrer
-
-- **Tailwind CSS** : Framework CSS utility-first pour le styling
-- **HTMX** : Interactions AJAX modernes sans JavaScript complexe
-- **Alpine.js** : Réactivité côté client légère
 
 ## Commandes Utiles
 

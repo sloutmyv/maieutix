@@ -4,6 +4,7 @@ Logique métier et interactions pour les consultations
 """
 
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
 def home_view(request):
@@ -16,6 +17,7 @@ def home_view(request):
     return render(request, 'core/home.html', context)
 
 
+@login_required
 def feuille_soins_view(request):
     """
     Vue principale pour la gestion des feuilles de soins

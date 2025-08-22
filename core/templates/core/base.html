@@ -52,37 +52,72 @@
                 <a href="/" class="hover:text-secondary transition-colors">Maieutix</a>
             </h1>
             
-            <div class="flex space-x-8">
-                <a href="/feuille-soins/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Feuille de Soins</a>
-                <a href="/patients/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Patients</a>
-                <a href="/outils/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Outils</a>
-                <a href="/statistiques/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Statistiques</a>
-                
-                <!-- Menu Administration avec dropdown - Visible pour super admin et titulaires -->
-                {% if user.is_superuser or user_can_access_administration|default:True %}
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="nav-link text-primary hover:text-highlight transition-colors font-medium flex items-center">
-                        Administration
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
+            <div class="flex items-center space-x-8">
+                {% if user.is_authenticated %}
+                    <a href="/feuille-soins/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Feuille de Soins</a>
+                    <a href="/patients/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Patients</a>
+                    <a href="/outils/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Outils</a>
+                    <a href="/statistiques/" class="nav-link text-primary hover:text-highlight transition-colors font-medium">Statistiques</a>
                     
-                    <div x-show="open" 
-                         @click.outside="open = false"
-                         x-transition:enter="transition ease-out duration-100"
-                         x-transition:enter-start="transform opacity-0 scale-95"
-                         x-transition:enter-end="transform opacity-100 scale-100"
-                         x-transition:leave="transition ease-in duration-75"
-                         x-transition:leave-start="transform opacity-100 scale-100"
-                         x-transition:leave-end="transform opacity-0 scale-95"
-                         class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-accent z-10">
-                        <div class="py-1">
-                            <a href="{% url 'administration:administration_sages_femmes' %}" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Sages Femmes</a>
-                            <a href="/admin/" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Interface Admin</a>
+                    <!-- Menu Administration avec dropdown - Visible pour super admin et titulaires -->
+                    {% if user.is_superuser or user_can_access_administration|default:True %}
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="nav-link text-primary hover:text-highlight transition-colors font-medium flex items-center">
+                            Administration
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <div x-show="open" 
+                             @click.outside="open = false"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-accent z-10">
+                            <div class="py-1">
+                                <a href="{% url 'administration:administration_sages_femmes' %}" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Sages Femmes</a>
+                                <a href="/admin/" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Interface Admin</a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    {% endif %}
+                    
+                    <!-- Menu utilisateur avec dropdown -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="nav-link text-primary hover:text-highlight transition-colors font-medium flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            {{ user.email }}
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <div x-show="open" 
+                             @click.outside="open = false"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-accent z-10">
+                            <div class="py-1">
+                                <a href="{% url 'auth:change_password' %}" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Changer le mot de passe</a>
+                                <div class="border-t border-gray-100"></div>
+                                <a href="{% url 'auth:logout' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Se déconnecter</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'auth:login' %}" class="nav-link bg-primary hover:bg-secondary text-white px-4 py-2 rounded-md transition-colors font-medium">
+                        Se connecter
+                    </a>
                 {% endif %}
             </div>
         </div>

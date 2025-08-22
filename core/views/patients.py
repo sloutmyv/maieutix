@@ -4,8 +4,10 @@ Logique métier pour le suivi des patientes
 """
 
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def patients_view(request):
     """
     Vue principale pour la gestion des patients

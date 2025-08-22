@@ -4,8 +4,10 @@ Logique métier pour les fonctionnalités utilitaires
 """
 
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def outils_view(request):
     """
     Vue principale pour les outils

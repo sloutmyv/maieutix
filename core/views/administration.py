@@ -5,6 +5,7 @@ Logique métier pour la gestion administrative
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, Http404
 from django.db.models import Q
 from django import forms
@@ -103,6 +104,7 @@ def check_titulaire_permission(request):
     return True
 
 
+@login_required
 def administration_sages_femmes_view(request):
     """
     Vue pour la gestion des sages-femmes

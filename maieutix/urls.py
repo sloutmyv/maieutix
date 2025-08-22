@@ -28,5 +28,6 @@ urlpatterns = [
     path('outils/', outils_view, name='outils'),
     path('statistiques/', statistiques_view, name='statistiques'),
     path('administration/', include('core.urls.administration', namespace='administration')),
+    path('auth/', include('authentication.urls', namespace='auth')),
     path('admin/', admin.site.urls),
 ]

@@ -25,9 +25,9 @@ echo "Création du superutilisateur par défaut..."
 python manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
-if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@maieutix.com', 'admin123')
-    print('Superutilisateur créé: admin/admin123')
+if not User.objects.filter(email='admin@maieutix.com').exists():
+    User.objects.create_superuser('admin@maieutix.com', 'admin123')
+    print('Superutilisateur créé: admin@maieutix.com/admin123')
 else:
     print('Superutilisateur existe déjà')
 EOF

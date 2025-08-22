@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.conf import settings
 
 
 class SageFemme(models.Model):
@@ -56,6 +57,16 @@ class SageFemme(models.Model):
         default=False,
         verbose_name="Bons de dépôt communs avec le titulaire",
         help_text="Cocher si les bons de dépôt sont communs avec le titulaire"
+    )
+    
+    # Compte utilisateur
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Compte utilisateur",
+        help_text="Compte utilisateur pour la connexion"
     )
     
     # Note: Le statut est déterminé automatiquement par les périodes d'activité
@@ -209,4 +220,20 @@ class SageFemme(models.Model):
         periode.full_clean()
         periode.save()
         return periode
+    
+    def creer_compte_utilisateur(self):
+        """
+        Crée un compte utilisateur avec mot de passe par défaut 'azerty'
+        """
+        if not self.user:
+            from authentication.models import SageFemmeUser
+            user = SageFemmeUser.objects.create_user(
+                email=self.email,
+                password='azerty'
+            )
+            user.must_change_password = True
+            user.save()
+            self.user = user
+            self.save(update_fields=['user'])
+        return self.user
     

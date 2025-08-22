@@ -99,6 +99,11 @@ class SageFemmeAdmin(admin.ModelAdmin):
         ('Statut', {
             'fields': ('is_active',)
         }),
+        ('Compte utilisateur', {
+            'fields': ('user',),
+            'classes': ('collapse',),
+            'description': 'Compte pour la connexion (créé automatiquement)'
+        }),
     )
     
     readonly_fields = ['created_at', 'updated_at']
@@ -158,14 +163,21 @@ class SageFemmeAdmin(admin.ModelAdmin):
     
     def save_model(self, request, obj, form, change):
         """Personnalisation de la sauvegarde"""
-        # Log de l'action
-        if change:
-            # Modification
-            pass
-        else:
-            # Création
-            pass
-        
         super().save_model(request, obj, form, change)
+        
+        # Créer automatiquement un compte utilisateur si il n'existe pas
+        if not obj.user and obj.email:
+            try:
+                obj.creer_compte_utilisateur()
+                self.message_user(
+                    request, 
+                    f"Compte utilisateur créé pour {obj.nom_complet} avec mot de passe par défaut 'azerty'"
+                )
+            except Exception as e:
+                self.message_user(
+                    request, 
+                    f"Erreur lors de la création du compte utilisateur: {e}",
+                    level='ERROR'
+                )
     
     # Media class removed - referenced files don't exist
