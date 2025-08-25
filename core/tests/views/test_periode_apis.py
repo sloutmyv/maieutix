@@ -3,7 +3,7 @@ Tests pour les APIs de gestion des périodes d'activité.
 """
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from authentication.models import SageFemmeUser
 import json
 from datetime import date, timedelta
 from core.models.sagefemme import SageFemme
@@ -18,8 +18,7 @@ class BasePeriodeAPITest(TestCase):
         self.client = Client()
         
         # Créer un superutilisateur pour les tests
-        self.superuser = User.objects.create_superuser(
-            username='admin',
+        self.superuser = SageFemmeUser.objects.create_superuser(
             email='admin@test.nc',
             password='testpass123'
         )
@@ -52,6 +51,7 @@ class AjouterPeriodeAPITest(BasePeriodeAPITest):
     
     def test_ajouter_periode_valide(self):
         """Test d'ajout d'une période valide"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:ajouter_periode', args=[self.sage_femme.pk])
         
         data = {
@@ -83,6 +83,7 @@ class AjouterPeriodeAPITest(BasePeriodeAPITest):
     
     def test_ajouter_periode_sans_fin(self):
         """Test d'ajout d'une période sans date de fin"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:ajouter_periode', args=[self.sage_femme.pk])
         
         data = {
@@ -108,6 +109,7 @@ class AjouterPeriodeAPITest(BasePeriodeAPITest):
     
     def test_ajouter_periode_date_invalide(self):
         """Test d'ajout avec format de date invalide"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:ajouter_periode', args=[self.sage_femme.pk])
         
         data = {
@@ -129,6 +131,7 @@ class AjouterPeriodeAPITest(BasePeriodeAPITest):
     
     def test_ajouter_periode_sage_femme_inexistante(self):
         """Test d'ajout pour une sage-femme inexistante"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:ajouter_periode', args=[9999])
         
         data = {
@@ -146,6 +149,7 @@ class AjouterPeriodeAPITest(BasePeriodeAPITest):
     
     def test_ajouter_periode_methode_non_autorisee(self):
         """Test que seule la méthode POST est autorisée"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:ajouter_periode', args=[self.sage_femme.pk])
         
         response = self.client.get(url)
@@ -162,6 +166,7 @@ class AjouterPeriodeAPITest(BasePeriodeAPITest):
             date_debut=self.today - timedelta(days=15)
         )
         
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:ajouter_periode', args=[self.sage_femme.pk])
         
         # Essayer d'ajouter une autre période sans fin (devrait échouer)
@@ -197,6 +202,7 @@ class ModifierPeriodeAPITest(BasePeriodeAPITest):
     
     def test_modifier_periode_valide(self):
         """Test de modification valide d'une période"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:modifier_periode', args=[self.periode.pk])
         
         nouvelle_debut = self.today - timedelta(days=60)
@@ -228,6 +234,7 @@ class ModifierPeriodeAPITest(BasePeriodeAPITest):
     
     def test_modifier_periode_enlever_date_fin(self):
         """Test de modification pour enlever la date de fin"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:modifier_periode', args=[self.periode.pk])
         
         data = {
@@ -253,6 +260,7 @@ class ModifierPeriodeAPITest(BasePeriodeAPITest):
     
     def test_modifier_periode_seulement_commentaire(self):
         """Test de modification du commentaire seulement"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:modifier_periode', args=[self.periode.pk])
         
         data = {
@@ -279,6 +287,7 @@ class ModifierPeriodeAPITest(BasePeriodeAPITest):
     
     def test_modifier_periode_inexistante(self):
         """Test de modification d'une période inexistante"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:modifier_periode', args=[9999])
         
         data = {
@@ -295,6 +304,7 @@ class ModifierPeriodeAPITest(BasePeriodeAPITest):
     
     def test_modifier_periode_date_invalide(self):
         """Test de modification avec format de date invalide"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:modifier_periode', args=[self.periode.pk])
         
         data = {
@@ -328,6 +338,7 @@ class SupprimerPeriodeAPITest(BasePeriodeAPITest):
     
     def test_supprimer_periode_valide(self):
         """Test de suppression valide d'une période"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:supprimer_periode', args=[self.periode.pk])
         
         response = self.client.delete(
@@ -346,6 +357,7 @@ class SupprimerPeriodeAPITest(BasePeriodeAPITest):
     
     def test_supprimer_periode_inexistante(self):
         """Test de suppression d'une période inexistante"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:supprimer_periode', args=[9999])
         
         response = self.client.delete(
@@ -357,6 +369,7 @@ class SupprimerPeriodeAPITest(BasePeriodeAPITest):
     
     def test_supprimer_periode_methode_non_autorisee(self):
         """Test que seule la méthode DELETE est autorisée"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:supprimer_periode', args=[self.periode.pk])
         
         response = self.client.get(url)
@@ -379,6 +392,7 @@ class TerminerPeriodeAPITest(BasePeriodeAPITest):
     
     def test_terminer_periode_valide(self):
         """Test de terminaison valide d'une période"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:terminer_periode', args=[self.periode.pk])
         
         response = self.client.post(
@@ -402,6 +416,7 @@ class TerminerPeriodeAPITest(BasePeriodeAPITest):
         self.periode.date_fin = self.today - timedelta(days=5)
         self.periode.save()
         
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:terminer_periode', args=[self.periode.pk])
         
         response = self.client.post(
@@ -421,6 +436,7 @@ class TerminerPeriodeAPITest(BasePeriodeAPITest):
     
     def test_terminer_periode_inexistante(self):
         """Test de terminaison d'une période inexistante"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:terminer_periode', args=[9999])
         
         response = self.client.post(
@@ -444,8 +460,7 @@ class PermissionsAPITest(BasePeriodeAPITest):
     
     def test_acces_sans_permission(self):
         """Test d'accès aux APIs sans permission appropriée"""
-        # Selon la logique actuelle, l'accès est permis à tous
-        # Ce test pourrait être adapté si les permissions changent
+        # Maintenant l'authentification est requise, donc sans login on devrait avoir 403 ou 302
         
         urls_to_test = [
             reverse('administration:ajouter_periode', args=[self.sage_femme.pk]),
@@ -462,9 +477,8 @@ class PermissionsAPITest(BasePeriodeAPITest):
             else:  # supprimer
                 response = self.client.delete(url, **self.json_headers)
             
-            # Selon la logique actuelle, devrait retourner 200 ou erreur de validation
-            # plutôt que 403 (forbidden)
-            self.assertNotEqual(response.status_code, 403)
+            # Sans authentification, devrait retourner 403, 302 (redirection) ou 405 (method not allowed)
+            self.assertIn(response.status_code, [403, 302, 405])
 
 
 class APIResponseFormatTest(BasePeriodeAPITest):
@@ -480,6 +494,7 @@ class APIResponseFormatTest(BasePeriodeAPITest):
     
     def test_format_reponse_succes(self):
         """Test du format de réponse en cas de succès"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:terminer_periode', args=[self.periode.pk])
         
         response = self.client.post(url, **self.json_headers)
@@ -497,6 +512,7 @@ class APIResponseFormatTest(BasePeriodeAPITest):
     
     def test_format_reponse_erreur(self):
         """Test du format de réponse en cas d'erreur"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:ajouter_periode', args=[self.sage_femme.pk])
         
         # Envoyer des données invalides

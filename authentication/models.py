@@ -114,3 +114,38 @@ class SageFemmeUser(AbstractBaseUser, PermissionsMixin):
     def needs_password_change(self):
         """Vérifie si l'utilisateur doit changer son mot de passe"""
         return self.must_change_password
+    
+    @property
+    def prenom(self):
+        """Retourne le prénom de la sage-femme associée ou une valeur par défaut"""
+        try:
+            return self.sagefemme.prenom
+        except:
+            # Si pas de sage-femme associée, retourner la première partie de l'email
+            return self.email.split('@')[0].capitalize()
+    
+    @property
+    def is_titulaire(self):
+        """Vérifie si l'utilisateur est une sage-femme titulaire"""
+        try:
+            return self.sagefemme.situation == 'titulaire'
+        except:
+            return False
+    
+    def update_active_status(self):
+        """Met à jour le statut actif basé sur les périodes d'activité"""
+        if self.is_superuser:
+            # Les superusers restent toujours actifs
+            return
+        
+        try:
+            # Mettre à jour is_active basé sur les périodes d'activité
+            self.is_active = self.sagefemme.est_actuellement_active
+        except:
+            # Si pas de sage-femme associée, garder le statut actuel
+            pass
+    
+    @property
+    def can_access_administration(self):
+        """Vérifie si l'utilisateur peut accéder au menu Administration"""
+        return self.is_superuser or self.is_titulaire

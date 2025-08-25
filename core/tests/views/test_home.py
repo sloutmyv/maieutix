@@ -39,11 +39,9 @@ class HomeViewTest(TestCase):
         """Test navigation links are present"""
         response = self.client.get('/')
         
-        self.assertContains(response, 'href="/"')                     # Home link
-        self.assertContains(response, 'href="/admin/"')               # Admin link
-        self.assertContains(response, 'href="/feuille-soins/"')       # Feuille de soins
-        self.assertContains(response, 'href="/patients/"')            # Patients
-        self.assertContains(response, 'href="/statistiques/"')        # Statistiques
+        self.assertContains(response, 'href="/"')                                  # Home link
+        self.assertContains(response, 'href="/admin/"')                           # Admin link  
+        self.assertContains(response, 'href="/administration/sages-femmes/"')     # Gestion des Sages-Femmes
     
     def test_home_view_responsive_design(self):
         """Test responsive design elements are present"""

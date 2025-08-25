@@ -3,7 +3,7 @@ Tests pour les vues d'administration des sage-femmes.
 """
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from authentication.models import SageFemmeUser
 import json
 from datetime import date, timedelta
 from core.models.sagefemme import SageFemme
@@ -18,8 +18,7 @@ class BaseAdministrationTest(TestCase):
         self.client = Client()
         
         # Créer un superutilisateur pour les tests
-        self.superuser = User.objects.create_superuser(
-            username='admin',
+        self.superuser = SageFemmeUser.objects.create_superuser(
             email='admin@test.nc',
             password='testpass123'
         )
@@ -52,12 +51,12 @@ class AdministrationSagesFemmesViewTest(BaseAdministrationTest):
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
-        # Devrait être accessible (selon la logique actuelle)
-        self.assertEqual(response.status_code, 200)
+        # Devrait rediriger vers la page de connexion
+        self.assertEqual(response.status_code, 302)
     
     def test_vue_sages_femmes_avec_superuser(self):
         """Test d'accès à la vue avec superutilisateur"""
-        self.client.login(username='admin', password='testpass123')
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -79,6 +78,7 @@ class AdministrationSagesFemmesViewTest(BaseAdministrationTest):
         })
         sage_femme2 = SageFemme.objects.create(**data2)
         
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -111,6 +111,7 @@ class SageFemmeListViewTest(BaseAdministrationTest):
     
     def test_liste_sage_femmes_get(self):
         """Test de récupération de la liste des sage-femmes"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_list')
         response = self.client.get(url)
         
@@ -120,6 +121,7 @@ class SageFemmeListViewTest(BaseAdministrationTest):
     
     def test_recherche_par_nom(self):
         """Test de recherche par nom"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_list')
         response = self.client.get(url, {'search': 'Dupont'})
         
@@ -129,6 +131,7 @@ class SageFemmeListViewTest(BaseAdministrationTest):
     
     def test_recherche_par_prenom(self):
         """Test de recherche par prénom"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_list')
         response = self.client.get(url, {'search': 'Julie'})
         
@@ -138,6 +141,7 @@ class SageFemmeListViewTest(BaseAdministrationTest):
     
     def test_recherche_par_email(self):
         """Test de recherche par email"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_list')
         response = self.client.get(url, {'search': 'julie.martin'})
         
@@ -147,6 +151,7 @@ class SageFemmeListViewTest(BaseAdministrationTest):
     
     def test_filtre_par_situation(self):
         """Test de filtrage par situation"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_list')
         response = self.client.get(url, {'situation': 'titulaire'})
         
@@ -160,6 +165,7 @@ class SageFemmeCreateViewTest(BaseAdministrationTest):
     
     def test_get_formulaire_creation(self):
         """Test d'affichage du formulaire de création"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_create')
         response = self.client.get(url)
         
@@ -169,6 +175,7 @@ class SageFemmeCreateViewTest(BaseAdministrationTest):
     
     def test_creation_sage_femme_valide(self):
         """Test de création d'une sage-femme avec des données valides"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_create')
         response = self.client.post(url, self.sage_femme_data)
         
@@ -188,6 +195,7 @@ class SageFemmeCreateViewTest(BaseAdministrationTest):
     
     def test_creation_sage_femme_donnees_invalides(self):
         """Test de création avec des données invalides"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_create')
         
         # Données invalides (email manquant)
@@ -221,6 +229,7 @@ class SageFemmeCreateViewTest(BaseAdministrationTest):
             'remplacement_de': titulaire.pk
         })
         
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_create')
         response = self.client.post(url, data)
         
@@ -255,6 +264,7 @@ class SageFemmeUpdateViewTest(BaseAdministrationTest):
     
     def test_get_formulaire_modification(self):
         """Test d'affichage du formulaire de modification"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.sage_femme.pk])
         response = self.client.get(url)
         
@@ -265,6 +275,7 @@ class SageFemmeUpdateViewTest(BaseAdministrationTest):
     
     def test_modification_sage_femme_valide(self):
         """Test de modification avec des données valides"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.sage_femme.pk])
         
         data = self.sage_femme_data.copy()
@@ -289,6 +300,7 @@ class SageFemmeUpdateViewTest(BaseAdministrationTest):
     
     def test_modification_periodes_activite(self):
         """Test de modification des périodes d'activité dans le formulaire"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.sage_femme.pk])
         
         # Données incluant modification de période
@@ -312,6 +324,7 @@ class SageFemmeUpdateViewTest(BaseAdministrationTest):
     
     def test_modification_donnees_invalides(self):
         """Test de modification avec des données invalides"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.sage_femme.pk])
         
         # Email invalide
@@ -339,6 +352,7 @@ class SageFemmeDeleteViewTest(BaseAdministrationTest):
     
     def test_suppression_sage_femme_get_non_autorise(self):
         """Test que GET n'est pas autorisé pour la suppression"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_delete', args=[self.sage_femme.pk])
         response = self.client.get(url)
         
@@ -346,6 +360,7 @@ class SageFemmeDeleteViewTest(BaseAdministrationTest):
     
     def test_suppression_sage_femme_delete(self):
         """Test de suppression avec méthode DELETE"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_delete', args=[self.sage_femme.pk])
         
         # Utiliser une requête AJAX avec le header CSRF approprié
@@ -367,6 +382,7 @@ class SageFemmeDeleteViewTest(BaseAdministrationTest):
     
     def test_suppression_sage_femme_inexistante(self):
         """Test de suppression d'une sage-femme inexistante"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_delete', args=[9999])
         
         response = self.client.delete(
@@ -406,6 +422,7 @@ class SageFemmeDetailViewTest(BaseAdministrationTest):
     
     def test_detail_sage_femme(self):
         """Test de la vue de détail"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[self.sage_femme.pk])
         response = self.client.get(url)
         
@@ -420,6 +437,7 @@ class SageFemmeDetailViewTest(BaseAdministrationTest):
     
     def test_detail_avec_statuts_periodes(self):
         """Test que les statuts des périodes sont correctement affichés"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[self.sage_femme.pk])
         response = self.client.get(url)
         
@@ -439,6 +457,7 @@ class SageFemmeDetailViewTest(BaseAdministrationTest):
     
     def test_detail_sage_femme_inexistante(self):
         """Test de détail pour une sage-femme inexistante"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[9999])
         response = self.client.get(url)
         
@@ -457,6 +476,7 @@ class ErrorHandlingTest(BaseAdministrationTest):
         """Test de validation CSRF"""
         # Créer un client avec vérification CSRF activée
         csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_create')
         
         # Utiliser des données uniques pour ce test

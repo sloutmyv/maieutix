@@ -118,8 +118,8 @@ class PeriodeActiviteModelTest(TestCase):
 
     def test_verbose_names(self):
         """Test des noms verbeux du modèle"""
-        self.assertEqual(PeriodeActivite._meta.verbose_name, 'Période d\'activité')
-        self.assertEqual(PeriodeActivite._meta.verbose_name_plural, 'Périodes d\'activité')
+        self.assertEqual(PeriodeActivite._meta.verbose_name, '2.1 Période d\'activité')
+        self.assertEqual(PeriodeActivite._meta.verbose_name_plural, '2.1 Périodes d\'activité')
 
 
 class PeriodeActivitePropertyTest(TestCase):

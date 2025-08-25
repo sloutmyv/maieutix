@@ -43,8 +43,8 @@ class PeriodeActivite(models.Model):
     )
     
     class Meta:
-        verbose_name = "Période d'activité"
-        verbose_name_plural = "Périodes d'activité"
+        verbose_name = "2.1 Période d'activité"
+        verbose_name_plural = "2.1 Périodes d'activité"
         ordering = ['-date_debut']
         
     def __str__(self):
@@ -174,3 +174,20 @@ class PeriodeActivite(models.Model):
             if self.date_fin and self.date_fin < timezone.now().date():
                 return f"Terminée le {self.date_fin}"
             return "À venir"
+    
+    def save(self, *args, **kwargs):
+        """Surcharge save pour mettre à jour le statut utilisateur"""
+        super().save(*args, **kwargs)
+        # Mettre à jour le statut actif de l'utilisateur associé
+        if hasattr(self.sage_femme, 'user') and self.sage_femme.user:
+            self.sage_femme.user.update_active_status()
+            self.sage_femme.user.save(update_fields=['is_active'])
+    
+    def delete(self, *args, **kwargs):
+        """Surcharge delete pour mettre à jour le statut utilisateur"""
+        sage_femme = self.sage_femme
+        super().delete(*args, **kwargs)
+        # Mettre à jour le statut actif de l'utilisateur associé
+        if hasattr(sage_femme, 'user') and sage_femme.user:
+            sage_femme.user.update_active_status()
+            sage_femme.user.save(update_fields=['is_active'])

@@ -94,14 +94,19 @@ class SageFemmeForm(ModelForm):
 
 
 def check_titulaire_permission(request):
-    """Vérifie si l'utilisateur a les permissions d'administration (titulaire)"""
+    """Vérifie si l'utilisateur a les permissions d'administration (titulaire ou superuser)"""
+    if not hasattr(request, 'user') or not request.user.is_authenticated:
+        return False
+    
     # Super admin a toujours accès
-    if hasattr(request, 'user') and request.user.is_authenticated and request.user.is_superuser:
+    if request.user.is_superuser:
         return True
     
-    # TODO: Implémenter la vraie logique de permissions basée sur les sessions sage-femme titulaire
-    # Pour l'instant, permettre l'accès à tous les utilisateurs authentifiés
-    return True
+    # Vérifier si l'utilisateur est une sage-femme titulaire
+    try:
+        return hasattr(request.user, 'sagefemme') and request.user.sagefemme.situation == 'titulaire'
+    except:
+        return False
 
 
 @login_required

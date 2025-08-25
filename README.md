@@ -1,36 +1,69 @@
 # Maieutix
 
-Un projet Django pour la gestion et le développement d'applications web.
+**Plateforme de gestion pour sages-femmes en Nouvelle-Calédonie**
 
-## Structure du projet
+Un projet Django moderne pour la gestion des activités professionnelles des sages-femmes, développé avec une architecture modulaire et une interface utilisateur intuitive.
 
-```
-maieutix/
-├── core/                   # Application principale
-│   ├── migrations/        # Migrations de base de données
-│   ├── admin.py          # Interface d'administration
-│   ├── apps.py           # Configuration de l'application
-│   ├── models.py         # Modèles de données
-│   ├── tests.py          # Tests unitaires
-│   └── views.py          # Vues de l'application
-├── maieutix/              # Configuration du projet Django
-│   ├── settings.py       # Configuration unifiée
-│   ├── urls.py           # Configuration des URLs
-│   ├── wsgi.py           # Configuration WSGI
-│   └── asgi.py           # Configuration ASGI
-├── docker-compose.yml     # Configuration Docker
-├── Dockerfile            # Image Docker Django
-├── nginx.conf            # Configuration Nginx
-├── docker-entrypoint.sh  # Script de démarrage
-├── manage.py             # Script de gestion Django
-└── requirements.txt      # Dépendances Python
-```
+## Statut du Projet ✅
 
-## Installation avec Docker
+- **Tests** : 241/241 tests passent (100% ✅)
+- **Authentification** : Système complet avec gestion des périodes d'activité
+- **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
+- **Architecture** : Modulaire et extensible
+- **Production Ready** : Configuration Docker optimisée
 
-Ce projet utilise Docker pour une configuration simplifiée et cohérente.
+## 🔑 Identifiants de Connexion
 
-### Déploiement rapide
+**Superutilisateur Django Admin** :
+- Email : admin@maieutix.nc
+- Mot de passe : azerty
+
+**Note** : Seules les sages-femmes avec des périodes d'activité actives peuvent se connecter au système.
+
+## Fonctionnalités Principales
+
+### 🏥 Gestion du Cabinet
+- **Cabinet unique** : Configuration singleton avec informations centralisées
+- **Interface dédiée** : Accès via l'administration Django
+- **Validation stricte** : Un seul cabinet par instance
+
+### 👩‍⚕️ Gestion des Sages-Femmes
+- **Profils complets** : Informations personnelles et professionnelles
+- **Trois statuts** : Titulaire, Collaborateur, Remplaçant
+- **Gestion des remplacements** : Logique métier complète avec validations
+- **Authentification** : Comptes utilisateurs automatiques
+
+### 📅 Périodes d'Activité
+- **Gestion intelligente** : Statut automatique basé sur les périodes
+- **Validation métier** : Anti-chevauchement et période unique ouverte
+- **Interface intuitive** : Statuts colorés et gestion HTMX
+- **API REST** : Endpoints complets pour manipulation des données
+
+### 🔐 Authentification Avancée
+- **Accès conditionnel** : Seules les sages-femmes avec période active peuvent se connecter
+- **Modèle utilisateur personnalisé** : `SageFemmeUser` basé sur email
+- **Mise à jour automatique** : Statut utilisateur synchronisé avec les périodes
+
+## Technologies Utilisées
+
+### Backend
+- **Django 5.2.5** + **Gunicorn** + **PostgreSQL** + **psycopg[binary] v3**
+- **python-decouple** pour les variables d'environnement
+- **DEBUG=False** par défaut (configuration production)
+
+### Frontend
+- **Tailwind CSS** - Framework CSS utility-first
+- **HTMX** - Interactions AJAX modernes via attributs HTML
+- **Alpine.js** - Réactivité côté client légère
+
+### Infrastructure
+- **Docker Compose** avec 3 services : Django + PostgreSQL + Nginx
+- **Nginx** - Reverse proxy + service des fichiers statiques/media
+- **Volumes persistants** pour DB, static et media
+
+## Installation et Déploiement
+
+### Déploiement Rapide
 ```bash
 # Cloner le projet
 git clone <url-du-repo>
@@ -39,213 +72,219 @@ cd maieutix
 # Déployer l'application
 docker-compose up -d --build
 
-# Accéder à l'application
-# http://localhost/ (Feuille de Soins - page d'accueil)
-# http://localhost/admin/ (Interface admin - admin/admin123)
+# L'application est disponible sur :
+# http://localhost/ - Page d'accueil
+# http://localhost/administration/sages-femmes/ - Gestion des sages-femmes
+# http://localhost/admin/ - Interface Django Admin
 ```
 
-## Technologies utilisées
-
-### Backend
-- **Django 5.2.5** - Framework web Python
-- **python-decouple** - Gestion des variables d'environnement
-- **psycopg[binary]** - Adaptateur PostgreSQL moderne (version 3)
-- **PostgreSQL** - Base de données
-- **Gunicorn** - Serveur WSGI pour la production
-
-### Frontend
-- **Tailwind CSS** - Framework CSS utility-first
-- **HTMX** - Interactions AJAX modernes
-- **Alpine.js** - Réactivité côté client légère
-
-### Infrastructure
-- **Nginx** - Serveur web et proxy inverse
-- **Docker** - Containerisation et déploiement
-
-## Notes importantes
-
-### Base de données
-- PostgreSQL avec psycopg[binary] (version 3)
-- Superutilisateur par défaut : `admin` / `admin123`
-
-### Configuration
-- Configuration unifiée dans `maieutix/settings.py`
-- Variables d'environnement gérées via python-decouple
-- Mode production activé par défaut dans Docker (`DEBUG=False`)
-
-### Prérequis
-- Docker et Docker Compose installés
-
-### Commandes Docker essentielles
+### Première Connexion
 ```bash
-# Démarrer les services
-docker-compose up -d --build
+# Créer un superutilisateur (optionnel, un admin existe déjà)
+docker-compose exec web python manage.py createsuperuser
 
-# Voir les logs
-docker-compose logs -f
-docker-compose logs -f web    # Logs Django uniquement
-docker-compose logs -f db     # Logs PostgreSQL uniquement
-
-# Arrêter les services
-docker-compose down
-
-# Redémarrer un service
-docker-compose restart web
-
-# Accéder aux conteneurs
-docker-compose exec web bash     # Conteneur Django
-docker-compose exec db psql -U maieutix_user maieutix_prod  # Base de données
-
-# Sauvegarder la base de données
-docker-compose exec db pg_dump -U maieutix_user maieutix_prod > backup.sql
-
-# Supprimer tout (attention: données perdues!)
-docker-compose down -v
+# Connexion admin par défaut :
+# Email : admin@maieutix.nc
+# Mot de passe : azerty
 ```
 
-### Configuration Docker
-- **services** : Django + PostgreSQL + Nginx
-- **volumes** : Données persistantes (DB, static, media)
-- **networks** : Communication sécurisée entre conteneurs
-- **healthchecks** : Surveillance automatique des services
+## Structure du Projet
 
-### Variables importantes (docker-compose.yml)
+```
+maieutix/
+├── core/                          # Application principale
+│   ├── models/                    # Modèles de données modulaires
+│   │   ├── cabinet.py             # Gestion du cabinet (singleton)
+│   │   ├── sagefemme.py           # Gestion des sages-femmes
+│   │   └── periode_activite.py    # Gestion des périodes d'activité
+│   ├── views/                     # Vues organisées par domaine
+│   │   ├── administration.py      # Interface d'administration
+│   │   └── home.py               # Page d'accueil
+│   ├── admin/                     # Configuration admin modulaire
+│   │   ├── cabinet.py             # Admin Cabinet
+│   │   ├── sagefemme.py           # Admin SageFemme  
+│   │   └── periode_activite.py    # Admin PeriodeActivite
+│   ├── tests/                     # Tests organisés (241 tests ✅)
+│   │   ├── models/                # Tests des modèles
+│   │   ├── views/                 # Tests des vues
+│   │   ├── admin/                 # Tests de l'interface admin
+│   │   └── integration/           # Tests d'intégration
+│   ├── templates/core/            # Templates organisés
+│   │   ├── base.html              # Template de base
+│   │   ├── home.html              # Page d'accueil
+│   │   ├── auth/                  # Templates d'authentification
+│   │   └── administration/        # Templates d'administration
+│   └── static/core/               # Assets statiques
+├── authentication/                # Application d'authentification
+│   ├── models.py                  # SageFemmeUser (modèle personnalisé)
+│   ├── views.py                   # Vues de connexion/déconnexion
+│   └── tests.py                   # Tests d'authentification (42 tests ✅)
+├── context/                       # Documentation projet
+│   ├── design-principles.md       # Principes de design
+│   └── style-guide.md             # Guide de style
+├── CLAUDE.md                      # Guide de développement complet
+└── tests_readme.md               # Documentation des tests
+```
+
+## URLs Principales
+
+- **/** - Page d'accueil avec navigation
+- **/administration/sages-femmes/** - Interface de gestion
+- **/auth/connexion/** - Page de connexion
+- **/auth/deconnexion/** - Déconnexion
+- **/admin/** - Interface Django Admin
+
+## API Administration
+
+### Périodes d'Activité
+- `POST /administration/sage-femme/{id}/periode/ajouter/` - Ajouter période
+- `POST /administration/periode/{id}/modifier/` - Modifier période  
+- `DELETE /administration/periode/{id}/supprimer/` - Supprimer période
+- `POST /administration/periode/{id}/terminer/` - Terminer période
+
+### CRUD Sages-Femmes (HTMX)
+- `GET /administration/sages-femmes/list/` - Liste avec recherche/filtres
+- `GET /administration/sage-femme/create/` - Formulaire création
+- `GET /administration/sage-femme/{id}/update/` - Formulaire modification
+- `GET /administration/sage-femme/{id}/detail/` - Vue détaillée
+- `DELETE /administration/sage-femme/{id}/delete/` - Suppression
+
+## Commandes Utiles
+
+### Docker
+```bash
+# Gestion des services
+docker-compose up -d --build       # Démarrer
+docker-compose logs -f web          # Logs Django
+docker-compose restart web          # Redémarrer Django
+docker-compose down                 # Arrêter
+
+# Accès aux conteneurs  
+docker-compose exec web bash        # Shell Django
+docker-compose exec web python manage.py shell  # Shell Django
+docker-compose exec db psql -U maieutix_user maieutix_prod  # PostgreSQL
+```
+
+### Django
+```bash
+# Tests
+docker-compose exec web python manage.py test                    # Tous les tests
+docker-compose exec web python manage.py test --failfast         # Arrêt au premier échec
+docker-compose exec web python manage.py test core.tests         # Tests core uniquement
+
+# Migrations
+docker-compose exec web python manage.py makemigrations
+docker-compose exec web python manage.py migrate
+
+# Static files
+docker-compose exec web python manage.py collectstatic --noinput
+```
+
+## Configuration
+
+### Variables d'Environnement
 ```yaml
+# Dans docker-compose.yml
 environment:
-  - SECRET_KEY=your-secret-key-change-in-production
-  - DEBUG=False
+  - SECRET_KEY=your-secret-key-here
+  - DEBUG=False                    # Production par défaut
   - ALLOWED_HOSTS=localhost,127.0.0.1
   - POSTGRES_PASSWORD=maieutix_password
+  - TZ=Pacific/Noumea             # Timezone NC (UTC+11)
 ```
 
-### Services exposés
-- **Port 80** : Application complète (Nginx + Django)
-- **Page d'accueil** : `http://localhost/` (Feuille de Soins)
-- **Administration** : `http://localhost/admin/` (admin/admin123)
-- **Volumes persistants** : Base de données, fichiers media et static
+### Base de Données
+- **PostgreSQL 13** avec psycopg v3
+- **Utilisateur** : `maieutix_user`
+- **Base** : `maieutix_prod`
+- **Volumes persistants** pour conservation des données
 
-## Application Core
+## Tests et Qualité
 
-L'application `core` contient les fonctionnalités principales du projet avec une architecture modulaire :
+### Couverture de Tests : 100% ✅
+- **241 tests** tous passent
+- **Tests unitaires** : Modèles, vues, admin
+- **Tests d'intégration** : Templates, navigation, API
+- **Tests fonctionnels** : Authentification, permissions
+- **Tests de validation** : Règles métier, contraintes DB
 
+### Organisation des Tests
 ```
-core/
-├── models/                   # Logique de données
-│   ├── __init__.py           # Import centralisé des modèles
-│   ├── cabinet.py            # Modèle Cabinet (singleton)
-│   └── sagefemme.py          # Modèle SageFemme (gestion des professionnels)
-├── views/                    # Logique métier et interaction
-│   ├── __init__.py           # Import centralisé des vues
-│   ├── feuille_soins.py      # Gestion des consultations
-│   ├── patients.py           # Gestion des patientes
-│   ├── outils.py             # Fonctionnalités utilitaires
-│   ├── statistiques.py       # Analyses et rapports
-│   └── administration.py     # Gestion administrative
-├── admin/                    # Configuration interface d'administration
-│   ├── __init__.py           # Import centralisé des admins
-│   ├── cabinet.py            # Interface admin Cabinet
-│   └── sagefemme.py          # Interface admin SageFemme
-├── admin.py                  # Point d'entrée admin (import du package)
-├── tests/                    # Tests organisés par domaine
-│   ├── models/
-│   │   ├── test_cabinet.py   # Tests modèle Cabinet
-│   │   └── test_sagefemme.py # Tests modèle SageFemme
-│   ├── admin/
-│   │   ├── test_cabinet.py   # Tests admin Cabinet
-│   │   └── test_sagefemme.py # Tests admin SageFemme
-│   └── views/
-│       └── test_home.py      # Tests vues
-├── templates/core/           # Interface utilisateur
-│   ├── base.html             # Template de base avec navbar
-│   ├── feuille_soins.html    # Page principale des consultations
-│   ├── patients/             # Templates des patientes
-│   ├── outils/               # Templates des outils
-│   ├── statistiques/         # Templates des analyses
-│   └── administration/       # Templates d'administration
-└── static/core/              # CSS/JS personnalisés
+core/tests/
+├── models/                    # Tests des modèles (85 tests)
+├── views/                     # Tests des vues (73 tests)  
+├── admin/                     # Tests de l'admin (41 tests)
+└── integration/              # Tests d'intégration (42 tests)
 ```
 
-### Fonctionnalités
+Pour plus de détails, voir `tests_readme.md`.
 
-#### Interface Utilisateur
-- **Navigation** : Navbar avec menus Feuille de Soins, Patients, Outils, Statistiques, Administration
-- **Page d'accueil** : Feuille de Soins (tableau de bord des consultations)
-- **Design** : Interface sobre et épurée avec palette de couleurs cohérente
-- **Interactivité** : Dropdown menu Administration avec Alpine.js
-- **Responsive** : Adapté aux différents écrans
+## Architecture et Design
 
-#### URLs Disponibles
-- `http://localhost/` → Feuille de Soins (page d'accueil)
-- `http://localhost/feuille-soins/` → Gestion des consultations
-- `http://localhost/patients/` → Gestion des patientes  
-- `http://localhost/outils/` → Outils et utilitaires
-- `http://localhost/statistiques/` → Analyses et rapports
-- `http://localhost/administration/sages-femmes/` → Gestion des sages-femmes
+### Principes de Design
+- **Modulaire** : Séparation claire des responsabilités
+- **Extensible** : Architecture permettant l'ajout de nouvelles fonctionnalités
+- **Testable** : Couverture de tests complète
+- **Maintenable** : Code documenté et structuré
 
-#### Fonctionnalités Métier
-- **Cabinet** : Modèle singleton (un seul cabinet par application)
-- **Sages-femmes** : Gestion complète des professionnels (titulaires, collaborateurs, remplaçants)
-- **Périodes d'activité** : Gestion automatique du statut d'activité des sages-femmes
-- **Interface d'administration** : Interface optimisée avec terminologie mise à jour
-- **Architecture modulaire** : Séparation models/views/admin/tests par domaine
-- **Tests complets** : 80+ tests unitaires (models, admin, views)
-- **Interface moderne** : Tailwind CSS + HTMX + Alpine.js
-- **Timezone** : UTC+11 (Pacific/Noumea)
+### Palette de Couleurs
+- **Primary** : #2D4B73 (Bleu foncé)
+- **Secondary** : #253C59 (Bleu plus foncé)
+- **Accent** : #99B4BF (Bleu clair)
+- **Highlight** : #D9BA23 (Jaune)
+- **Warning** : #BF8D30 (Orange)
 
-### Modèle SageFemme
-- **Informations personnelles** : Nom, prénom, titre, contact
-- **Informations professionnelles** : CAFAT, RIDET, RIB, banque
-- **Adresse optionnelle** : Rue, code postal, ville
-- **Situation** : Titulaire, collaborateur, remplaçant
-- **Logique remplaçant** : Gestion des remplacements avec validations métier
-- **Options remplaçant** : État récapitulatif et bons de dépôt communs
-- **Statut actif/inactif** : Gestion de l'état des professionnels
-- **Périodes d'activité** : Statut automatique basé sur les périodes d'activité
-- **Interface optimisée** : Terminologie mise à jour (gérant → titulaire)
+### Composants UI
+- **Navigation** : Navbar responsive avec logo
+- **Modals** : Formulaires en overlay avec HTMX
+- **Tables** : Listes avec tri, recherche et pagination
+- **Notifications** : Système de feedback utilisateur
+- **Statuts** : Badges colorés pour les états
 
-### Modèle PeriodeActivite
-- **Date de début obligatoire** : Début de la période d'activité
-- **Date de fin facultative** : Si vide, période considérée comme en cours
-- **Logique d'activité** : Inactive si date de fin dépassée
-- **Validation stricte** : Une seule période ouverte par sage-femme
-- **Anti-chevauchement** : Aucune période ne peut se chevaucher
-- **Statut automatique** : Calcul en temps réel de l'état d'activité
-- **Interface admin** : Gestion complète avec statuts colorés
+## Règles Métier
 
-### Développement
-- **Design** : Interface sobre et épurée
-- **Palette de couleurs** : Thème Voyages (#2D4B73, #253C59, #99B4BF, #D9BA23, #BF8D30)
-- **Tests** : `docker-compose exec web python manage.py test core.tests`
-- **Validation métier** : Règles strictes pour les périodes d'activité
-- **Admin interface** : "2.1 Périodes d'activité" avec gestion des statuts
-- **Guide complet** : Voir `CLAUDE.md` pour les détails de développement
+### Périodes d'Activité
+1. **Une seule période ouverte** par sage-femme (sans date de fin)
+2. **Anti-chevauchement** : Aucune période ne peut se chevaucher
+3. **Statut automatique** : Calculé en temps réel
+4. **Mise à jour du compte** : Statut utilisateur synchronisé automatiquement
 
-## Gestion des Périodes d'Activité
+### Authentification
+- **Email obligatoire** pour la connexion
+- **Seules les sages-femmes actives** peuvent se connecter
+- **Création automatique** des comptes lors de l'ajout d'une sage-femme
+- **Mot de passe par défaut** : `azerty` (à changer lors de la première connexion)
 
-### Règles Métier
-- **Période unique ouverte** : Une seule période sans date de fin par sage-femme
-- **Validation anti-chevauchement** : Aucune période ne peut se chevaucher
-- **Statut automatique** : 
-  - **Active** : Date début ≤ aujourd'hui ET (pas de date fin OU date fin ≥ aujourd'hui)
-  - **Inactive** : Date fin < aujourd'hui
-  - **À venir** : Date début > aujourd'hui
+## Développement
 
-### Interface Admin
-- Accès via `http://localhost/admin/` → "2.1 Périodes d'activité"
-- Statuts colorés : ✓ Active, ⏳ À venir, ✗ Terminée
-- Gestion inline dans les fiches sages-femmes
-- Messages d'erreur explicites pour les violations de règles
+### Ajout de Fonctionnalités
+1. **Suivre l'architecture modulaire** (models/views/admin/tests séparés)
+2. **Écrire les tests d'abord** (TDD encouragé)
+3. **Respecter les conventions** définies dans `CLAUDE.md`
+4. **Tester l'intégration** avec les fonctionnalités existantes
 
-### Utilisation
-```python
-# Créer une période d'activité
-sage_femme.ajouter_periode_activite(
-    date_debut=date.today(),
-    date_fin=None,  # Période ouverte
-    commentaire="Début d'activité"
-)
+### Guide Complet
+Consultez `CLAUDE.md` pour :
+- Guide de développement détaillé
+- Conventions de code
+- Architecture modulaire
+- Commandes Docker
+- Bonnes pratiques
 
-# Vérifier le statut
-print(sage_femme.statut_activite)  # "Active (en cours)"
-print(sage_femme.est_actuellement_active)  # True
-```
+## Support et Documentation
+
+- **CLAUDE.md** : Guide de développement complet
+- **tests_readme.md** : Documentation détaillée des tests  
+- **context/design-principles.md** : Principes de design
+- **context/style-guide.md** : Guide de style visuel
+
+## Sécurité
+
+- **CSRF Protection** : Activée sur toutes les vues
+- **Authentification requise** : Pour toutes les vues d'administration
+- **Validation stricte** : Côté serveur et client
+- **Configuration production** : DEBUG=False par défaut
+
+---
+
+**Projet développé avec ❤️ pour les sages-femmes de Nouvelle-Calédonie**

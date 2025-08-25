@@ -2,7 +2,7 @@
 Tests pour l'administration du modèle SageFemme.
 """
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from authentication.models import SageFemmeUser
 from django.urls import reverse
 from django.contrib.admin.sites import AdminSite
 from core.models.sagefemme import SageFemme
@@ -17,8 +17,7 @@ class SageFemmeAdminTest(TestCase):
         self.client = Client()
         
         # Créer un superutilisateur
-        self.admin_user = User.objects.create_superuser(
-            username='admin',
+        self.admin_user = SageFemmeUser.objects.create_superuser(
             email='admin@test.nc',
             password='admin123'
         )
@@ -129,7 +128,7 @@ class SageFemmeAdminTest(TestCase):
         fieldsets = self.admin.fieldsets
         
         # Vérifier le nombre de sections
-        self.assertEqual(len(fieldsets), 7)  # 7 fieldsets incluant le nouveau 'Statut'
+        self.assertEqual(len(fieldsets), 8)  # 8 fieldsets incluant 'Statut' et 'Compte utilisateur'
         
         # Vérifier les titres des sections
         section_titles = [fieldset[0] for fieldset in fieldsets]
@@ -140,7 +139,8 @@ class SageFemmeAdminTest(TestCase):
             'Informations professionnelles',
             'Situation professionnelle',
             'Options pour remplaçants',
-            'Statut'
+            'Statut',
+            'Compte utilisateur'
         ]
         self.assertEqual(section_titles, expected_titles)
         
@@ -168,7 +168,7 @@ class SageFemmeAdminTest(TestCase):
 
     def test_admin_changelist_view_authenticated(self):
         """Test de la vue liste avec utilisateur connecté"""
-        self.client.login(username='admin', password='admin123')
+        self.client.login(username='admin@test.nc', password='admin123')
         url = reverse('admin:core_sagefemme_changelist')
         response = self.client.get(url)
         
@@ -179,7 +179,7 @@ class SageFemmeAdminTest(TestCase):
 
     def test_admin_add_view(self):
         """Test de la vue d'ajout"""
-        self.client.login(username='admin', password='admin123')
+        self.client.login(username='admin@test.nc', password='admin123')
         url = reverse('admin:core_sagefemme_add')
         response = self.client.get(url)
         
@@ -190,7 +190,7 @@ class SageFemmeAdminTest(TestCase):
 
     def test_admin_change_view(self):
         """Test de la vue de modification"""
-        self.client.login(username='admin', password='admin123')
+        self.client.login(username='admin@test.nc', password='admin123')
         url = reverse('admin:core_sagefemme_change', args=[self.titulaire.pk])
         response = self.client.get(url)
         
@@ -200,7 +200,7 @@ class SageFemmeAdminTest(TestCase):
 
     def test_admin_search_functionality(self):
         """Test de la fonctionnalité de recherche"""
-        self.client.login(username='admin', password='admin123')
+        self.client.login(username='admin@test.nc', password='admin123')
         url = reverse('admin:core_sagefemme_changelist')
         
         # Recherche par nom
@@ -217,7 +217,7 @@ class SageFemmeAdminTest(TestCase):
 
     def test_admin_filter_by_situation(self):
         """Test du filtrage par situation"""
-        self.client.login(username='admin', password='admin123')
+        self.client.login(username='admin@test.nc', password='admin123')
         url = reverse('admin:core_sagefemme_changelist')
         
         # Filtrer par gérant
@@ -238,7 +238,7 @@ class SageFemmeAdminTest(TestCase):
         self.titulaire.is_active = False
         self.titulaire.save()
         
-        self.client.login(username='admin', password='admin123')
+        self.client.login(username='admin@test.nc', password='admin123')
         url = reverse('admin:core_sagefemme_changelist')
         
         # Filtrer par actif

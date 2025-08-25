@@ -1,6 +1,6 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth.models import User
+from authentication.models import SageFemmeUser
 from django.http import HttpResponseRedirect
 from core.models import Cabinet
 from core.admin import CabinetAdmin
@@ -22,8 +22,7 @@ class CabinetAdminTest(TestCase):
         self.factory = RequestFactory()
         
         # Create superuser
-        self.superuser = User.objects.create_superuser(
-            username='admin',
+        self.superuser = SageFemmeUser.objects.create_superuser(
             email='admin@test.com',
             password='testpass123'
         )

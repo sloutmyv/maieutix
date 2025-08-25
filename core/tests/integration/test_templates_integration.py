@@ -3,7 +3,7 @@ Tests d'intégration pour les templates d'administration des sage-femmes.
 """
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from authentication.models import SageFemmeUser
 from datetime import date, timedelta
 from core.models.sagefemme import SageFemme
 from core.models.periode_activite import PeriodeActivite
@@ -17,8 +17,7 @@ class BaseTemplateIntegrationTest(TestCase):
         self.client = Client()
         
         # Créer un superutilisateur
-        self.superuser = User.objects.create_superuser(
-            username='admin',
+        self.superuser = SageFemmeUser.objects.create_superuser(
             email='admin@test.nc',
             password='testpass123'
         )
@@ -114,6 +113,7 @@ class SagesFemmesListTemplateTest(BaseTemplateIntegrationTest):
     
     def test_affichage_liste_complete(self):
         """Test de l'affichage complet de la liste"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -131,6 +131,7 @@ class SagesFemmesListTemplateTest(BaseTemplateIntegrationTest):
     
     def test_affichage_statuts_activite(self):
         """Test de l'affichage des statuts d'activité"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -146,6 +147,7 @@ class SagesFemmesListTemplateTest(BaseTemplateIntegrationTest):
     
     def test_affichage_situations(self):
         """Test de l'affichage des différentes situations"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -161,6 +163,7 @@ class SagesFemmesListTemplateTest(BaseTemplateIntegrationTest):
     
     def test_affichage_jours_cumules(self):
         """Test de l'affichage des jours d'activité cumulés"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -175,6 +178,7 @@ class SagesFemmesListTemplateTest(BaseTemplateIntegrationTest):
     
     def test_boutons_actions(self):
         """Test de l'affichage des boutons d'action"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -191,6 +195,7 @@ class SagesFemmesListTemplateTest(BaseTemplateIntegrationTest):
     
     def test_recherche_interface(self):
         """Test de l'interface de recherche"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -211,6 +216,7 @@ class SageFemmeFormTemplateTest(BaseTemplateIntegrationTest):
     
     def test_formulaire_creation_affichage(self):
         """Test de l'affichage du formulaire de création"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_create')
         response = self.client.get(url)
         
@@ -236,6 +242,7 @@ class SageFemmeFormTemplateTest(BaseTemplateIntegrationTest):
     
     def test_formulaire_modification_affichage(self):
         """Test de l'affichage du formulaire de modification"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.titulaire_active.pk])
         response = self.client.get(url)
         
@@ -254,6 +261,7 @@ class SageFemmeFormTemplateTest(BaseTemplateIntegrationTest):
     
     def test_formulaire_gestion_situation_remplacant(self):
         """Test de la gestion dynamique des champs remplaçant"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_create')
         response = self.client.get(url)
         
@@ -269,6 +277,7 @@ class SageFemmeFormTemplateTest(BaseTemplateIntegrationTest):
     
     def test_formulaire_periodes_activite(self):
         """Test de l'affichage des périodes d'activité dans le formulaire"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.titulaire_active.pk])
         response = self.client.get(url)
         
@@ -289,6 +298,7 @@ class SageFemmeFormTemplateTest(BaseTemplateIntegrationTest):
     
     def test_formulaire_note_statut_automatique(self):
         """Test de l'affichage de la note sur le statut automatique"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.titulaire_active.pk])
         response = self.client.get(url)
         
@@ -305,6 +315,7 @@ class SageFemmeDetailTemplateTest(BaseTemplateIntegrationTest):
     
     def test_detail_informations_generales(self):
         """Test de l'affichage des informations générales"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[self.titulaire_active.pk])
         response = self.client.get(url)
         
@@ -325,6 +336,7 @@ class SageFemmeDetailTemplateTest(BaseTemplateIntegrationTest):
     
     def test_detail_statut_et_periodes(self):
         """Test de l'affichage du statut et des périodes"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[self.collaborateur_inactif.pk])
         response = self.client.get(url)
         
@@ -345,6 +357,7 @@ class SageFemmeDetailTemplateTest(BaseTemplateIntegrationTest):
     
     def test_detail_remplacant_informations(self):
         """Test de l'affichage spécifique pour un remplaçant"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[self.remplacant.pk])
         response = self.client.get(url)
         
@@ -363,6 +376,7 @@ class SageFemmeDetailTemplateTest(BaseTemplateIntegrationTest):
     
     def test_detail_periode_en_cours(self):
         """Test de l'affichage d'une période en cours"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[self.remplacant.pk])
         response = self.client.get(url)
         
@@ -378,6 +392,7 @@ class ResponsiveTemplateTest(BaseTemplateIntegrationTest):
     
     def test_classes_responsive(self):
         """Test de la présence des classes responsive"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -390,6 +405,7 @@ class ResponsiveTemplateTest(BaseTemplateIntegrationTest):
     
     def test_accessibility_attributes(self):
         """Test des attributs d'accessibilité"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -413,6 +429,7 @@ class ResponsiveTemplateTest(BaseTemplateIntegrationTest):
         primary_color = '#2D4B73'  # Couleur primaire définie dans CLAUDE.md
         
         for url in urls_to_test:
+            self.client.login(username='admin@test.nc', password='testpass123')
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
             
@@ -427,6 +444,7 @@ class JavaScriptIntegrationTest(BaseTemplateIntegrationTest):
     
     def test_htmx_attributes_presence(self):
         """Test de la présence des attributs HTMX"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -446,6 +464,7 @@ class JavaScriptIntegrationTest(BaseTemplateIntegrationTest):
     
     def test_javascript_functions_presence(self):
         """Test de la présence des fonctions JavaScript essentielles"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.titulaire_active.pk])
         response = self.client.get(url)
         
@@ -467,6 +486,7 @@ class JavaScriptIntegrationTest(BaseTemplateIntegrationTest):
     
     def test_notification_system_integration(self):
         """Test de l'intégration du système de notifications"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:administration_sages_femmes')
         response = self.client.get(url)
         
@@ -479,6 +499,7 @@ class JavaScriptIntegrationTest(BaseTemplateIntegrationTest):
     
     def test_form_validation_javascript(self):
         """Test de la validation JavaScript des formulaires"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_update', args=[self.titulaire_active.pk])
         response = self.client.get(url)
         
@@ -496,6 +517,7 @@ class ErrorHandlingTemplateTest(BaseTemplateIntegrationTest):
     
     def test_template_404_handling(self):
         """Test de gestion des erreurs 404"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[9999])
         response = self.client.get(url)
         
@@ -517,6 +539,7 @@ class ErrorHandlingTemplateTest(BaseTemplateIntegrationTest):
             situation='titulaire'
         )
         
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[sage_femme_minimale.pk])
         response = self.client.get(url)
         
@@ -527,6 +550,7 @@ class ErrorHandlingTemplateTest(BaseTemplateIntegrationTest):
     
     def test_template_empty_periods(self):
         """Test de template avec sage-femme sans périodes"""
+        self.client.login(username='admin@test.nc', password='testpass123')
         url = reverse('administration:sagefemme_detail', args=[self.collaborateur_inactif.pk])
         response = self.client.get(url)
         
