@@ -84,7 +84,7 @@ class SageFemmeUser(AbstractBaseUser, PermissionsMixin):
     
     class Meta:
         verbose_name = "1. Utilisateur Sage-femme"
-        verbose_name_plural = "1. Utilisateurs Sages-femmes"
+        verbose_name_plural = "Utilisateurs Sages-femmes"
         db_table = 'core_sagefemme_user'
     
     def __str__(self):

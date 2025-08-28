@@ -39,6 +39,12 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Interface intuitive** : Statuts colorés et gestion HTMX
 - **API REST** : Endpoints complets pour manipulation des données
 
+### 🩺 Gestion des Actes Médicaux
+- **Nomenclature complète** : Code et libellé des actes
+- **Conventions tarifaires** : Gestion des tarifs par périodes
+- **Historique tarifaire** : Évolution des coûts dans le temps
+- **Interface dédiée** : CRUD complet avec modales HTMX
+
 ### 🔐 Authentification Avancée
 - **Accès conditionnel** : Seules les sages-femmes avec période active peuvent se connecter
 - **Modèle utilisateur personnalisé** : `SageFemmeUser` basé sur email
@@ -96,14 +102,16 @@ maieutix/
 │   ├── models/                    # Modèles de données modulaires
 │   │   ├── cabinet.py             # Gestion du cabinet (singleton)
 │   │   ├── sagefemme.py           # Gestion des sages-femmes
-│   │   └── periode_activite.py    # Gestion des périodes d'activité
+│   │   ├── periode_activite.py    # Gestion des périodes d'activité
+│   │   └── acte.py               # Gestion des actes et tarifs
 │   ├── views/                     # Vues organisées par domaine
 │   │   ├── administration.py      # Interface d'administration
 │   │   └── home.py               # Page d'accueil
 │   ├── admin/                     # Configuration admin modulaire
 │   │   ├── cabinet.py             # Admin Cabinet
 │   │   ├── sagefemme.py           # Admin SageFemme  
-│   │   └── periode_activite.py    # Admin PeriodeActivite
+│   │   ├── periode_activite.py    # Admin PeriodeActivite
+│   │   └── acte.py               # Admin Actes et Tarifs
 │   ├── tests/                     # Tests organisés (241 tests ✅)
 │   │   ├── models/                # Tests des modèles
 │   │   ├── views/                 # Tests des vues
@@ -129,7 +137,8 @@ maieutix/
 ## URLs Principales
 
 - **/** - Page d'accueil avec navigation
-- **/administration/sages-femmes/** - Interface de gestion
+- **/administration/sages-femmes/** - Interface de gestion des sages-femmes
+- **/administration/actes/** - Interface de gestion des actes médicaux
 - **/auth/connexion/** - Page de connexion
 - **/auth/deconnexion/** - Déconnexion
 - **/admin/** - Interface Django Admin
@@ -148,6 +157,18 @@ maieutix/
 - `GET /administration/sage-femme/{id}/update/` - Formulaire modification
 - `GET /administration/sage-femme/{id}/detail/` - Vue détaillée
 - `DELETE /administration/sage-femme/{id}/delete/` - Suppression
+
+### CRUD Actes Médicaux (HTMX)
+- `GET /administration/actes/list/` - Liste avec recherche
+- `GET /administration/acte/create/` - Formulaire création
+- `GET /administration/acte/{id}/update/` - Formulaire modification  
+- `GET /administration/acte/{id}/detail/` - Vue détaillée
+- `DELETE /administration/acte/{id}/delete/` - Suppression
+
+### Tarifs et Conventions
+- `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire
+- `POST /administration/tarifs/{id}/modifier/` - Modifier période tarifaire
+- `DELETE /administration/tarifs/{id}/supprimer/` - Supprimer période tarifaire
 
 ## Commandes Utiles
 

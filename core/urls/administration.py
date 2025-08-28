@@ -13,7 +13,17 @@ from core.views.administration import (
     ajouter_periode_activite_view,
     modifier_periode_activite_view,
     supprimer_periode_activite_view,
-    terminer_periode_activite_view
+    terminer_periode_activite_view,
+    # Vues pour les actes médicaux
+    administration_actes_view,
+    acte_list_view,
+    acte_create_view,
+    acte_detail_view,
+    acte_update_view,
+    acte_delete_view,
+    ajouter_tarif_periode_view,
+    modifier_tarif_periode_view,
+    supprimer_tarif_periode_view
 )
 
 app_name = 'administration'
@@ -35,4 +45,19 @@ urlpatterns = [
     path('api/periodes/<int:pk>/modifier/', modifier_periode_activite_view, name='modifier_periode'),
     path('api/periodes/<int:pk>/supprimer/', supprimer_periode_activite_view, name='supprimer_periode'),
     path('api/periodes/<int:pk>/terminer/', terminer_periode_activite_view, name='terminer_periode'),
+    
+    # Vue principale des actes médicaux
+    path('actes/', administration_actes_view, name='administration_actes'),
+    
+    # API HTMX pour les actes médicaux
+    path('api/actes/', acte_list_view, name='acte_list'),
+    path('api/actes/create/', acte_create_view, name='acte_create'),
+    path('api/actes/<int:pk>/', acte_detail_view, name='acte_detail'),
+    path('api/actes/<int:pk>/update/', acte_update_view, name='acte_update'),
+    path('api/actes/<int:pk>/delete/', acte_delete_view, name='acte_delete'),
+    
+    # API pour les périodes tarifaires
+    path('actes/<int:pk>/ajouter-tarif/', ajouter_tarif_periode_view, name='ajouter_tarif'),
+    path('tarifs/<int:pk>/modifier/', modifier_tarif_periode_view, name='modifier_tarif'),
+    path('tarifs/<int:pk>/supprimer/', supprimer_tarif_periode_view, name='supprimer_tarif'),
 ]

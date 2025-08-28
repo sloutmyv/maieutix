@@ -83,6 +83,7 @@
                              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-accent z-10">
                             <div class="py-1">
                                 <a href="{% url 'administration:administration_sages_femmes' %}" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Sages Femmes</a>
+                                <a href="{% url 'administration:administration_actes' %}" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Actes</a>
                                 {% if user.is_superuser %}
                                 <a href="/admin/" class="block px-4 py-2 text-sm text-primary hover:bg-accent hover:bg-opacity-10 transition-colors">Admin Django</a>
                                 {% endif %}

@@ -16,6 +16,7 @@ import json
 from datetime import date, datetime
 from core.models.sagefemme import SageFemme
 from core.models.periode_activite import PeriodeActivite
+from core.models.acte import Acte, TarifPeriode
 
 
 class SageFemmeForm(ModelForm):
@@ -478,4 +479,341 @@ def terminer_periode_activite_view(request, pk):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
+
+# ============================================================================
+# VUES POUR LA GESTION DES ACTES MEDICAUX
+# ============================================================================
+
+class ActeForm(ModelForm):
+    """Formulaire pour les actes médicaux"""
+    
+    class Meta:
+        model = Acte
+        fields = ['code', 'libelle']
+        widgets = {
+            'code': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Ex: CSF, VGC...'
+            }),
+            'libelle': forms.Textarea(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'rows': 3,
+                'placeholder': 'Description complète de l\'acte...'
+            })
+        }
+
+    def clean_code(self):
+        """Valide l'unicité du code"""
+        code = self.cleaned_data.get('code')
+        if code:
+            queryset = Acte.objects.filter(code__iexact=code)
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            if queryset.exists():
+                raise forms.ValidationError("Un acte avec ce code existe déjà.")
+        return code.upper() if code else code
+
+
+class TarifPeriodeForm(ModelForm):
+    """Formulaire pour les périodes tarifaires"""
+    
+    class Meta:
+        model = TarifPeriode
+        fields = ['acte', 'cout_xpf', 'date_debut', 'date_fin']
+        widgets = {
+            'acte': forms.Select(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+            }),
+            'cout_xpf': forms.NumberInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Montant en XPF'
+            }),
+            'date_debut': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+            }),
+            'date_fin': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+            })
+        }
+
+
+@login_required
+def administration_actes_view(request):
+    """
+    Vue pour la gestion des actes médicaux
+    """
+    if not check_titulaire_permission(request):
+        messages.error(request, "Accès non autorisé. Seuls les titulaires peuvent accéder à cette section.")
+        return redirect('home')
+    
+    actes = Acte.objects.all().order_by('code')
+    
+    context = {
+        'page_title': 'Administration - Actes',
+        'section': 'administration',
+        'actes': actes
+    }
+    return render(request, 'core/administration/actes.html', context)
+
+
+def acte_list_view(request):
+    """Vue HTMX pour la liste filtrée des actes"""
+    if not check_titulaire_permission(request):
+        return HttpResponse("Non autorisé", status=403)
+    
+    actes = Acte.objects.all().order_by('code')
+    
+    # Filtres
+    search = request.GET.get('search', '').strip()
+    
+    if search:
+        actes = actes.filter(
+            Q(code__icontains=search) |
+            Q(libelle__icontains=search)
+        )
+    
+    context = {
+        'actes': actes
+    }
+    return render(request, 'core/administration/partials/acte_table.html', context)
+
+
+@csrf_protect
+def acte_create_view(request):
+    """Vue pour créer un acte"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        if request.method == 'POST':
+            form = ActeForm(request.POST)
+            if form.is_valid():
+                acte = form.save()
+                
+                # Retourner une réponse HTMX pour fermer la modal et afficher notification
+                response = HttpResponse()
+                response.content = f'''
+                <script>
+                    window.showNotification("Acte {acte.code} créé avec succès.", "success");
+                    document.getElementById('modal-container').innerHTML = '';
+                    window.location.reload();
+                </script>
+                '''
+                return response
+            else:
+                # Formulaire invalide, renvoyer le formulaire avec erreurs
+                context = {
+                    'form': form,
+                    'today': date.today()
+                }
+                return render(request, 'core/administration/acte_form.html', context)
+        else:
+            form = ActeForm()
+        
+        context = {
+            'form': form,
+            'today': date.today()
+        }
+        return render(request, 'core/administration/acte_form.html', context)
+    
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+def acte_detail_view(request, pk):
+    """Vue pour voir les détails d'un acte"""
+    if not check_titulaire_permission(request):
+        return HttpResponse("Non autorisé", status=403)
+    
+    acte = get_object_or_404(Acte, pk=pk)
+    # Précharger les périodes tarifaires triées par date de début décroissante
+    acte.tarifs_periodes_all = acte.tarifs_periodes.all().order_by('-date_debut')
+    
+    context = {
+        'acte': acte,
+        'today': date.today()
+    }
+    return render(request, 'core/administration/acte_detail.html', context)
+
+
+def acte_update_view(request, pk):
+    """Vue pour modifier un acte"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        acte = get_object_or_404(Acte, pk=pk)
+        # Précharger les périodes tarifaires triées par date de début décroissante
+        acte.tarifs_periodes_all = acte.tarifs_periodes.all().order_by('-date_debut')
+        
+        if request.method == 'POST':
+            form = ActeForm(request.POST, instance=acte)
+            if form.is_valid():
+                acte = form.save()
+                
+                # Retourner une réponse HTMX pour fermer la modal et afficher notification
+                response = HttpResponse()
+                response.content = f'''
+                <script>
+                    window.showNotification("Acte {acte.code} modifié avec succès.", "success");
+                    document.getElementById('modal-container').innerHTML = '';
+                    window.location.reload();
+                </script>
+                '''
+                return response
+            else:
+                # Formulaire invalide, renvoyer le formulaire avec erreurs
+                context = {
+                    'form': form,
+                    'acte': acte,
+                    'today': date.today()
+                }
+                return render(request, 'core/administration/acte_form.html', context)
+        else:
+            form = ActeForm(instance=acte)
+            # S'assurer que les périodes tarifaires sont chargées pour le rendu du formulaire
+            acte.tarifs_periodes_all = acte.tarifs_periodes.all().order_by('-date_debut')
+        
+        context = {
+            'form': form,
+            'acte': acte,
+            'today': date.today()
+        }
+        return render(request, 'core/administration/acte_form.html', context)
+    
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+def acte_delete_view(request, pk):
+    """Vue pour supprimer un acte"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        if request.method == 'DELETE':
+            acte = get_object_or_404(Acte, pk=pk)
+            code = acte.code
+            acte.delete()
+            
+            # Retourner une réponse vide pour que HTMX supprime la ligne
+            response = HttpResponse()
+            response.content = f'''
+            <script>
+                window.showNotification("Acte {code} supprimé avec succès.", "success");
+            </script>
+            '''
+            return response
+        
+        return HttpResponse("Méthode non autorisée", status=405)
+    
+    except Http404:
+        return HttpResponse("Acte introuvable", status=404)
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+@require_http_methods(["POST"])
+def ajouter_tarif_periode_view(request, pk):
+    """Vue API pour ajouter une période tarifaire"""
+    if not check_titulaire_permission(request):
+        return JsonResponse({'success': False, 'error': 'Non autorisé'}, status=403)
+    
+    try:
+        acte = get_object_or_404(Acte, pk=pk)
+        data = json.loads(request.body)
+        
+        cout_xpf = data['cout_xpf']
+        date_debut = datetime.strptime(data['date_debut'], '%Y-%m-%d').date()
+        date_fin = None
+        if data.get('date_fin'):
+            date_fin = datetime.strptime(data['date_fin'], '%Y-%m-%d').date()
+        
+        # Créer la période tarifaire
+        tarif_periode = TarifPeriode(
+            acte=acte,
+            cout_xpf=cout_xpf,
+            date_debut=date_debut,
+            date_fin=date_fin
+        )
+        
+        # Valider avant de sauvegarder
+        tarif_periode.full_clean()
+        tarif_periode.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Période tarifaire ajoutée avec succès'
+        })
+        
+    except Http404:
+        return JsonResponse({'success': False, 'error': 'Acte introuvable'}, status=404)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': 'Données invalides'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@require_http_methods(["POST"])
+def modifier_tarif_periode_view(request, pk):
+    """Vue API pour modifier une période tarifaire"""
+    if not check_titulaire_permission(request):
+        return JsonResponse({'success': False, 'error': 'Non autorisé'}, status=403)
+    
+    try:
+        tarif_periode = get_object_or_404(TarifPeriode, pk=pk)
+        data = json.loads(request.body)
+        
+        # Modifier les champs fournis
+        if 'cout_xpf' in data:
+            tarif_periode.cout_xpf = data['cout_xpf']
+            
+        if 'date_debut' in data:
+            if data['date_debut']:
+                tarif_periode.date_debut = datetime.strptime(data['date_debut'], '%Y-%m-%d').date()
+            
+        if 'date_fin' in data:
+            if data['date_fin']:
+                tarif_periode.date_fin = datetime.strptime(data['date_fin'], '%Y-%m-%d').date()
+            else:
+                tarif_periode.date_fin = None
+        
+        # Valider et sauvegarder
+        tarif_periode.full_clean()
+        tarif_periode.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Période tarifaire modifiée avec succès'
+        })
+        
+    except Http404:
+        return JsonResponse({'success': False, 'error': 'Période tarifaire introuvable'}, status=404)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': 'Données invalides'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@require_http_methods(["DELETE"])
+def supprimer_tarif_periode_view(request, pk):
+    """Vue API pour supprimer une période tarifaire"""
+    if not check_titulaire_permission(request):
+        return JsonResponse({'success': False, 'error': 'Non autorisé'}, status=403)
+    
+    try:
+        tarif_periode = get_object_or_404(TarifPeriode, pk=pk)
+        tarif_periode.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Période tarifaire supprimée avec succès'
+        })
+        
+    except Http404:
+        return JsonResponse({'success': False, 'error': 'Période tarifaire introuvable'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
