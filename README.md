@@ -170,6 +170,52 @@ maieutix/
 - `POST /administration/tarifs/{id}/modifier/` - Modifier période tarifaire
 - `DELETE /administration/tarifs/{id}/supprimer/` - Supprimer période tarifaire
 
+## Sauvegarde et Restauration
+
+### Sauvegarde PostgreSQL (Recommandée)
+```bash
+# Sauvegarde complète avec horodatage
+docker-compose exec db pg_dump -U maieutix_user -d maieutix_prod > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Sauvegarde compressée (recommandée pour la production)
+docker-compose exec db pg_dump -U maieutix_user -d maieutix_prod | gzip > backup_$(date +%Y%m%d_%H%M%S).sql.gz
+
+# Sauvegarde avec structure + données séparées
+docker-compose exec db pg_dump -U maieutix_user -d maieutix_prod --schema-only > schema_backup.sql
+docker-compose exec db pg_dump -U maieutix_user -d maieutix_prod --data-only > data_backup.sql
+```
+
+### Restauration
+```bash
+# Restauration complète (base vide ou existante)
+cat backup_20250830_073317.sql | docker-compose exec -T db psql -U maieutix_user -d maieutix_prod
+
+# Alternative avec redirection
+docker-compose exec db psql -U maieutix_user -d maieutix_prod < backup_20250830_073317.sql
+
+# Restauration d'une sauvegarde compressée
+zcat backup_20250830_073317.sql.gz | docker-compose exec -T db psql -U maieutix_user -d maieutix_prod
+```
+
+### Sauvegarde Django (Fixtures)
+```bash
+# Export au format JSON (lisible)
+docker-compose exec web python manage.py dumpdata --natural-foreign --natural-primary --indent=2 > backup.json
+
+# Export par application
+docker-compose exec web python manage.py dumpdata core > core_backup.json
+docker-compose exec web python manage.py dumpdata authentication > auth_backup.json
+
+# Import des fixtures
+docker-compose exec web python manage.py loaddata backup.json
+```
+
+### Notes Importantes
+- **Utilisateurs inclus** : Les sauvegardes PostgreSQL incluent tous les comptes utilisateurs (superuser + sages-femmes)
+- **Mots de passe** : Les mots de passe sont sauvegardés de manière sécurisée (hashés)
+- **Données complètes** : Structure + données + contraintes + index
+- **Permissions** : Tous les groupes et permissions Django
+
 ## Commandes Utiles
 
 ### Docker
