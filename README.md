@@ -6,7 +6,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 241/241 tests passent (100% ✅)
+- **Tests** : 355/355 tests passent (100% ✅)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
 - **Architecture** : Modulaire et extensible
@@ -15,8 +15,8 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 ## 🔑 Identifiants de Connexion
 
 **Superutilisateur Django Admin** :
-- Email : admin@maieutix.nc
-- Mot de passe : azerty
+- Email : admin@maieutix.com
+- Mot de passe : admin123
 
 **Note** : Seules les sages-femmes avec des périodes d'activité actives peuvent se connecter au système.
 
@@ -112,7 +112,7 @@ maieutix/
 │   │   ├── sagefemme.py           # Admin SageFemme  
 │   │   ├── periode_activite.py    # Admin PeriodeActivite
 │   │   └── acte.py               # Admin Actes et Tarifs
-│   ├── tests/                     # Tests organisés (241 tests ✅)
+│   ├── tests/                     # Tests organisés (327 tests ✅)
 │   │   ├── models/                # Tests des modèles
 │   │   ├── views/                 # Tests des vues
 │   │   ├── admin/                 # Tests de l'interface admin
@@ -126,7 +126,7 @@ maieutix/
 ├── authentication/                # Application d'authentification
 │   ├── models.py                  # SageFemmeUser (modèle personnalisé)
 │   ├── views.py                   # Vues de connexion/déconnexion
-│   └── tests.py                   # Tests d'authentification (42 tests ✅)
+│   └── tests.py                   # Tests d'authentification (28 tests ✅)
 ├── context/                       # Documentation projet
 │   ├── design-principles.md       # Principes de design
 │   └── style-guide.md             # Guide de style
@@ -223,7 +223,7 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **241 tests** tous passent
+- **355 tests** tous passent
 - **Tests unitaires** : Modèles, vues, admin
 - **Tests d'intégration** : Templates, navigation, API
 - **Tests fonctionnels** : Authentification, permissions
@@ -232,10 +232,11 @@ environment:
 ### Organisation des Tests
 ```
 core/tests/
-├── models/                    # Tests des modèles (85 tests)
-├── views/                     # Tests des vues (73 tests)  
-├── admin/                     # Tests de l'admin (41 tests)
-└── integration/              # Tests d'intégration (42 tests)
+├── models/                    # Tests des modèles (120+ tests)
+├── views/                     # Tests des vues (130+ tests)  
+├── admin/                     # Tests de l'admin (50+ tests)
+└── integration/              # Tests d'intégration (27+ tests)
+authentication/tests.py        # Tests d'authentification (28 tests)
 ```
 
 Pour plus de détails, voir `tests_readme.md`.

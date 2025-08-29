@@ -4,6 +4,7 @@ Tests complets pour le modèle PeriodeActivite.
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.utils import timezone
 from datetime import date, timedelta
 from core.models.sagefemme import SageFemme
 from core.models.periode_activite import PeriodeActivite
@@ -27,7 +28,7 @@ class PeriodeActiviteModelTest(TestCase):
             situation='titulaire'
         )
         
-        self.today = date.today()
+        self.today = timezone.now().date()
         self.periode_data = {
             'sage_femme': self.sage_femme,
             'date_debut': self.today,
@@ -139,7 +140,7 @@ class PeriodeActivitePropertyTest(TestCase):
             banque='BCI',
             situation='titulaire'
         )
-        self.today = date.today()
+        self.today = timezone.now().date()
 
     def test_est_active_periode_en_cours(self):
         """Test qu'une période sans date de fin commencée est active"""
@@ -205,7 +206,7 @@ class PeriodeActivitePropertyTest(TestCase):
             date_debut=debut
         )
         
-        expected_duree = (self.today - debut).days
+        expected_duree = (self.today - debut).days + 1  # Calcul inclusif
         self.assertEqual(periode.duree_jours, expected_duree)
 
     def test_duree_jours_periode_terminee(self):
@@ -218,7 +219,7 @@ class PeriodeActivitePropertyTest(TestCase):
             date_fin=fin
         )
         
-        expected_duree = (fin - debut).days
+        expected_duree = (fin - debut).days + 1  # Calcul inclusif
         self.assertEqual(periode.duree_jours, expected_duree)
 
     def test_statut_display_periode_active_sans_fin(self):
@@ -281,7 +282,7 @@ class PeriodeActiviteValidationTest(TestCase):
             banque='BCI',
             situation='titulaire'
         )
-        self.today = date.today()
+        self.today = timezone.now().date()
 
     def test_validation_date_fin_avant_debut(self):
         """Test que la date de fin ne peut pas être avant le début"""
@@ -407,7 +408,7 @@ class PeriodeActiviteRelationTest(TestCase):
             banque='BCI',
             situation='titulaire'
         )
-        self.today = date.today()
+        self.today = timezone.now().date()
 
     def test_relation_sage_femme(self):
         """Test de la relation avec SageFemme"""

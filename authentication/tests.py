@@ -488,13 +488,15 @@ class AuthenticationIntegrationTest(TestCase):
     
     def test_period_change_updates_access(self):
         """Test que les changements de périodes mettent à jour l'accès"""
+        from django.utils import timezone
+        
         # Initialement inactive
         self.assertFalse(self.collaborateur_user.is_active)
         
         # Ajouter une période active
         PeriodeActivite.objects.create(
             sage_femme=self.collaborateur_sagefemme,
-            date_debut=date.today(),
+            date_debut=timezone.now().date(),
             commentaire="Nouvelle période active"
         )
         

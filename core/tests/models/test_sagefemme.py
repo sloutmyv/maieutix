@@ -4,6 +4,7 @@ Tests pour le modèle SageFemme.
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.utils import timezone
 from core.models.sagefemme import SageFemme
 
 
@@ -380,7 +381,7 @@ class SageFemmeActiviteTest(TestCase):
             situation='titulaire'
         )
         
-        self.today = date.today()
+        self.today = timezone.now().date()
         self.PeriodeActivite = PeriodeActivite
     
     def test_est_actuellement_active_sans_periode(self):

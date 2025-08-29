@@ -4,7 +4,7 @@ Tests pour les conditions de visibilité et permissions selon les profils utilis
 
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth import get_user_model
+from django.utils import timezone
 from datetime import date, timedelta
 
 from authentication.models import SageFemmeUser
@@ -397,7 +397,7 @@ class PeriodBasedAccessTest(TestCase):
         # Ajouter une période active à l'utilisateur inactif
         PeriodeActivite.objects.create(
             sage_femme=self.inactive_sagefemme,
-            date_debut=date.today(),
+            date_debut=timezone.now().date(),
             commentaire="Nouvelle période active"
         )
         

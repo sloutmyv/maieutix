@@ -153,13 +153,13 @@ class PeriodeActivite(models.Model):
     @property
     def duree_jours(self):
         """
-        Calcule la durée de la période en jours
+        Calcule la durée de la période en jours (calcul inclusif)
         """
         if not self.date_fin:
-            # Période en cours, calculer depuis le début jusqu'à aujourd'hui
-            return (timezone.now().date() - self.date_debut).days
+            # Période en cours, calculer depuis le début jusqu'à aujourd'hui (inclus)
+            return (timezone.now().date() - self.date_debut).days + 1
         
-        return (self.date_fin - self.date_debut).days
+        return (self.date_fin - self.date_debut).days + 1
     
     @property
     def statut_display(self):

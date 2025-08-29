@@ -3,6 +3,7 @@ Tests pour les APIs de gestion des périodes d'activité.
 """
 from django.test import TestCase, Client
 from django.urls import reverse
+from django.utils import timezone
 from authentication.models import SageFemmeUser
 import json
 from datetime import date, timedelta
@@ -37,7 +38,7 @@ class BasePeriodeAPITest(TestCase):
             situation='titulaire'
         )
         
-        self.today = date.today()
+        self.today = timezone.now().date()
         
         # Headers pour les requêtes JSON
         self.json_headers = {
