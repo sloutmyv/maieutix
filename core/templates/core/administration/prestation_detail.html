@@ -1,0 +1,154 @@
+<!-- Modal pour visualiser les détails d'une prestation -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+     onclick="closeModal()">
+    
+    <div class="bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-[85vh] overflow-y-auto" 
+         onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-3 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-900">
+                Détails de la prestation
+            </h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                
+                <!-- Cadre d'exercice -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Cadre d'exercice</label>
+                    <p class="text-sm text-gray-900 font-bold">{{ prestation.cadre_exercice.label }}</p>
+                    {% if prestation.cadre_exercice.description %}
+                        <p class="text-xs text-gray-500 mt-1">{{ prestation.cadre_exercice.description }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Acte associé -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Acte associé</label>
+                    <p class="text-sm font-bold text-gray-900">{{ prestation.acte.code }}</p>
+                    <p class="text-xs text-gray-500">{{ prestation.acte.libelle }}</p>
+                </div>
+
+                <!-- Désignation -->
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Désignation</label>
+                    <p class="text-sm text-gray-900 font-bold">{{ prestation.designation }}</p>
+                </div>
+
+                <!-- Séparateur discret -->
+                <div class="md:col-span-2">
+                    <hr class="border-gray-200 my-2">
+                </div>
+
+                <!-- Cotation -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Cotation</label>
+                    <p class="text-sm text-gray-900">
+                        <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                            {{ prestation.cotation }} points
+                        </span>
+                    </p>
+                </div>
+
+                <!-- Tarif calculé -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Tarif calculé</label>
+                    <p class="text-sm text-gray-900">
+                        {% if prestation.tarif %}
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                {{ prestation.tarif_display }}
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+                                Non calculable
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Limite -->
+                {% if prestation.limite %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Limite(s)</label>
+                    <p class="text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 p-2 rounded">
+                        {% load custom_filters %}
+                        {{ prestation.limite|replace_periods_with_breaks|safe }}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Entente préalable -->
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Entente préalable</label>
+                    <p class="text-sm text-gray-900">{{ prestation.entente_prealable }}</p>
+                </div>
+
+                <!-- Assurances -->
+                {% if prestation.assurance_maladie %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Assurance maladie</label>
+                    <p class="text-sm text-gray-900">{{ prestation.assurance_maladie }}</p>
+                </div>
+                {% endif %}
+
+                {% if prestation.assurance_maternite_normale %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Assurance maternité normale</label>
+                    <p class="text-sm text-gray-900">{{ prestation.assurance_maternite_normale }}</p>
+                </div>
+                {% endif %}
+
+                {% if prestation.assurance_maternite_pathologie %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Assurance maternité pathologie</label>
+                    <p class="text-sm text-gray-900">{{ prestation.assurance_maternite_pathologie }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Observation -->
+                {% if prestation.observation %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Observations</label>
+                    <p class="text-sm text-gray-900">{{ prestation.observation }}</p>
+                </div>
+                {% endif %}
+
+
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-2 mt-4 pt-3 border-t border-gray-200">
+                <button 
+                    hx-get="{% url 'administration:prestation_update' prestation.pk %}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    style="background-color: #2D4B73; color: white;"
+                    class="px-3 py-1.5 text-xs font-medium border border-transparent rounded hover:opacity-90 focus:outline-none focus:ring-1 transition-all">
+                    Modifier
+                </button>
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+</script>

@@ -23,7 +23,14 @@ from core.views.administration import (
     acte_delete_view,
     ajouter_tarif_periode_view,
     modifier_tarif_periode_view,
-    supprimer_tarif_periode_view
+    supprimer_tarif_periode_view,
+    # Vues pour les prestations
+    administration_prestations_view,
+    prestation_list_view,
+    prestation_create_view,
+    prestation_detail_view,
+    prestation_update_view,
+    prestation_delete_view
 )
 
 app_name = 'administration'
@@ -60,4 +67,14 @@ urlpatterns = [
     path('actes/<int:pk>/ajouter-tarif/', ajouter_tarif_periode_view, name='ajouter_tarif'),
     path('tarifs/<int:pk>/modifier/', modifier_tarif_periode_view, name='modifier_tarif'),
     path('tarifs/<int:pk>/supprimer/', supprimer_tarif_periode_view, name='supprimer_tarif'),
+    
+    # Vue principale des prestations
+    path('prestations/', administration_prestations_view, name='administration_prestations'),
+    
+    # API HTMX pour les prestations
+    path('api/prestations/', prestation_list_view, name='prestation_list'),
+    path('api/prestations/create/', prestation_create_view, name='prestation_create'),
+    path('api/prestations/<int:pk>/', prestation_detail_view, name='prestation_detail'),
+    path('api/prestations/<int:pk>/update/', prestation_update_view, name='prestation_update'),
+    path('api/prestations/<int:pk>/delete/', prestation_delete_view, name='prestation_delete'),
 ]

@@ -17,6 +17,8 @@ from datetime import date, datetime
 from core.models.sagefemme import SageFemme
 from core.models.periode_activite import PeriodeActivite
 from core.models.acte import Acte, TarifPeriode
+from core.models.cadre_exercice import CadreExercice
+from core.models.prestation import Prestation
 
 
 class SageFemmeForm(ModelForm):
@@ -497,7 +499,7 @@ class ActeForm(ModelForm):
             }),
             'libelle': forms.Textarea(attrs={
                 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
-                'rows': 3,
+                'rows': 2,
                 'placeholder': 'Description complète de l\'acte...'
             })
         }
@@ -816,4 +818,259 @@ def supprimer_tarif_periode_view(request, pk):
         return JsonResponse({'success': False, 'error': 'Période tarifaire introuvable'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+
+# ============================================================================
+# VUES POUR LA GESTION DES PRESTATIONS
+# ============================================================================
+
+class PrestationForm(ModelForm):
+    """Formulaire pour les prestations"""
+    
+    class Meta:
+        model = Prestation
+        fields = [
+            'cadre_exercice', 'designation', 'limite', 'acte', 'cotation',
+            'entente_prealable', 'assurance_maladie', 'assurance_maternite_normale',
+            'assurance_maternite_pathologie', 'observation'
+        ]
+        widgets = {
+            'cadre_exercice': forms.Select(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+            }),
+            'designation': forms.Textarea(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'rows': 2,
+                'placeholder': 'Description de la prestation...'
+            }),
+            'limite': forms.Textarea(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'rows': 3,
+                'placeholder': 'Limites ou contraintes (optionnel)...'
+            }),
+            'acte': forms.Select(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+            }),
+            'cotation': forms.NumberInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'step': '0.01',
+                'placeholder': 'Ex: 25.50'
+            }),
+            'entente_prealable': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Conditions d\'entente préalable...'
+            }),
+            'assurance_maladie': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Informations assurance maladie (optionnel)...'
+            }),
+            'assurance_maternite_normale': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Informations maternité normale (optionnel)...'
+            }),
+            'assurance_maternite_pathologie': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Informations maternité pathologie (optionnel)...'
+            }),
+            'observation': forms.Textarea(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'rows': 3,
+                'placeholder': 'Observations particulières (optionnel)...'
+            })
+        }
+
+    def clean_cotation(self):
+        """Valide que la cotation est positive"""
+        cotation = self.cleaned_data.get('cotation')
+        if cotation and cotation <= 0:
+            raise forms.ValidationError("La cotation doit être un nombre positif.")
+        return cotation
+
+
+@login_required
+def administration_prestations_view(request):
+    """
+    Vue pour la gestion des prestations
+    """
+    if not check_titulaire_permission(request):
+        messages.error(request, "Accès non autorisé. Seuls les titulaires peuvent accéder à cette section.")
+        return redirect('home')
+    
+    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').all().order_by('cadre_exercice__label', 'designation')
+    cadres_exercice = CadreExercice.objects.all().order_by('label')
+    actes = Acte.objects.all().order_by('code')
+    
+    context = {
+        'page_title': 'Administration - Prestations',
+        'section': 'administration',
+        'prestations': prestations,
+        'cadres_exercice': cadres_exercice,
+        'actes': actes
+    }
+    return render(request, 'core/administration/prestations.html', context)
+
+
+def prestation_list_view(request):
+    """Vue HTMX pour la liste filtrée des prestations"""
+    if not check_titulaire_permission(request):
+        return HttpResponse("Non autorisé", status=403)
+    
+    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').all().order_by('cadre_exercice__label', 'designation')
+    
+    # Filtres
+    search = request.GET.get('search', '').strip()
+    cadre_exercice = request.GET.get('cadre_exercice', '').strip()
+    acte_filter = request.GET.get('acte', '').strip()
+    
+    if search:
+        prestations = prestations.filter(
+            Q(designation__icontains=search) |
+            Q(limite__icontains=search) |
+            Q(cadre_exercice__label__icontains=search) |
+            Q(acte__code__icontains=search) |
+            Q(acte__libelle__icontains=search)
+        )
+    
+    if cadre_exercice:
+        prestations = prestations.filter(cadre_exercice_id=cadre_exercice)
+        
+    if acte_filter:
+        prestations = prestations.filter(acte_id=acte_filter)
+    
+    context = {
+        'prestations': prestations
+    }
+    return render(request, 'core/administration/partials/prestation_table.html', context)
+
+
+@csrf_protect
+def prestation_create_view(request):
+    """Vue pour créer une prestation"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        if request.method == 'POST':
+            form = PrestationForm(request.POST)
+            if form.is_valid():
+                prestation = form.save()
+                
+                # Retourner une réponse HTMX pour fermer la modal et afficher notification
+                response = HttpResponse()
+                response.content = f'''
+                <script>
+                    window.showNotification("Prestation créée avec succès.", "success");
+                    document.getElementById('modal-container').innerHTML = '';
+                    window.location.reload();
+                </script>
+                '''
+                return response
+            else:
+                # Formulaire invalide, renvoyer le formulaire avec erreurs
+                context = {
+                    'form': form,
+                    'today': date.today()
+                }
+                return render(request, 'core/administration/prestation_form.html', context)
+        else:
+            form = PrestationForm()
+        
+        context = {
+            'form': form,
+            'today': date.today()
+        }
+        return render(request, 'core/administration/prestation_form.html', context)
+    
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+def prestation_detail_view(request, pk):
+    """Vue pour voir les détails d'une prestation"""
+    if not check_titulaire_permission(request):
+        return HttpResponse("Non autorisé", status=403)
+    
+    prestation = get_object_or_404(
+        Prestation.objects.select_related('cadre_exercice', 'acte'), 
+        pk=pk
+    )
+    
+    context = {
+        'prestation': prestation,
+        'today': date.today()
+    }
+    return render(request, 'core/administration/prestation_detail.html', context)
+
+
+def prestation_update_view(request, pk):
+    """Vue pour modifier une prestation"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        prestation = get_object_or_404(Prestation, pk=pk)
+        
+        if request.method == 'POST':
+            form = PrestationForm(request.POST, instance=prestation)
+            if form.is_valid():
+                prestation = form.save()
+                
+                # Retourner une réponse HTMX pour fermer la modal et afficher notification
+                response = HttpResponse()
+                response.content = f'''
+                <script>
+                    window.showNotification("Prestation modifiée avec succès.", "success");
+                    document.getElementById('modal-container').innerHTML = '';
+                    window.location.reload();
+                </script>
+                '''
+                return response
+            else:
+                # Formulaire invalide, renvoyer le formulaire avec erreurs
+                context = {
+                    'form': form,
+                    'prestation': prestation,
+                    'today': date.today()
+                }
+                return render(request, 'core/administration/prestation_form.html', context)
+        else:
+            form = PrestationForm(instance=prestation)
+        
+        context = {
+            'form': form,
+            'prestation': prestation,
+            'today': date.today()
+        }
+        return render(request, 'core/administration/prestation_form.html', context)
+    
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+def prestation_delete_view(request, pk):
+    """Vue pour supprimer une prestation"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        if request.method == 'DELETE':
+            prestation = get_object_or_404(Prestation, pk=pk)
+            designation_courte = prestation.designation[:50] + "..." if len(prestation.designation) > 50 else prestation.designation
+            prestation.delete()
+            
+            # Retourner une réponse vide pour que HTMX supprime la ligne
+            response = HttpResponse()
+            response.content = f'''
+            <script>
+                window.showNotification("Prestation supprimée avec succès.", "success");
+            </script>
+            '''
+            return response
+        
+        return HttpResponse("Méthode non autorisée", status=405)
+    
+    except Http404:
+        return HttpResponse("Prestation introuvable", status=404)
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
 

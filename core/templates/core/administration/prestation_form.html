@@ -1,0 +1,207 @@
+<!-- Modal pour création/modification d'une prestation -->
+<div id="prestation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+     onclick="closeModal()">
+    
+    <div class="bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-[85vh] overflow-y-auto" 
+         onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-3 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-900">
+                {% if prestation %}
+                    Modifier la prestation
+                {% else %}
+                    Ajouter une prestation
+                {% endif %}
+            </h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form 
+            {% if prestation %}
+                hx-post="{% url 'administration:prestation_update' prestation.pk %}"
+            {% else %}
+                hx-post="{% url 'administration:prestation_create' %}"
+            {% endif %}
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            class="p-3"
+        >
+            {% csrf_token %}
+            
+            <!-- Messages d'erreur généraux -->
+            {% if form.non_field_errors %}
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    {% for error in form.non_field_errors %}
+                        <p class="text-red-600 text-sm">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                
+                <!-- Cadre d'exercice -->
+                <div>
+                    <label for="{{ form.cadre_exercice.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.cadre_exercice.label }}
+                        {% if form.cadre_exercice.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.cadre_exercice }}
+                    {% if form.cadre_exercice.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.cadre_exercice.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Acte associé -->
+                <div>
+                    <label for="{{ form.acte.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.acte.label }}
+                        {% if form.acte.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.acte }}
+                    {% if form.acte.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.acte.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Désignation -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.designation.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.designation.label }}
+                        {% if form.designation.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.designation }}
+                    {% if form.designation.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.designation.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Séparateur discret -->
+                <div class="md:col-span-2">
+                    <hr class="border-gray-200 my-2">
+                </div>
+
+                <!-- Cotation -->
+                <div>
+                    <label for="{{ form.cotation.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.cotation.label }}
+                        {% if form.cotation.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.cotation }}
+                    {% if form.cotation.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.cotation.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Limite(s) -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.limite.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        Limite(s)
+                    </label>
+                    {{ form.limite }}
+                    {% if form.limite.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.limite.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Entente préalable -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.entente_prealable.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.entente_prealable.label }}
+                        {% if form.entente_prealable.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.entente_prealable }}
+                    {% if form.entente_prealable.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.entente_prealable.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Assurance maladie -->
+                {% if form.assurance_maladie.value or not prestation %}
+                <div class="md:col-span-2">
+                    <label for="{{ form.assurance_maladie.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.assurance_maladie.label }}
+                    </label>
+                    {{ form.assurance_maladie }}
+                    {% if form.assurance_maladie.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.assurance_maladie.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Assurance maternité normale -->
+                {% if form.assurance_maternite_normale.value or not prestation %}
+                <div class="md:col-span-2">
+                    <label for="{{ form.assurance_maternite_normale.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.assurance_maternite_normale.label }}
+                    </label>
+                    {{ form.assurance_maternite_normale }}
+                    {% if form.assurance_maternite_normale.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.assurance_maternite_normale.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Assurance maternité pathologie -->
+                {% if form.assurance_maternite_pathologie.value or not prestation %}
+                <div class="md:col-span-2">
+                    <label for="{{ form.assurance_maternite_pathologie.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.assurance_maternite_pathologie.label }}
+                    </label>
+                    {{ form.assurance_maternite_pathologie }}
+                    {% if form.assurance_maternite_pathologie.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.assurance_maternite_pathologie.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Observation -->
+                {% if form.observation.value or not prestation %}
+                <div class="md:col-span-2">
+                    <label for="{{ form.observation.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.observation.label }}
+                    </label>
+                    {{ form.observation }}
+                    {% if form.observation.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.observation.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-2 mt-4 pt-3 border-t border-gray-200">
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        style="background-color: #2D4B73;"
+                        class="px-3 py-1.5 text-xs font-medium text-white border border-transparent rounded hover:opacity-90 focus:outline-none focus:ring-1 transition-all">
+                    {% if prestation %}
+                        Modifier
+                    {% else %}
+                        Ajouter
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Fonction pour fermer le modal
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+</script>

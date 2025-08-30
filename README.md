@@ -41,9 +41,16 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ### 🩺 Gestion des Actes Médicaux
 - **Nomenclature complète** : Code et libellé des actes
-- **Conventions tarifaires** : Gestion des tarifs par périodes
+- **Conventions tarifaires** : Gestion des tarifs par périodes avec interface minimaliste
 - **Historique tarifaire** : Évolution des coûts dans le temps
-- **Interface dédiée** : CRUD complet avec modales HTMX
+- **Interface dédiée** : CRUD complet avec modales HTMX compactes
+
+### 📋 Gestion des Prestations
+- **Prestations par cadre d'exercice** : Organisation structurée des prestations
+- **Calculs automatiques** : Tarifs calculés automatiquement (cotation × coût conventionnel)
+- **Interface moderne** : Formulaires et vues de détail avec design cohérent
+- **Recherche globale** : Recherche unique sur actes, cadres d'exercice et désignations
+- **Filtres personnalisés** : Formatage automatique des textes de limites
 
 ### 📋 Gestion des Cadres d'Exercice
 - **Configuration flexible** : Définition des différents cadres d'exercice
@@ -63,9 +70,10 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **DEBUG=False** par défaut (configuration production)
 
 ### Frontend
-- **Tailwind CSS** - Framework CSS utility-first
+- **Tailwind CSS** - Framework CSS utility-first avec design minimaliste
 - **HTMX** - Interactions AJAX modernes via attributs HTML
 - **Alpine.js** - Réactivité côté client légère
+- **Filtres Django personnalisés** - Formatage automatique de texte
 
 ### Infrastructure
 - **Docker Compose** avec 3 services : Django + PostgreSQL + Nginx
@@ -109,6 +117,7 @@ maieutix/
 │   │   ├── sagefemme.py           # Gestion des sages-femmes
 │   │   ├── periode_activite.py    # Gestion des périodes d'activité
 │   │   ├── acte.py               # Gestion des actes et tarifs
+│   │   ├── prestation.py          # Gestion des prestations
 │   │   └── cadre_exercice.py     # Gestion des cadres d'exercice
 │   ├── views/                     # Vues organisées par domaine
 │   │   ├── administration.py      # Interface d'administration
@@ -118,6 +127,7 @@ maieutix/
 │   │   ├── sagefemme.py           # Admin SageFemme  
 │   │   ├── periode_activite.py    # Admin PeriodeActivite
 │   │   ├── acte.py               # Admin Actes et Tarifs
+│   │   ├── prestation.py          # Admin Prestations
 │   │   └── cadre_exercice.py     # Admin Cadres d'exercice
 │   ├── tests/                     # Tests organisés (327 tests ✅)
 │   │   ├── models/                # Tests des modèles
@@ -146,6 +156,7 @@ maieutix/
 - **/** - Page d'accueil avec navigation
 - **/administration/sages-femmes/** - Interface de gestion des sages-femmes
 - **/administration/actes/** - Interface de gestion des actes médicaux
+- **/administration/prestations/** - Interface de gestion des prestations
 - **/auth/connexion/** - Page de connexion
 - **/auth/deconnexion/** - Déconnexion
 - **/admin/** - Interface Django Admin
@@ -171,6 +182,13 @@ maieutix/
 - `GET /administration/acte/{id}/update/` - Formulaire modification  
 - `GET /administration/acte/{id}/detail/` - Vue détaillée
 - `DELETE /administration/acte/{id}/delete/` - Suppression
+
+### CRUD Prestations (HTMX)
+- `GET /administration/prestations/list/` - Liste avec recherche globale
+- `GET /administration/prestation/create/` - Formulaire création
+- `GET /administration/prestation/{id}/update/` - Formulaire modification
+- `GET /administration/prestation/{id}/detail/` - Vue détaillée
+- `DELETE /administration/prestation/{id}/delete/` - Suppression
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire
