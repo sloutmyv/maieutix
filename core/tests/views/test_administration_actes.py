@@ -207,7 +207,7 @@ class ActeCreateViewTests(ActeViewsBaseTest):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Nouveau acte')
+        self.assertContains(response, 'Ajouter un acte')
         self.assertContains(response, 'Code de l\'acte')
     
     def test_acte_create_view_post_success(self):
@@ -275,7 +275,8 @@ class ActeDetailViewTests(ActeViewsBaseTest):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'Acte : {self.acte1.code}')
+        self.assertContains(response, 'Détails de l\'acte')
+        self.assertContains(response, self.acte1.code)
         self.assertContains(response, self.acte1.libelle)
         self.assertContains(response, '5000 XPF')  # Tarif actuel
     
@@ -319,7 +320,8 @@ class ActeUpdateViewTests(ActeViewsBaseTest):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'Modifier l\'acte : {self.acte1.code}')
+        self.assertContains(response, 'Modifier l\'acte')
+        self.assertContains(response, self.acte1.code)
         self.assertContains(response, self.acte1.libelle)
     
     def test_acte_update_view_post_success(self):

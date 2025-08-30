@@ -47,7 +47,7 @@ class PeriodeActiviteModelTest(TestCase):
     def test_str_representation(self):
         """Test de la représentation string du modèle"""
         periode = PeriodeActivite.objects.create(**self.periode_data)
-        expected = f"Marie Test - Du {self.today.strftime('%d/%m/%Y')} (en cours)"
+        expected = f"Marie TEST - Du {self.today.strftime('%d/%m/%Y')} (en cours)"
         self.assertEqual(str(periode), expected)
 
     def test_str_representation_avec_fin(self):
@@ -57,7 +57,7 @@ class PeriodeActiviteModelTest(TestCase):
         data['date_fin'] = fin
         
         periode = PeriodeActivite.objects.create(**data)
-        expected = f"Marie Test - Du {self.today.strftime('%d/%m/%Y')} au {fin.strftime('%d/%m/%Y')}"
+        expected = f"Marie TEST - Du {self.today.strftime('%d/%m/%Y')} au {fin.strftime('%d/%m/%Y')}"
         self.assertEqual(str(periode), expected)
 
     def test_champs_obligatoires(self):

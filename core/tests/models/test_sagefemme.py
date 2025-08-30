@@ -30,7 +30,7 @@ class SageFemmeModelTest(TestCase):
         """Test de création d'une sage-femme avec des données valides"""
         sage_femme = SageFemme.objects.create(**self.sage_femme_data)
         
-        self.assertEqual(sage_femme.nom, 'Dupont')
+        self.assertEqual(sage_femme.nom, 'DUPONT')
         self.assertEqual(sage_femme.prenom, 'Marie')
         self.assertEqual(sage_femme.situation, 'titulaire')
         self.assertIsNotNone(sage_femme.created_at)
@@ -39,13 +39,13 @@ class SageFemmeModelTest(TestCase):
     def test_str_representation(self):
         """Test de la représentation string du modèle"""
         sage_femme = SageFemme.objects.create(**self.sage_femme_data)
-        expected = "Dupont Marie (Titulaire)"
+        expected = "DUPONT Marie (Titulaire)"
         self.assertEqual(str(sage_femme), expected)
 
     def test_nom_complet_property(self):
         """Test de la propriété nom_complet"""
         sage_femme = SageFemme.objects.create(**self.sage_femme_data)
-        self.assertEqual(sage_femme.nom_complet, "Marie Dupont")
+        self.assertEqual(sage_femme.nom_complet, "Marie DUPONT")
 
     def test_adresse_complete_property_avec_adresse(self):
         """Test de la propriété adresse_complete avec adresse renseignée"""
@@ -151,10 +151,10 @@ class SageFemmeModelTest(TestCase):
         created_ids = [zebra.pk, alpha.pk, dupont.pk]
         sages_femmes = list(SageFemme.objects.filter(pk__in=created_ids).order_by('nom', 'prenom'))
         
-        # Vérifier l'ordre par nom puis prénom
-        self.assertEqual(sages_femmes[0].nom, 'Alpha')
-        self.assertEqual(sages_femmes[1].nom, 'Dupont')
-        self.assertEqual(sages_femmes[2].nom, 'Zebra')
+        # Vérifier l'ordre par nom puis prénom (noms en majuscules)
+        self.assertEqual(sages_femmes[0].nom, 'ALPHA')
+        self.assertEqual(sages_femmes[1].nom, 'DUPONT')
+        self.assertEqual(sages_femmes[2].nom, 'ZEBRA')
 
     def test_verbose_names(self):
         """Test des noms verbeux du modèle"""

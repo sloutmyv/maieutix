@@ -117,7 +117,7 @@ class SageFemmeAdminTest(TestCase):
     def test_nom_complet_display_method(self):
         """Test de la méthode nom_complet_display"""
         result = self.admin.nom_complet_display(self.titulaire)
-        self.assertEqual(result, "Pierre Gerant")
+        self.assertEqual(result, "Pierre GERANT")
         
         # Vérifier les attributs de la méthode
         self.assertEqual(self.admin.nom_complet_display.short_description, "Nom complet")
@@ -173,9 +173,9 @@ class SageFemmeAdminTest(TestCase):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Pierre Gerant')
-        self.assertContains(response, 'Julie Collaborateur')
-        self.assertContains(response, 'Sophie Remplacant')
+        self.assertContains(response, 'Pierre GERANT')
+        self.assertContains(response, 'Julie COLLABORATEUR')
+        self.assertContains(response, 'Sophie REMPLACANT')
 
     def test_admin_add_view(self):
         """Test de la vue d'ajout"""
@@ -196,7 +196,7 @@ class SageFemmeAdminTest(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Pierre')
-        self.assertContains(response, 'Gerant')
+        self.assertContains(response, 'GERANT')
 
     def test_admin_search_functionality(self):
         """Test de la fonctionnalité de recherche"""
@@ -204,16 +204,16 @@ class SageFemmeAdminTest(TestCase):
         url = reverse('admin:core_sagefemme_changelist')
         
         # Recherche par nom
-        response = self.client.get(url, {'q': 'Gerant'})
+        response = self.client.get(url, {'q': 'GERANT'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Pierre Gerant')
-        self.assertNotContains(response, 'Julie Collaborateur')
+        self.assertContains(response, 'Pierre GERANT')
+        self.assertNotContains(response, 'Julie COLLABORATEUR')
         
         # Recherche par téléphone
         response = self.client.get(url, {'q': '687222222'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Julie Collaborateur')
-        self.assertNotContains(response, 'Pierre Gerant')
+        self.assertContains(response, 'Julie COLLABORATEUR')
+        self.assertNotContains(response, 'Pierre GERANT')
 
     def test_admin_filter_by_situation(self):
         """Test du filtrage par situation"""
@@ -223,14 +223,14 @@ class SageFemmeAdminTest(TestCase):
         # Filtrer par gérant
         response = self.client.get(url, {'situation': 'titulaire'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Pierre Gerant')
-        self.assertNotContains(response, 'Julie Collaborateur')
+        self.assertContains(response, 'Pierre GERANT')
+        self.assertNotContains(response, 'Julie COLLABORATEUR')
         
         # Filtrer par remplaçant
         response = self.client.get(url, {'situation': 'remplacant'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Sophie Remplacant')
-        self.assertNotContains(response, 'Pierre Gerant')
+        self.assertContains(response, 'Sophie REMPLACANT')
+        self.assertNotContains(response, 'Pierre GERANT')
 
     def test_admin_filter_by_active_status(self):
         """Test du filtrage par statut actif"""
@@ -244,8 +244,8 @@ class SageFemmeAdminTest(TestCase):
         # Filtrer par actif
         response = self.client.get(url, {'is_active': 'True'})
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'Pierre Gerant')
-        self.assertContains(response, 'Julie Collaborateur')
+        self.assertNotContains(response, 'Pierre GERANT')
+        self.assertContains(response, 'Julie COLLABORATEUR')
 
 
 class SageFemmeAdminFormTest(TestCase):

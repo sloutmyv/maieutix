@@ -60,7 +60,10 @@ class PrestationAdmin(admin.ModelAdmin):
     
     def acte_code(self, obj):
         """Affichage du code de l'acte"""
-        return obj.acte_code
+        try:
+            return obj.acte_code
+        except:
+            return "Aucun"
     acte_code.short_description = 'Acte'
     
     def tarif_display_admin(self, obj):

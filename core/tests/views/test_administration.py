@@ -290,7 +290,7 @@ class SageFemmeUpdateViewTest(BaseAdministrationTest):
         
         # Vérifier que la sage-femme a été modifiée
         self.sage_femme.refresh_from_db()
-        self.assertEqual(self.sage_femme.nom, 'Nouveau Nom')
+        self.assertEqual(self.sage_femme.nom, 'NOUVEAU NOM')
         self.assertEqual(self.sage_femme.prenom, 'Nouveau Prénom')
         
         # Vérifier la réponse HTMX

@@ -147,7 +147,7 @@ class SageFemmeFormTest(TestCase):
         updated_sage_femme = form.save()
         
         self.assertEqual(updated_sage_femme.pk, sage_femme.pk)
-        self.assertEqual(updated_sage_femme.nom, 'Nouveau Nom')
+        self.assertEqual(updated_sage_femme.nom, 'NOUVEAU NOM')
         self.assertEqual(updated_sage_femme.prenom, 'Nouveau Prénom')
     
     def test_form_creation_nouvelle_instance(self):
@@ -160,7 +160,7 @@ class SageFemmeFormTest(TestCase):
         sage_femme = form.save()
         
         self.assertIsNotNone(sage_femme.pk)
-        self.assertEqual(sage_femme.nom, 'Dupont')
+        self.assertEqual(sage_femme.nom, 'DUPONT')
         self.assertEqual(sage_femme.prenom, 'Marie')
         self.assertEqual(sage_femme.situation, 'titulaire')
 

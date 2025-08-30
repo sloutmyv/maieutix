@@ -932,10 +932,18 @@ def prestation_list_view(request):
         )
     
     if cadre_exercice:
-        prestations = prestations.filter(cadre_exercice_id=cadre_exercice)
+        try:
+            cadre_exercice = int(cadre_exercice)
+            prestations = prestations.filter(cadre_exercice_id=cadre_exercice)
+        except (ValueError, TypeError):
+            pass  # Ignorer les valeurs non numériques
         
     if acte_filter:
-        prestations = prestations.filter(acte_id=acte_filter)
+        try:
+            acte_filter = int(acte_filter)
+            prestations = prestations.filter(acte_id=acte_filter)
+        except (ValueError, TypeError):
+            pass  # Ignorer les valeurs non numériques
     
     context = {
         'prestations': prestations

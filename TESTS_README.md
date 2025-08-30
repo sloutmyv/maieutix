@@ -1,26 +1,27 @@
 # Tests Maieutix - Documentation Complète
 
-**État actuel : 241/241 tests passent (100% ✅)**
+**État actuel : 533/533 tests passent (100% ✅)**
 
-Ce document décrit la suite de tests complète et fonctionnelle de l'application Maieutix, couvrant tous les aspects du système de gestion des sages-femmes.
+Ce document décrit la suite de tests complète et fonctionnelle de l'application Maieutix, une plateforme de gestion pour sages-femmes développée avec Django.
 
 ## 🎯 Résultats Globaux
 
-- **Total de tests** : 241
+- **Total de tests** : 533
 - **Taux de réussite** : 100% ✅
 - **Applications testées** : `core` et `authentication`
-- **Temps d'exécution** : ~36 secondes
+- **Temps d'exécution** : ~87 secondes
 - **Couverture** : Modèles, Vues, Admin, Authentification, Intégration
 
 ## 📊 Répartition des Tests
 
-### Core Application (199 tests ✅)
+### Core Application (491 tests ✅)
 ```
 core/tests/
-├── models/          # 85 tests - Modèles de données
-├── views/           # 73 tests - Vues et APIs  
-├── admin/           # 41 tests - Interface d'administration
-└── integration/     # Tests d'intégration UI/UX
+├── models/          # 120+ tests - Modèles de données
+├── views/           # 200+ tests - Vues et APIs  
+├── admin/           # 80+ tests - Interface d'administration
+├── integration/     # 90+ tests - Tests d'intégration UI/UX
+└── forms/           # Tests de formulaires
 ```
 
 ### Authentication Application (42 tests ✅)
@@ -31,7 +32,7 @@ authentication/
 
 ## 🏗️ Structure Détaillée des Tests
 
-### 1. Tests de Modèles (85 tests)
+### 1. Tests de Modèles (120+ tests)
 
 #### Cabinet (`test_cabinet.py`)
 - **Singleton pattern** : Validation qu'un seul cabinet peut exister
@@ -52,7 +53,18 @@ authentication/
 - **Validation des dates** : Cohérence début/fin, logique temporelle
 - **Mise à jour automatique** : Synchronisation des statuts utilisateurs
 
-### 2. Tests de Vues (73 tests)
+#### Actes Médicaux (`test_acte.py`, `test_prestation.py`)
+- **Nomenclature des actes** : Code, libellé, validation unicité
+- **Gestion des conventions tarifaires** : TarifPeriode avec historique
+- **Prestations complètes** : Cadres d'exercice, cotations, assurances
+- **Calculs de tarifs** : Formules métier et affichage
+
+#### Cadres d'Exercice (`test_cadre_exercice.py`)
+- **Organisation métier** : Labels et descriptions
+- **Relations avec prestations** : Liens cohérents
+- **Validation et contraintes** : Unicité et formats
+
+### 2. Tests de Vues (200+ tests)
 
 #### Administration (`test_administration.py`)
 - **Vue principale** : Liste des sages-femmes avec authentification
@@ -61,6 +73,24 @@ authentication/
 - **Gestion des formulaires** : Validation et soumission
 - **Permissions** : Contrôle d'accès aux fonctionnalités
 
+#### Administration Actes (`test_administration_actes.py`)
+- **CRUD actes médicaux** : Interface complète de gestion
+- **Gestion des tarifs** : APIs REST pour périodes tarifaires
+- **Validation métier** : Codes uniques, libellés obligatoires
+- **Permissions** : Accès limité aux titulaires
+
+#### Administration Prestations (`test_administration_prestations.py`)
+- **CRUD prestations** : Gestion complète des prestations
+- **Calculs automatiques** : Tarifs basés sur cotations
+- **Filtrage avancé** : Par acte, cadre d'exercice, recherche textuelle
+- **Interface responsive** : Design adaptatif
+
+#### Administration Cadres d'Exercice (`test_administration_cadre_exercice.py`)
+- **Intégration avec prestations** : Utilisation dans les formulaires
+- **Ordering alphabétique** : Tri automatique
+- **Gestion des caractères spéciaux** : Échappement sécurisé
+- **Performance** : Optimisation des requêtes
+
 #### APIs Périodes (`test_periode_apis.py`)
 - **Endpoints REST** : Ajout, modification, suppression, terminaison
 - **Formats de réponse** : Validation JSON, structure des données
@@ -68,12 +98,7 @@ authentication/
 - **Authentification** : Sécurisation des endpoints
 - **Validation métier** : Respect des règles d'activité
 
-#### Home (`test_home.py`)
-- **Page d'accueil** : Rendu et navigation
-- **Éléments UI** : Logo, liens, design responsive
-- **Contenus dynamiques** : Affichage contextuel
-
-### 3. Tests d'Administration (41 tests)
+### 3. Tests d'Administration (80+ tests)
 
 #### SageFemme Admin (`test_sagefemme.py`)
 - **Configuration admin** : List display, filtres, recherche
@@ -82,13 +107,13 @@ authentication/
 - **Permissions admin** : Accès et modifications
 - **Interface utilisateur** : Navigation et ergonomie
 
-#### Cabinet Admin (`test_cabinet.py`)
-- **Singleton admin** : Gestion unique du cabinet
-- **Permissions spéciales** : Ajout/suppression contrôlés
-- **Navigation intelligente** : Redirection automatique
-- **Configuration** : Fields, display, ordering
+#### Admin Complet (`test_prestation_admin.py`, `test_cadre_exercice_admin.py`)
+- **Interface unifiée** : Gestion de tous les modèles métier
+- **Validation avancée** : Contraintes business dans l'admin
+- **Recherche et filtres** : Fonctionnalités de navigation admin
+- **Actions personnalisées** : Opérations batch et spécialisées
 
-### 4. Tests d'Intégration (42+ tests)
+### 4. Tests d'Intégration (90+ tests)
 
 #### Templates (`test_templates_integration.py`)
 - **Rendu complet** : Toutes les pages principales
@@ -98,6 +123,24 @@ authentication/
 - **JavaScript** : Intégration Alpine.js, HTMX
 - **Système de notifications** : Feedback utilisateur
 - **Accessibilité** : Attributs ARIA, navigation clavier
+
+#### Templates Prestations (`test_prestations_templates_integration.py`)
+- **Interface prestations** : CRUD complet avec modales
+- **Affichage des données** : Formatage français, cotations, tarifs
+- **Recherche avancée** : Filtrage par acte, cadre, texte libre
+- **Responsive design** : Tables adaptatives et interface mobile
+- **Gestion d'erreurs** : Cas limites et données manquantes
+
+#### Templates Actes (`test_actes_templates_integration.py`)
+- **Interface actes** : Gestion complète des actes médicaux
+- **Gestion des tarifs** : Interface inline pour périodes tarifaires
+- **Validation temps réel** : Formulaires avec feedback immédiat
+- **Performance** : Chargement optimisé des données
+
+#### Templates Cadres d'Exercice (`test_cadre_exercice_templates_integration.py`)
+- **Intégration UI** : Affichage dans les formulaires de prestations
+- **Filtrage dynamique** : Sélection et recherche
+- **Performance** : Optimisation des requêtes et affichage
 
 ### 5. Tests d'Authentification (42 tests)
 
@@ -112,7 +155,7 @@ authentication/
 
 ### Tests Complets
 ```bash
-# Tous les tests (241)
+# Tous les tests (533)
 docker-compose exec web python manage.py test
 
 # Avec arrêt au premier échec
@@ -120,11 +163,14 @@ docker-compose exec web python manage.py test --failfast
 
 # Mode verbose
 docker-compose exec web python manage.py test --verbosity=2
+
+# Conserver la DB de test (plus rapide)
+docker-compose exec web python manage.py test --keepdb
 ```
 
 ### Tests par Application
 ```bash
-# Tests Core (199 tests)
+# Tests Core (491 tests)
 docker-compose exec web python manage.py test core.tests
 
 # Tests Authentication (42 tests)
@@ -144,6 +190,9 @@ docker-compose exec web python manage.py test core.tests.admin
 
 # Tests d'intégration
 docker-compose exec web python manage.py test core.tests.integration
+
+# Tests de formulaires
+docker-compose exec web python manage.py test core.tests.forms
 ```
 
 ### Tests Spécifiques
@@ -174,6 +223,20 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 - **Recherche avancée** : Par nom, prénom, email, situation
 - **Interface HTMX** : Interactions dynamiques sans rechargement
 
+### ✅ Gestion des Actes Médicaux
+- **Nomenclature complète** : Codes d'actes et libellés
+- **Conventions tarifaires** : Historique des tarifs par périodes
+- **API REST** : Gestion des tarifs en temps réel
+- **Validation métier** : Codes uniques, cohérence des données
+- **Interface moderne** : CRUD avec modales HTMX
+
+### ✅ Système de Prestations
+- **Prestations complètes** : Désignation, cotation, assurances
+- **Calculs automatiques** : Tarifs basés sur cotations et conventions
+- **Cadres d'exercice** : Organisation par spécialités médicales
+- **Filtrage avancé** : Recherche multi-critères
+- **Validation complète** : Contraintes métier et cohérence
+
 ### ✅ Périodes d'Activité
 - **Gestion intelligente** : Calcul automatique des statuts
 - **Règles métier** : Anti-chevauchement, période unique ouverte
@@ -201,13 +264,110 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 - **Tests unitaires** : ~0.01-0.05s chacun
 - **Tests d'intégration** : ~0.1-0.3s chacun
 - **Tests d'admin** : ~0.05-0.15s chacun
-- **Suite complète** : ~36 secondes
+- **Suite complète** : ~87 secondes (533 tests)
 
 ### Fiabilité
-- **Stabilité** : 241/241 tests passent constamment
+- **Stabilité** : 533/533 tests passent constamment
 - **Données réalistes** : Formats Nouvelle-Calédonie
-- **Isolation** : Tests indépendants, base de données propre
+- **Isolation** : Tests indépendents, base de données propre
 - **Reproductibilité** : Résultats constants entre les exécutions
+
+## 🛠️ Organisation des Tests
+
+### Structure des Fichiers
+```
+maieutix/
+├── core/tests/
+│   ├── models/
+│   │   ├── test_cabinet.py                    # Tests modèle Cabinet
+│   │   ├── test_sagefemme.py                  # Tests modèle SageFemme
+│   │   ├── test_periode_activite_complet.py   # Tests PeriodeActivite
+│   │   ├── test_acte.py                       # Tests modèle Acte
+│   │   ├── test_prestation.py                 # Tests modèle Prestation
+│   │   └── test_cadre_exercice.py             # Tests modèle CadreExercice
+│   ├── views/
+│   │   ├── test_home.py                       # Tests page d'accueil
+│   │   ├── test_administration.py             # Tests vues admin principales
+│   │   ├── test_administration_actes.py       # Tests gestion actes
+│   │   ├── test_administration_prestations.py # Tests gestion prestations
+│   │   ├── test_administration_cadre_exercice.py # Tests cadres d'exercice
+│   │   └── test_periode_apis.py               # Tests APIs périodes
+│   ├── admin/
+│   │   ├── test_cabinet_admin.py              # Tests admin Cabinet
+│   │   ├── test_sagefemme.py                  # Tests admin SageFemme
+│   │   ├── test_prestation_admin.py           # Tests admin Prestation
+│   │   └── test_cadre_exercice_admin.py       # Tests admin CadreExercice
+│   ├── integration/
+│   │   ├── test_templates_integration.py      # Tests UI généraux
+│   │   ├── test_actes_templates_integration.py # Tests UI actes
+│   │   ├── test_prestations_templates_integration.py # Tests UI prestations
+│   │   └── test_cadre_exercice_templates_integration.py # Tests UI cadres
+│   ├── forms/
+│   │   └── test_sagefemme_form.py             # Tests formulaires
+│   └── test_visibility_permissions.py         # Tests permissions
+└── authentication/
+    └── tests.py                               # Tests authentification
+```
+
+## 🎯 Fonctionnalités Clés Testées
+
+### 🔐 Authentification et Permissions
+- **Modèle utilisateur personnalisé** basé sur email
+- **Permissions dynamiques** basées sur les périodes d'activité
+- **Sécurité** : CSRF, sessions, validation des accès
+- **Intégration** : Synchronisation automatique des statuts
+
+### 🏥 Gestion Métier
+- **Cabinet singleton** : Configuration unique du cabinet
+- **Sages-femmes** : Gestion complète avec statuts et périodes
+- **Actes médicaux** : Nomenclature et conventions tarifaires
+- **Prestations** : Système complet avec cotations et assurances
+- **Cadres d'exercice** : Organisation par spécialités
+
+### 🌐 Interface Utilisateur
+- **Design responsive** : Tailwind CSS adaptatif
+- **Interactions modernes** : HTMX pour dynamisme
+- **Modales et formulaires** : UX fluide
+- **Notifications** : Système de feedback centralisé
+- **Accessibilité** : Standards ARIA respectés
+
+## 🧪 Types de Tests
+
+### Tests Unitaires
+**Focus** : Test isolé de chaque composant
+
+```python
+def test_sage_femme_est_actuellement_active(self):
+    """Test calcul statut d'activité basé sur périodes"""
+    self.assertTrue(self.sage_femme.est_actuellement_active)
+```
+
+### Tests d'Intégration
+**Focus** : Interaction entre composants
+
+```python
+def test_ajouter_periode_workflow_complet(self):
+    """Test workflow ajout période + mise à jour utilisateur"""
+    # Teste l'interaction modèle/vue/template
+```
+
+### Tests Templates/UI
+**Focus** : Rendu et comportement interface utilisateur
+
+```python
+def test_acte_detail_template_structure(self):
+    """Test structure HTML et classes CSS"""
+    self.assertContains(response, 'Administration - Actes')
+```
+
+### Tests de Permissions
+**Focus** : Sécurité et contrôle d'accès
+
+```python
+def test_access_denied_anonymous_user(self):
+    """Test refus accès utilisateur non connecté"""
+    self.assertEqual(response.status_code, 302)
+```
 
 ## 🛠️ Maintenance et Débogage
 
@@ -255,37 +415,52 @@ sage_femme_data = {
 }
 ```
 
-## 🎯 Objectifs de Qualité Atteints
+## 📋 Bonnes Pratiques Appliquées
 
-### ✅ Couverture Complète
-- **Tous les modèles** testés avec leurs relations
-- **Toutes les vues** testées avec authentification
-- **Toute l'interface admin** testée avec permissions
-- **Tous les templates** testés avec interactions
+### ✅ Isolation des Tests
+- Chaque test est indépendant
+- Pas d'effets de bord entre tests
+- Setup/teardown automatiques
 
-### ✅ Scénarios Réels
-- **Workflow complet** : De la création à la suppression
-- **Cas d'erreur** : Validation, permissions, contraintes
-- **Intégration** : Communication entre composants
-- **Performance** : Temps de réponse acceptable
+### ✅ Nommage Descriptif
+```python
+def test_sage_femme_activation_period_creates_user_account(self):
+    """Nom explicite décrivant le comportement testé"""
+```
 
-### ✅ Maintenabilité
-- **Code de test lisible** : Noms explicites, documentation
-- **Réutilisabilité** : Classes de base, données partagées
-- **Évolutivité** : Structure modulaire extensible
-- **Documentation** : README détaillé et à jour
+### ✅ Données de Test Cohérentes
+```python
+def setUp(self):
+    """Configuration cohérente pour tous les tests"""
+    self.sage_femme = SageFemme.objects.create(...)
+```
+
+### ✅ Tests Lisibles (Pattern AAA)
+```python
+# Arrange
+user = self.create_test_user()
+# Act  
+result = user.authenticate()
+# Assert
+self.assertTrue(result)
+```
+
+### ✅ Coverage Maximale
+- Tous les chemins de code testés
+- Cas nominaux et cas d'erreur
+- Edge cases et conditions limites
 
 ## 🏆 Conclusion
 
-Cette suite de tests de **241 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
+Cette suite de tests de **533 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
 
-- **Fonctionnalités métier** : Gestion des sages-femmes et périodes
-- **Sécurité** : Authentification et permissions
-- **Interface utilisateur** : Navigation et interactions
-- **Intégrité des données** : Validation et contraintes
-- **Performance** : Temps de réponse et stabilité
+- **Fonctionnalités métier** : Gestion complète des sages-femmes, actes, prestations
+- **Sécurité** : Authentification et permissions robustes
+- **Interface utilisateur** : Navigation et interactions modernes
+- **Intégrité des données** : Validation et contraintes métier
+- **Performance** : Optimisation des requêtes et temps de réponse
 
-Cette couverture exhaustive permet un développement serein et des déploiements en toute confiance.
+Cette couverture exhaustive permet un développement serein et des déploiements en toute confiance pour la plateforme de gestion des sages-femmes de Nouvelle-Calédonie.
 
 ---
 

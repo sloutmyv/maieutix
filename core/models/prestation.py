@@ -100,7 +100,7 @@ class Prestation(models.Model):
         super().clean()
         
         # Valider que la cotation est positive
-        if self.cotation and self.cotation <= 0:
+        if self.cotation is not None and self.cotation <= 0:
             raise ValidationError({
                 'cotation': 'La cotation doit être un nombre positif.'
             })
