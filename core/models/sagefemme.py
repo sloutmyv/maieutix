@@ -115,6 +115,10 @@ class SageFemme(models.Model):
                 })
     
     def save(self, *args, **kwargs):
+        # Convertir le nom de famille en majuscules
+        if self.nom:
+            self.nom = self.nom.upper()
+        
         # Réinitialiser les champs spécifiques aux remplaçants si ce n'est pas un remplaçant
         if self.situation != 'remplacant':
             self.remplacement_de = None

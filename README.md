@@ -45,6 +45,11 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Historique tarifaire** : Évolution des coûts dans le temps
 - **Interface dédiée** : CRUD complet avec modales HTMX
 
+### 📋 Gestion des Cadres d'Exercice
+- **Configuration flexible** : Définition des différents cadres d'exercice
+- **Administration simple** : Gestion via l'interface Django Admin uniquement
+- **Structure modulaire** : Label et description pour chaque cadre
+
 ### 🔐 Authentification Avancée
 - **Accès conditionnel** : Seules les sages-femmes avec période active peuvent se connecter
 - **Modèle utilisateur personnalisé** : `SageFemmeUser` basé sur email
@@ -103,7 +108,8 @@ maieutix/
 │   │   ├── cabinet.py             # Gestion du cabinet (singleton)
 │   │   ├── sagefemme.py           # Gestion des sages-femmes
 │   │   ├── periode_activite.py    # Gestion des périodes d'activité
-│   │   └── acte.py               # Gestion des actes et tarifs
+│   │   ├── acte.py               # Gestion des actes et tarifs
+│   │   └── cadre_exercice.py     # Gestion des cadres d'exercice
 │   ├── views/                     # Vues organisées par domaine
 │   │   ├── administration.py      # Interface d'administration
 │   │   └── home.py               # Page d'accueil
@@ -111,7 +117,8 @@ maieutix/
 │   │   ├── cabinet.py             # Admin Cabinet
 │   │   ├── sagefemme.py           # Admin SageFemme  
 │   │   ├── periode_activite.py    # Admin PeriodeActivite
-│   │   └── acte.py               # Admin Actes et Tarifs
+│   │   ├── acte.py               # Admin Actes et Tarifs
+│   │   └── cadre_exercice.py     # Admin Cadres d'exercice
 │   ├── tests/                     # Tests organisés (327 tests ✅)
 │   │   ├── models/                # Tests des modèles
 │   │   ├── views/                 # Tests des vues

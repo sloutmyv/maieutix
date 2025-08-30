@@ -181,7 +181,7 @@ def sagefemme_create_view(request):
                     PeriodeActivite.objects.create(
                         sage_femme=sagefemme,
                         date_debut=date.today(),
-                        commentaire="Début d'activité - créé automatiquement"
+                        commentaire=""
                     )
                 except Exception as e:
                     # Si erreur dans la création de période, on continue sans bloquer
