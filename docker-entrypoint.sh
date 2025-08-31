@@ -20,17 +20,8 @@ python manage.py migrate --noinput
 echo "Collecte des fichiers statiques..."
 python manage.py collectstatic --noinput
 
-# Créer un superutilisateur si il n'existe pas
-echo "Création du superutilisateur par défaut..."
-python manage.py shell << EOF
-from django.contrib.auth import get_user_model
-User = get_user_model()
-if not User.objects.filter(email='admin@maieutix.com').exists():
-    User.objects.create_superuser('admin@maieutix.com', 'admin123')
-    print('Superutilisateur créé: admin@maieutix.com/admin123')
-else:
-    print('Superutilisateur existe déjà')
-EOF
+# Création automatique du superutilisateur désactivée
+# Utilisez admin@maieutix.nc avec mot de passe azerty si besoin
 
 echo "Démarrage du serveur de production avec Gunicorn..."
 exec gunicorn --bind 0.0.0.0:8000 --workers 3 maieutix.wsgi:application

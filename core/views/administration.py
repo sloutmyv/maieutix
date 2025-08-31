@@ -97,7 +97,7 @@ class SageFemmeForm(ModelForm):
 
 
 def check_titulaire_permission(request):
-    """Vérifie si l'utilisateur a les permissions d'administration (titulaire ou superuser)"""
+    """Vérifie si l'utilisateur a les permissions d'administration complètes (titulaire ou superuser)"""
     if not hasattr(request, 'user') or not request.user.is_authenticated:
         return False
     
@@ -112,13 +112,32 @@ def check_titulaire_permission(request):
         return False
 
 
+def check_administration_read_permission(request):
+    """Vérifie si l'utilisateur a les permissions de lecture en administration (titulaire, collaborateur, remplaçant ou superuser)"""
+    if not hasattr(request, 'user') or not request.user.is_authenticated:
+        return False
+    
+    # Super admin a toujours accès
+    if request.user.is_superuser:
+        return True
+    
+    # Vérifier si l'utilisateur est une sage-femme (titulaire, collaborateur ou remplaçant)
+    try:
+        if hasattr(request.user, 'sagefemme'):
+            situation = request.user.sagefemme.situation
+            return situation in ['titulaire', 'collaborateur', 'remplacant']
+        return False
+    except:
+        return False
+
+
 @login_required
 def administration_sages_femmes_view(request):
     """
     Vue pour la gestion des sages-femmes
     """
-    if not check_titulaire_permission(request):
-        messages.error(request, "Accès non autorisé. Seuls les titulaires peuvent accéder à cette section.")
+    if not check_administration_read_permission(request):
+        messages.error(request, "Accès non autorisé.")
         return redirect('home')
     
     sagefemmes = SageFemme.objects.all().order_by('nom', 'prenom')
@@ -178,6 +197,12 @@ def sagefemme_create_view(request):
             if form.is_valid():
                 sagefemme = form.save()
                 
+                # Créer automatiquement un compte utilisateur pour la sage-femme
+                try:
+                    sagefemme.creer_compte_utilisateur()
+                except Exception as e:
+                    print(f"Erreur création compte utilisateur: {e}")
+                
                 # Créer automatiquement une période d'activité par défaut (active depuis aujourd'hui)
                 try:
                     PeriodeActivite.objects.create(
@@ -221,7 +246,7 @@ def sagefemme_create_view(request):
 
 def sagefemme_detail_view(request, pk):
     """Vue pour voir les détails d'une sage-femme"""
-    if not check_titulaire_permission(request):
+    if not check_administration_read_permission(request):
         return HttpResponse("Non autorisé", status=403)
     
     sagefemme = get_object_or_404(
@@ -250,6 +275,13 @@ def sagefemme_update_view(request, pk):
             form = SageFemmeForm(request.POST, instance=sagefemme)
             if form.is_valid():
                 sagefemme = form.save()
+                
+                # Créer un compte utilisateur si il n'existe pas déjà
+                if not sagefemme.user:
+                    try:
+                        sagefemme.creer_compte_utilisateur()
+                    except Exception as e:
+                        print(f"Erreur création compte utilisateur: {e}")
                 
                 # Traiter les modifications de périodes d'activité
                 periodes_modifiees = []
@@ -546,8 +578,8 @@ def administration_actes_view(request):
     """
     Vue pour la gestion des actes médicaux
     """
-    if not check_titulaire_permission(request):
-        messages.error(request, "Accès non autorisé. Seuls les titulaires peuvent accéder à cette section.")
+    if not check_administration_read_permission(request):
+        messages.error(request, "Accès non autorisé.")
         return redirect('home')
     
     actes = Acte.objects.all().order_by('code')
@@ -626,7 +658,7 @@ def acte_create_view(request):
 
 def acte_detail_view(request, pk):
     """Vue pour voir les détails d'un acte"""
-    if not check_titulaire_permission(request):
+    if not check_administration_read_permission(request):
         return HttpResponse("Non autorisé", status=403)
     
     acte = get_object_or_404(Acte, pk=pk)
@@ -892,8 +924,8 @@ def administration_prestations_view(request):
     """
     Vue pour la gestion des prestations
     """
-    if not check_titulaire_permission(request):
-        messages.error(request, "Accès non autorisé. Seuls les titulaires peuvent accéder à cette section.")
+    if not check_administration_read_permission(request):
+        messages.error(request, "Accès non autorisé.")
         return redirect('home')
     
     prestations = Prestation.objects.select_related('cadre_exercice', 'acte').all().order_by('cadre_exercice__label', 'designation')
@@ -995,7 +1027,7 @@ def prestation_create_view(request):
 
 def prestation_detail_view(request, pk):
     """Vue pour voir les détails d'une prestation"""
-    if not check_titulaire_permission(request):
+    if not check_administration_read_permission(request):
         return HttpResponse("Non autorisé", status=403)
     
     prestation = get_object_or_404(

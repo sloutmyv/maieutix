@@ -6,7 +6,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 355/355 tests passent (100% ✅)
+- **Tests** : 533/533 tests passent (100% ✅)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
 - **Architecture** : Modulaire et extensible
@@ -15,8 +15,8 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 ## 🔑 Identifiants de Connexion
 
 **Superutilisateur Django Admin** :
-- Email : admin@maieutix.com
-- Mot de passe : admin123
+- Email : admin@maieutix.nc
+- Mot de passe : azerty
 
 **Note** : Seules les sages-femmes avec des périodes d'activité actives peuvent se connecter au système.
 
@@ -57,10 +57,12 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Administration simple** : Gestion via l'interface Django Admin uniquement
 - **Structure modulaire** : Label et description pour chaque cadre
 
-### 🔐 Authentification Avancée
+### 🔐 Authentification et Permissions Avancées
 - **Accès conditionnel** : Seules les sages-femmes avec période active peuvent se connecter
 - **Modèle utilisateur personnalisé** : `SageFemmeUser` basé sur email
 - **Mise à jour automatique** : Statut utilisateur synchronisé avec les périodes
+- **Permissions à deux niveaux** : Accès lecture pour tous, écriture pour titulaires
+- **Gestion automatique des comptes** : Création automatique d'utilisateurs lors de l'ajout de sages-femmes
 
 ## Technologies Utilisées
 
@@ -294,10 +296,10 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **355 tests** tous passent
+- **533 tests** tous passent
 - **Tests unitaires** : Modèles, vues, admin
 - **Tests d'intégration** : Templates, navigation, API
-- **Tests fonctionnels** : Authentification, permissions
+- **Tests fonctionnels** : Authentification, permissions à deux niveaux
 - **Tests de validation** : Règles métier, contraintes DB
 
 ### Organisation des Tests
@@ -347,6 +349,14 @@ Pour plus de détails, voir `tests_readme.md`.
 - **Seules les sages-femmes actives** peuvent se connecter
 - **Création automatique** des comptes lors de l'ajout d'une sage-femme
 - **Mot de passe par défaut** : `azerty` (à changer lors de la première connexion)
+
+### Permissions à Deux Niveaux
+| Type d'utilisateur | Menu Admin | Voir listes | Voir détails | Créer | Modifier | Supprimer | Django Admin |
+|---------------------|------------|-------------|--------------|-------|----------|-----------|--------------|
+| **Superuser**       | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Titulaire**       | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Collaborateur**   | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Remplaçant**      | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 
 ## Développement
 

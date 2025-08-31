@@ -150,8 +150,9 @@ class NavbarVisibilityTest(TestCase):
         self.client.force_login(self.collaborateur_user)
         response = self.client.get(reverse('home'))
         
-        # Ne doit PAS voir les liens du menu Administration
-        self.assertNotContains(response, 'Sages Femmes</a>')
+        # DOIT voir les liens du menu Administration (lecture seule)
+        self.assertContains(response, 'Sages Femmes</a>')
+        # Ne doit PAS voir Admin Django (réservé aux superusers)
         self.assertNotContains(response, 'Admin Django</a>')
         
         # Doit voir son prénom
@@ -168,8 +169,9 @@ class NavbarVisibilityTest(TestCase):
         self.client.force_login(self.remplacant_user)
         response = self.client.get(reverse('home'))
         
-        # Ne doit PAS voir les liens du menu Administration
-        self.assertNotContains(response, 'Sages Femmes</a>')
+        # DOIT voir les liens du menu Administration (lecture seule)
+        self.assertContains(response, 'Sages Femmes</a>')
+        # Ne doit PAS voir Admin Django (réservé aux superusers)
         self.assertNotContains(response, 'Admin Django</a>')
         
         # Doit voir son prénom
@@ -277,13 +279,13 @@ class AdministrationAccessTest(TestCase):
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 302)  # Redirection vers login admin
     
-    def test_collaborateur_administration_denied(self):
-        """Test refus d'accès administration pour sage-femme collaboratrice"""
+    def test_collaborateur_administration_read_only(self):
+        """Test accès en lecture seule à l'administration pour sage-femme collaboratrice"""
         self.client.force_login(self.collaborateur_user)
         
-        # Pas d'accès à la page d'administration
+        # DOIT avoir accès à la page d'administration (lecture seule)
         response = self.client.get(self.admin_url)
-        self.assertEqual(response.status_code, 302)  # Redirection vers home
+        self.assertEqual(response.status_code, 200)  # Accès autorisé
         
         # Pas d'accès à Django admin
         response = self.client.get('/admin/')
@@ -491,13 +493,13 @@ class ProfileSpecificFunctionalityTest(TestCase):
         # La page contient le titre d'administration
         self.assertContains(response, 'Administration - Sages Femmes')
     
-    def test_collaborateur_cannot_manage_sages_femmes(self):
-        """Test qu'une collaboratrice ne peut pas gérer les sages-femmes"""
+    def test_collaborateur_can_view_sages_femmes_read_only(self):
+        """Test qu'une collaboratrice peut voir les sages-femmes en lecture seule"""
         self.client.force_login(self.collaborateur_user)
         
-        # Ne peut pas accéder à la gestion des sages-femmes
+        # PEUT accéder à la gestion des sages-femmes (lecture seule)
         response = self.client.get(reverse('administration:administration_sages_femmes'))
-        self.assertEqual(response.status_code, 302)  # Redirection vers home
+        self.assertEqual(response.status_code, 200)  # Accès autorisé
     
     def test_prenom_display_in_navbar(self):
         """Test affichage du prénom dans la navbar selon les profils"""
@@ -532,5 +534,6 @@ class ProfileSpecificFunctionalityTest(TestCase):
         
         # Collaborateur
         self.assertFalse(self.collaborateur_user.is_superuser)
-        self.assertFalse(self.collaborateur_user.can_access_administration)
+        self.assertTrue(self.collaborateur_user.can_access_administration)  # Maintenant accessible en lecture
+        self.assertFalse(self.collaborateur_user.can_edit_administration)  # Mais pas en écriture
         self.assertFalse(self.collaborateur_user.is_titulaire)

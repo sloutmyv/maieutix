@@ -147,5 +147,14 @@ class SageFemmeUser(AbstractBaseUser, PermissionsMixin):
     
     @property
     def can_access_administration(self):
-        """Vérifie si l'utilisateur peut accéder au menu Administration"""
+        """Vérifie si l'utilisateur peut accéder au menu Administration (lecture pour tous, écriture pour titulaires)"""
+        if self.is_superuser:
+            return True
+        if hasattr(self, 'sagefemme'):
+            return self.sagefemme.situation in ['titulaire', 'collaborateur', 'remplacant']
+        return False
+    
+    @property
+    def can_edit_administration(self):
+        """Vérifie si l'utilisateur peut modifier en administration (titulaires et superusers seulement)"""
         return self.is_superuser or self.is_titulaire
