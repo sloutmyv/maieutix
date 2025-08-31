@@ -9,6 +9,7 @@
         <div>
             <h1 class="text-3xl font-bold text-primary">{{ page_title }}</h1>
             <p class="text-accent">Gestion des actes et de leurs tarifications</p>
+            <p class="text-sm text-primary mt-1 font-medium">{{ actes.count }} acte{{ actes.count|pluralize }} au total</p>
         </div>
         {% if user.can_edit_administration %}
         <button 
