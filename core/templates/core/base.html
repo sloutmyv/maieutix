@@ -44,7 +44,7 @@
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-primary">
+<body class="bg-gray-50 text-primary min-h-screen flex flex-col">
     <!-- Navigation -->
     <nav class="bg-white shadow-md border-b border-accent px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -131,7 +131,7 @@
     </nav>
     
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-8">
+    <main class="flex-1 max-w-7xl mx-auto px-6 py-8 w-full">
         {% block content %}{% endblock %}
     </main>
     
@@ -139,9 +139,14 @@
     {% include 'core/partials/notifications.html' %}
     
     <!-- Footer -->
-    <footer class="mt-16 border-t border-accent py-6">
+    <footer class="border-t border-accent py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-6 text-center text-accent">
-            <p>&copy; 2025 Maieutix. Tous droits réservés.</p>
+            <p>&copy; 2025 CCORP 
+                <svg class="w-4 h-4 inline-block ml-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.1 2.1L13.2 8.4L22 9L13.2 9.6L12.1 16L10.9 9.6L2 9L10.9 8.4L12.1 2.1Z"/>
+                </svg>
+                . Tous droits réservés.
+            </p>
         </div>
     </footer>
     
