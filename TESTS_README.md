@@ -1,15 +1,15 @@
 # Tests Maieutix - Documentation Complète
 
-**État actuel : 533/533 tests passent (100% ✅)**
+**État actuel : 506/506 tests passent (100% ✅)**
 
 Ce document décrit la suite de tests complète et fonctionnelle de l'application Maieutix, une plateforme de gestion pour sages-femmes développée avec Django.
 
 ## 🎯 Résultats Globaux
 
-- **Total de tests** : 533
+- **Total de tests** : 506
 - **Taux de réussite** : 100% ✅
 - **Applications testées** : `core` et `authentication`
-- **Temps d'exécution** : ~87 secondes
+- **Temps d'exécution** : ~73 secondes
 - **Couverture** : Modèles, Vues, Admin, Authentification, Intégration
 
 ## 📊 Répartition des Tests
@@ -155,7 +155,7 @@ authentication/
 
 ### Tests Complets
 ```bash
-# Tous les tests (533)
+# Tous les tests (506)
 docker-compose exec web python manage.py test
 
 # Avec arrêt au premier échec
@@ -232,9 +232,10 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 
 ### ✅ Système de Prestations
 - **Prestations complètes** : Désignation, cotation, assurances
+- **Champs étendus** : Suffixe, origine (LM/AT/MT/GP), statut actif/inactif, prescription
 - **Calculs automatiques** : Tarifs basés sur cotations et conventions
 - **Cadres d'exercice** : Organisation par spécialités médicales
-- **Filtrage avancé** : Recherche multi-critères
+- **Filtrage avancé** : Recherche multi-critères avec filtrage des prestations inactives
 - **Validation complète** : Contraintes métier et cohérence
 
 ### ✅ Périodes d'Activité
@@ -264,10 +265,10 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 - **Tests unitaires** : ~0.01-0.05s chacun
 - **Tests d'intégration** : ~0.1-0.3s chacun
 - **Tests d'admin** : ~0.05-0.15s chacun
-- **Suite complète** : ~87 secondes (533 tests)
+- **Suite complète** : ~73 secondes (506 tests)
 
 ### Fiabilité
-- **Stabilité** : 533/533 tests passent constamment
+- **Stabilité** : 506/506 tests passent constamment
 - **Données réalistes** : Formats Nouvelle-Calédonie
 - **Isolation** : Tests indépendents, base de données propre
 - **Reproductibilité** : Résultats constants entre les exécutions
@@ -452,7 +453,7 @@ self.assertTrue(result)
 
 ## 🏆 Conclusion
 
-Cette suite de tests de **533 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
+Cette suite de tests de **506 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
 
 - **Fonctionnalités métier** : Gestion complète des sages-femmes, actes, prestations
 - **Sécurité** : Authentification et permissions robustes

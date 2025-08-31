@@ -6,7 +6,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 533/533 tests passent (100% ✅)
+- **Tests** : 506/506 tests passent (100% ✅)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
 - **Architecture** : Modulaire et extensible
@@ -47,9 +47,11 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ### 📋 Gestion des Prestations
 - **Prestations par cadre d'exercice** : Organisation structurée des prestations
+- **Champs étendus** : Suffixe, origine (LM/AT/MT/GP), statut actif/inactif, prescription obligatoire
 - **Calculs automatiques** : Tarifs calculés automatiquement (cotation × coût conventionnel)
 - **Interface moderne** : Formulaires et vues de détail avec design cohérent
-- **Recherche globale** : Recherche unique sur actes, cadres d'exercice et désignations
+- **Recherche globale** : Recherche sur actes, cadres d'exercice, désignations et suffixes
+- **Filtrage intelligent** : Les prestations inactives sont automatiquement masquées
 - **Filtres personnalisés** : Formatage automatique des textes de limites
 
 ### 📋 Gestion des Cadres d'Exercice
@@ -296,7 +298,7 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **533 tests** tous passent
+- **506 tests** tous passent
 - **Tests unitaires** : Modèles, vues, admin
 - **Tests d'intégration** : Templates, navigation, API
 - **Tests fonctionnels** : Authentification, permissions à deux niveaux

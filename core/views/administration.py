@@ -862,9 +862,9 @@ class PrestationForm(ModelForm):
     class Meta:
         model = Prestation
         fields = [
-            'cadre_exercice', 'designation', 'limite', 'acte', 'cotation',
-            'entente_prealable', 'assurance_maladie', 'assurance_maternite_normale',
-            'assurance_maternite_pathologie', 'observation'
+            'cadre_exercice', 'designation', 'suffixe', 'origine', 'prescription',
+            'limite', 'acte', 'cotation', 'entente_prealable', 'assurance_maladie', 
+            'assurance_maternite_normale', 'assurance_maternite_pathologie', 'observation'
         ]
         widgets = {
             'cadre_exercice': forms.Select(attrs={
@@ -908,6 +908,16 @@ class PrestationForm(ModelForm):
                 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
                 'rows': 3,
                 'placeholder': 'Observations particulières (optionnel)...'
+            }),
+            'suffixe': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Suffixe (optionnel)...'
+            }),
+            'origine': forms.Select(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+            }),
+            'prescription': forms.CheckboxInput(attrs={
+                'class': 'h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary'
             })
         }
 
@@ -928,7 +938,7 @@ def administration_prestations_view(request):
         messages.error(request, "Accès non autorisé.")
         return redirect('home')
     
-    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').all().order_by('cadre_exercice__label', 'designation')
+    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').filter(actif=True).order_by('cadre_exercice__label', 'designation')
     cadres_exercice = CadreExercice.objects.all().order_by('label')
     actes = Acte.objects.all().order_by('code')
     
@@ -947,7 +957,7 @@ def prestation_list_view(request):
     if not check_titulaire_permission(request):
         return HttpResponse("Non autorisé", status=403)
     
-    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').all().order_by('cadre_exercice__label', 'designation')
+    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').filter(actif=True).order_by('cadre_exercice__label', 'designation')
     
     # Filtres
     search = request.GET.get('search', '').strip()
@@ -957,6 +967,7 @@ def prestation_list_view(request):
     if search:
         prestations = prestations.filter(
             Q(designation__icontains=search) |
+            Q(suffixe__icontains=search) |
             Q(limite__icontains=search) |
             Q(cadre_exercice__label__icontains=search) |
             Q(acte__code__icontains=search) |

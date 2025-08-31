@@ -7,6 +7,14 @@ class Prestation(models.Model):
     Modèle représentant une prestation pour les sages-femmes
     """
     
+    ORIGINE_CHOICES = [
+        ('', 'Vide'),
+        ('LM', 'LM'),
+        ('AT', 'AT'),
+        ('MT', 'MT'),
+        ('GP', 'GP'),
+    ]
+    
     # Relation avec le cadre d'exercice
     cadre_exercice = models.ForeignKey(
         'CadreExercice',
@@ -81,6 +89,39 @@ class Prestation(models.Model):
         null=True,
         verbose_name="Observation",
         help_text="Observations particulières"
+    )
+    
+    # Suffixe (facultatif)
+    suffixe = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="Suffixe",
+        help_text="Suffixe facultatif pour la prestation"
+    )
+    
+    # Origine (liste avec choix)
+    origine = models.CharField(
+        max_length=2,
+        choices=ORIGINE_CHOICES,
+        blank=True,
+        default='',
+        verbose_name="Origine",
+        help_text="Origine de la prestation"
+    )
+    
+    # Actif (booléen)
+    actif = models.BooleanField(
+        default=True,
+        verbose_name="Actif",
+        help_text="Indique si la prestation est active"
+    )
+    
+    # Prescription (booléen)
+    prescription = models.BooleanField(
+        default=False,
+        verbose_name="Prescription",
+        help_text="Indique si une prescription est nécessaire"
     )
     
     # Métadonnées

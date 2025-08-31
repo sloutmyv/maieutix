@@ -63,7 +63,11 @@ class PrestationAdminTests(TestCase):
             assurance_maladie='Prise en charge à 70%',
             assurance_maternite_normale='Prise en charge à 100%',
             assurance_maternite_pathologie='Prise en charge majorée',
-            observation='Consultation de routine'
+            observation='Consultation de routine',
+            suffixe='TEST',
+            origine='MT',
+            actif=True,
+            prescription=False
         )
     
     def test_list_display_configuration(self):
@@ -71,8 +75,12 @@ class PrestationAdminTests(TestCase):
         expected_fields = [
             'cadre_exercice',
             'designation_short',
+            'suffixe',
+            'origine',
             'cotation',
             'acte_code',
+            'actif',
+            'prescription',
             'tarif_display_admin',
             'created_at'
         ]
@@ -83,6 +91,9 @@ class PrestationAdminTests(TestCase):
         """Test de la configuration list_filter"""
         expected_filters = [
             'cadre_exercice',
+            'origine',
+            'actif',
+            'prescription',
             'cotation',
             'created_at',
             'updated_at'
@@ -94,6 +105,7 @@ class PrestationAdminTests(TestCase):
         """Test de la configuration search_fields"""
         expected_fields = [
             'designation',
+            'suffixe',
             'limite',
             'entente_prealable',
             'observation',
@@ -115,7 +127,10 @@ class PrestationAdminTests(TestCase):
                 'fields': ('cadre_exercice', 'designation', 'limite', 'cotation')
             }),
             ('Acte associé', {
-                'fields': ('acte',)
+                'fields': ('acte', 'suffixe', 'origine', 'prescription')
+            }),
+            ('Configuration', {
+                'fields': ('actif',)
             }),
             ('Entente et assurances', {
                 'fields': (
@@ -256,7 +271,11 @@ class PrestationAdminIntegrationTests(TestCase):
             designation='Prestation de test',
             acte=self.acte,
             cotation=Decimal('2.0'),
-            entente_prealable='Test entente'
+            entente_prealable='Test entente',
+            suffixe='INT',
+            origine='AT',
+            actif=True,
+            prescription=True
         )
     
     def test_admin_list_view(self):
@@ -286,6 +305,7 @@ class PrestationAdminIntegrationTests(TestCase):
         # Vérifier les fieldsets
         self.assertContains(response, 'Informations principales')
         self.assertContains(response, 'Acte associé')
+        self.assertContains(response, 'Configuration')
         self.assertContains(response, 'Entente et assurances')
         self.assertContains(response, 'Observations')
         
@@ -294,6 +314,10 @@ class PrestationAdminIntegrationTests(TestCase):
         self.assertContains(response, 'name="designation"')
         self.assertContains(response, 'name="acte"')
         self.assertContains(response, 'name="cotation"')
+        self.assertContains(response, 'name="suffixe"')
+        self.assertContains(response, 'name="origine"')
+        self.assertContains(response, 'name="actif"')
+        self.assertContains(response, 'name="prescription"')
     
     def test_admin_change_view(self):
         """Test de la vue de modification de l'admin"""
@@ -345,7 +369,8 @@ class PrestationAdminIntegrationTests(TestCase):
             designation='Autre prestation',
             acte=self.acte,
             cotation=Decimal('3.0'),
-            entente_prealable='Autre entente'
+            entente_prealable='Autre entente',
+            actif=True
         )
         
         self.client.login(email='admin@test.com', password='adminpass')
@@ -378,7 +403,11 @@ class PrestationAdminIntegrationTests(TestCase):
             'assurance_maladie': 'AM test',
             'assurance_maternite_normale': 'AMN test',
             'assurance_maternite_pathologie': 'AMP test',
-            'observation': 'Observation admin'
+            'observation': 'Observation admin',
+            'suffixe': 'ADMIN',
+            'origine': 'LM',
+            'actif': True,
+            'prescription': True
         }
         
         response = self.client.post(url, data)
@@ -397,6 +426,10 @@ class PrestationAdminIntegrationTests(TestCase):
         self.assertEqual(prestation.acte, self.acte)
         self.assertEqual(prestation.cotation, Decimal('1.5'))
         self.assertEqual(prestation.limite, 'Limite test')
+        self.assertEqual(prestation.suffixe, 'ADMIN')
+        self.assertEqual(prestation.origine, 'LM')
+        self.assertEqual(prestation.actif, True)
+        self.assertEqual(prestation.prescription, True)
     
     def test_admin_update_prestation(self):
         """Test de modification d'une prestation via l'admin"""
@@ -410,7 +443,11 @@ class PrestationAdminIntegrationTests(TestCase):
             'acte': self.acte.pk,
             'cotation': '2.5',
             'entente_prealable': 'Entente modifiée',
-            'observation': 'Observation modifiée'
+            'observation': 'Observation modifiée',
+            'suffixe': 'MODIF',
+            'origine': 'GP',
+            'actif': True,
+            'prescription': False
         }
         
         response = self.client.post(url, data)
@@ -424,6 +461,10 @@ class PrestationAdminIntegrationTests(TestCase):
         self.assertEqual(self.prestation.cotation, Decimal('2.5'))
         self.assertEqual(self.prestation.limite, 'Limite modifiée')
         self.assertEqual(self.prestation.observation, 'Observation modifiée')
+        self.assertEqual(self.prestation.suffixe, 'MODIF')
+        self.assertEqual(self.prestation.origine, 'GP')
+        self.assertEqual(self.prestation.actif, True)
+        self.assertEqual(self.prestation.prescription, False)
     
     def test_admin_delete_prestation(self):
         """Test de suppression d'une prestation via l'admin"""

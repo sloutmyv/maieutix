@@ -453,4 +453,4 @@ class CadreExercicePerformanceTests(CadreExerciceViewsBaseTest):
         """Retourne le nombre de requêtes attendu pour la vue prestations"""
         # Ce nombre peut varier selon la configuration Django et les optimisations
         # Il s'agit d'une estimation raisonnable basée sur les requêtes observées
-        return 25  # Ajusté selon les résultats observés dans les tests
+        return 27  # Ajusté selon les résultats observés dans les tests avec filtre actif=True

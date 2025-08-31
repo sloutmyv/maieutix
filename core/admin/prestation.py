@@ -9,19 +9,27 @@ class PrestationAdmin(admin.ModelAdmin):
     list_display = [
         'cadre_exercice', 
         'designation_short', 
+        'suffixe',
+        'origine',
         'cotation', 
         'acte_code',
+        'actif',
+        'prescription',
         'tarif_display_admin',
         'created_at'
     ]
     list_filter = [
         'cadre_exercice', 
+        'origine',
+        'actif',
+        'prescription',
         'cotation',
         'created_at', 
         'updated_at'
     ]
     search_fields = [
         'designation', 
+        'suffixe',
         'limite', 
         'entente_prealable',
         'observation',
@@ -35,7 +43,10 @@ class PrestationAdmin(admin.ModelAdmin):
             'fields': ('cadre_exercice', 'designation', 'limite', 'cotation')
         }),
         ('Acte associé', {
-            'fields': ('acte',)
+            'fields': ('acte', 'suffixe', 'origine', 'prescription')
+        }),
+        ('Configuration', {
+            'fields': ('actif',)
         }),
         ('Entente et assurances', {
             'fields': (

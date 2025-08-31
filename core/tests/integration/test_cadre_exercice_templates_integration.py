@@ -536,4 +536,4 @@ class CadreExercicePerformanceTest(BaseCadreExerciceTemplateTest):
         """Retourne le nombre de requêtes attendu"""
         # Ce nombre dépend de l'implémentation exacte
         # mais devrait être relativement faible grâce à select_related
-        return 11  # Ajusté selon les requêtes observées
+        return 13  # Ajusté selon les requêtes observées avec filtre actif=True

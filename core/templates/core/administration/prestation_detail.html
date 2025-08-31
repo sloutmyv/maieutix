@@ -43,6 +43,45 @@
                     <p class="text-sm text-gray-900 font-bold">{{ prestation.designation }}</p>
                 </div>
 
+                <!-- Suffixe -->
+                {% if prestation.suffixe %}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Suffixe</label>
+                    <p class="text-sm text-gray-900">{{ prestation.suffixe }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Origine -->
+                {% if prestation.origine %}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Origine</label>
+                    <p class="text-sm text-gray-900">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                            {{ prestation.origine }}
+                        </span>
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Prescription -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Prescription</label>
+                    <p class="text-sm text-gray-900">
+                        {% if prestation.prescription %}
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Requise
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                                Non requise
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+
                 <!-- Séparateur discret -->
                 <div class="md:col-span-2">
                     <hr class="border-gray-200 my-2">
