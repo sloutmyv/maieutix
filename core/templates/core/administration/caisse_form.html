@@ -1,0 +1,85 @@
+<!-- Modal pour créer/modifier une caisse -->
+<div id="caisse-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-[85vh] overflow-y-auto" 
+         onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-3 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-900">
+                {% if caisse %}Modifier la caisse{% else %}Nouvelle caisse{% endif %}
+            </h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Formulaire -->
+        <form hx-post="{% if caisse %}{% url 'administration:caisse_update' caisse.pk %}{% else %}{% url 'administration:caisse_create' %}{% endif %}" 
+              hx-target="#modal-container"
+              hx-swap="innerHTML">
+            {% csrf_token %}
+            
+            <div class="p-4 space-y-4">
+                <!-- Nom de la caisse -->
+                <div>
+                    <label for="{{ form.nom.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.nom.label }}
+                    </label>
+                    {{ form.nom }}
+                    {% if form.nom.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.nom.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Conditions de paiement éligibles -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.conditions_paiement_eligibles.label }}
+                    </label>
+                    <div class="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-md p-3">
+                        {% for choice in form.conditions_paiement_eligibles %}
+                            <div class="flex items-center">
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                    {{ choice.choice_label }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.conditions_paiement_eligibles.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.conditions_paiement_eligibles.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 p-4 border-t border-gray-200">
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        style="background-color: #2D4B73;"
+                        class="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200">
+                    {% if caisse %}Modifier{% else %}Créer{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+</script>

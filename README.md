@@ -59,6 +59,13 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Administration simple** : Gestion via l'interface Django Admin uniquement
 - **Structure modulaire** : Label et description pour chaque cadre
 
+### 💰 Gestion des Caisses et Conditions de Paiement
+- **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
+- **Caisses configurables** : Association des caisses aux conditions de paiement éligibles
+- **Interface dédiée** : CRUD complet avec modales HTMX pour gestion intuitive
+- **Permissions différenciées** : Accès lecture seule pour collaborateurs, accès complet pour titulaires
+- **Gestion par cases à cocher** : Sélection multiple des conditions éligibles par caisse
+
 ### 🔐 Authentification et Permissions Avancées
 - **Accès conditionnel** : Seules les sages-femmes avec période active peuvent se connecter
 - **Modèle utilisateur personnalisé** : `SageFemmeUser` basé sur email
@@ -122,7 +129,9 @@ maieutix/
 │   │   ├── periode_activite.py    # Gestion des périodes d'activité
 │   │   ├── acte.py               # Gestion des actes et tarifs
 │   │   ├── prestation.py          # Gestion des prestations
-│   │   └── cadre_exercice.py     # Gestion des cadres d'exercice
+│   │   ├── cadre_exercice.py     # Gestion des cadres d'exercice
+│   │   ├── condition_paiement.py  # Gestion des conditions de paiement
+│   │   └── caisse.py             # Gestion des caisses
 │   ├── views/                     # Vues organisées par domaine
 │   │   ├── administration.py      # Interface d'administration
 │   │   └── home.py               # Page d'accueil
@@ -132,7 +141,9 @@ maieutix/
 │   │   ├── periode_activite.py    # Admin PeriodeActivite
 │   │   ├── acte.py               # Admin Actes et Tarifs
 │   │   ├── prestation.py          # Admin Prestations
-│   │   └── cadre_exercice.py     # Admin Cadres d'exercice
+│   │   ├── cadre_exercice.py     # Admin Cadres d'exercice
+│   │   ├── condition_paiement.py  # Admin Conditions de paiement
+│   │   └── caisse.py             # Admin Caisses
 │   ├── tests/                     # Tests organisés (327 tests ✅)
 │   │   ├── models/                # Tests des modèles
 │   │   ├── views/                 # Tests des vues
@@ -161,6 +172,7 @@ maieutix/
 - **/administration/sages-femmes/** - Interface de gestion des sages-femmes
 - **/administration/actes/** - Interface de gestion des actes médicaux
 - **/administration/prestations/** - Interface de gestion des prestations
+- **/administration/caisses/** - Interface de gestion des caisses
 - **/auth/connexion/** - Page de connexion
 - **/auth/deconnexion/** - Déconnexion
 - **/admin/** - Interface Django Admin
@@ -193,6 +205,13 @@ maieutix/
 - `GET /administration/prestation/{id}/update/` - Formulaire modification
 - `GET /administration/prestation/{id}/detail/` - Vue détaillée
 - `DELETE /administration/prestation/{id}/delete/` - Suppression
+
+### CRUD Caisses (HTMX)
+- `GET /administration/caisses/list/` - Liste avec recherche et compteurs
+- `GET /administration/caisse/create/` - Formulaire création avec conditions éligibles
+- `GET /administration/caisse/{id}/update/` - Formulaire modification
+- `GET /administration/caisse/{id}/detail/` - Vue détaillée avec conditions associées
+- `DELETE /administration/caisse/{id}/delete/` - Suppression
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire

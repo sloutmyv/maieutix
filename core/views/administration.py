@@ -19,6 +19,8 @@ from core.models.periode_activite import PeriodeActivite
 from core.models.acte import Acte, TarifPeriode
 from core.models.cadre_exercice import CadreExercice
 from core.models.prestation import Prestation
+from core.models.caisse import Caisse
+from core.models.condition_paiement import ConditionPaiement
 
 
 class SageFemmeForm(ModelForm):
@@ -1122,6 +1124,211 @@ def prestation_delete_view(request, pk):
     
     except Http404:
         return HttpResponse("Prestation introuvable", status=404)
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+# ============================================================================
+# VUES POUR LA GESTION DES CAISSES
+# ============================================================================
+
+class CaisseForm(ModelForm):
+    """Formulaire pour les caisses"""
+    
+    class Meta:
+        model = Caisse
+        fields = ['nom', 'conditions_paiement_eligibles']
+        widgets = {
+            'nom': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Nom de la caisse...'
+            }),
+            'conditions_paiement_eligibles': forms.CheckboxSelectMultiple(attrs={
+                'class': 'text-primary focus:ring-primary'
+            })
+        }
+
+    def clean_nom(self):
+        """Valide l'unicité du nom"""
+        nom = self.cleaned_data.get('nom')
+        if nom:
+            queryset = Caisse.objects.filter(nom__iexact=nom)
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            if queryset.exists():
+                raise forms.ValidationError("Une caisse avec ce nom existe déjà.")
+        return nom
+
+
+@login_required
+def administration_caisses_view(request):
+    """
+    Vue pour la gestion des caisses
+    """
+    if not check_administration_read_permission(request):
+        messages.error(request, "Accès non autorisé.")
+        return redirect('home')
+    
+    caisses = Caisse.objects.prefetch_related('conditions_paiement_eligibles').order_by('nom')
+    conditions_paiement = ConditionPaiement.objects.all().order_by('designation')
+    
+    context = {
+        'page_title': 'Administration - Caisses',
+        'section': 'administration',
+        'caisses': caisses,
+        'conditions_paiement': conditions_paiement
+    }
+    return render(request, 'core/administration/caisses.html', context)
+
+
+def caisse_list_view(request):
+    """Vue HTMX pour la liste filtrée des caisses"""
+    if not check_administration_read_permission(request):
+        return HttpResponse("Non autorisé", status=403)
+    
+    caisses = Caisse.objects.prefetch_related('conditions_paiement_eligibles').order_by('nom')
+    
+    # Filtres
+    search = request.GET.get('search', '').strip()
+    
+    if search:
+        caisses = caisses.filter(nom__icontains=search)
+    
+    context = {
+        'caisses': caisses
+    }
+    return render(request, 'core/administration/partials/caisse_table.html', context)
+
+
+@csrf_protect
+def caisse_create_view(request):
+    """Vue pour créer une caisse"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        if request.method == 'POST':
+            form = CaisseForm(request.POST)
+            if form.is_valid():
+                caisse = form.save()
+                
+                # Retourner une réponse HTMX pour fermer la modal et recharger la page
+                response = HttpResponse()
+                response.content = f'''
+                <script>
+                    window.showNotification("Caisse {caisse.nom} créée avec succès.", "success");
+                    document.getElementById('modal-container').innerHTML = '';
+                    window.location.reload();
+                </script>
+                '''
+                return response
+            else:
+                # Formulaire invalide, renvoyer le formulaire avec erreurs
+                context = {
+                    'form': form,
+                    'today': date.today()
+                }
+                return render(request, 'core/administration/caisse_form.html', context)
+        else:
+            form = CaisseForm()
+        
+        context = {
+            'form': form,
+            'today': date.today()
+        }
+        return render(request, 'core/administration/caisse_form.html', context)
+    
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+def caisse_detail_view(request, pk):
+    """Vue pour voir les détails d'une caisse"""
+    if not check_administration_read_permission(request):
+        return HttpResponse("Non autorisé", status=403)
+    
+    caisse = get_object_or_404(
+        Caisse.objects.prefetch_related('conditions_paiement_eligibles'), 
+        pk=pk
+    )
+    
+    context = {
+        'caisse': caisse,
+        'today': date.today()
+    }
+    return render(request, 'core/administration/caisse_detail.html', context)
+
+
+def caisse_update_view(request, pk):
+    """Vue pour modifier une caisse"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        caisse = get_object_or_404(Caisse, pk=pk)
+        
+        if request.method == 'POST':
+            form = CaisseForm(request.POST, instance=caisse)
+            if form.is_valid():
+                caisse = form.save()
+                
+                # Retourner une réponse HTMX pour fermer la modal et recharger la page
+                response = HttpResponse()
+                response.content = f'''
+                <script>
+                    window.showNotification("Caisse {caisse.nom} modifiée avec succès.", "success");
+                    document.getElementById('modal-container').innerHTML = '';
+                    window.location.reload();
+                </script>
+                '''
+                return response
+            else:
+                # Formulaire invalide, renvoyer le formulaire avec erreurs
+                context = {
+                    'form': form,
+                    'caisse': caisse,
+                    'today': date.today()
+                }
+                return render(request, 'core/administration/caisse_form.html', context)
+        else:
+            form = CaisseForm(instance=caisse)
+        
+        context = {
+            'form': form,
+            'caisse': caisse,
+            'today': date.today()
+        }
+        return render(request, 'core/administration/caisse_form.html', context)
+    
+    except Exception as e:
+        return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
+
+
+def caisse_delete_view(request, pk):
+    """Vue pour supprimer une caisse"""
+    try:
+        if not check_titulaire_permission(request):
+            return HttpResponse("Non autorisé", status=403)
+        
+        if request.method == 'DELETE':
+            caisse = get_object_or_404(Caisse, pk=pk)
+            nom = caisse.nom
+            caisse.delete()
+            
+            # Retourner une réponse pour recharger la page après suppression
+            response = HttpResponse()
+            response.content = f'''
+            <script>
+                window.showNotification("Caisse {nom} supprimée avec succès.", "success");
+                window.location.reload();
+            </script>
+            '''
+            return response
+        
+        return HttpResponse("Méthode non autorisée", status=405)
+    
+    except Http404:
+        return HttpResponse("Caisse introuvable", status=404)
     except Exception as e:
         return HttpResponse(f"Erreur serveur: {str(e)}", status=500)
 

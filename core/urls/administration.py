@@ -30,7 +30,14 @@ from core.views.administration import (
     prestation_create_view,
     prestation_detail_view,
     prestation_update_view,
-    prestation_delete_view
+    prestation_delete_view,
+    # Vues pour les caisses
+    administration_caisses_view,
+    caisse_list_view,
+    caisse_create_view,
+    caisse_detail_view,
+    caisse_update_view,
+    caisse_delete_view
 )
 
 app_name = 'administration'
@@ -77,4 +84,14 @@ urlpatterns = [
     path('api/prestations/<int:pk>/', prestation_detail_view, name='prestation_detail'),
     path('api/prestations/<int:pk>/update/', prestation_update_view, name='prestation_update'),
     path('api/prestations/<int:pk>/delete/', prestation_delete_view, name='prestation_delete'),
+    
+    # Vue principale des caisses
+    path('caisses/', administration_caisses_view, name='administration_caisses'),
+    
+    # API HTMX pour les caisses
+    path('api/caisses/', caisse_list_view, name='caisse_list'),
+    path('api/caisses/create/', caisse_create_view, name='caisse_create'),
+    path('api/caisses/<int:pk>/', caisse_detail_view, name='caisse_detail'),
+    path('api/caisses/<int:pk>/update/', caisse_update_view, name='caisse_update'),
+    path('api/caisses/<int:pk>/delete/', caisse_delete_view, name='caisse_delete'),
 ]
