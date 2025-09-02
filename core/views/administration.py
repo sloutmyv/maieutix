@@ -1160,6 +1160,38 @@ class CaisseForm(ModelForm):
         return nom
 
 
+class ConditionPaiementForm(ModelForm):
+    """Formulaire pour les conditions de paiement"""
+    
+    class Meta:
+        model = ConditionPaiement
+        fields = ['designation', 'pourcentage']
+        widgets = {
+            'designation': forms.TextInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'placeholder': 'Désignation de la condition...'
+            }),
+            'pourcentage': forms.NumberInput(attrs={
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary',
+                'min': '0',
+                'max': '100',
+                'step': '0.01',
+                'placeholder': 'Pourcentage...'
+            })
+        }
+
+    def clean_designation(self):
+        """Valide l'unicité de la désignation"""
+        designation = self.cleaned_data.get('designation')
+        if designation:
+            queryset = ConditionPaiement.objects.filter(designation__iexact=designation)
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            if queryset.exists():
+                raise forms.ValidationError("Une condition avec cette désignation existe déjà.")
+        return designation
+
+
 @login_required
 def administration_caisses_view(request):
     """
