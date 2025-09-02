@@ -6,7 +6,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 506/506 tests passent (100% ✅)
+- **Tests** : 698/698 tests passent (100% ✅)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
 - **Architecture** : Modulaire et extensible
@@ -317,7 +317,7 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **506 tests** tous passent
+- **698 tests** tous passent
 - **Tests unitaires** : Modèles, vues, admin
 - **Tests d'intégration** : Templates, navigation, API
 - **Tests fonctionnels** : Authentification, permissions à deux niveaux

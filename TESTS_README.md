@@ -1,20 +1,20 @@
 # Tests Maieutix - Documentation Complète
 
-**État actuel : 506/506 tests passent (100% ✅)**
+**État actuel : 698/698 tests passent (100% ✅)**
 
 Ce document décrit la suite de tests complète et fonctionnelle de l'application Maieutix, une plateforme de gestion pour sages-femmes développée avec Django.
 
 ## 🎯 Résultats Globaux
 
-- **Total de tests** : 506
+- **Total de tests** : 698
 - **Taux de réussite** : 100% ✅
 - **Applications testées** : `core` et `authentication`
-- **Temps d'exécution** : ~73 secondes
+- **Temps d'exécution** : ~117 secondes
 - **Couverture** : Modèles, Vues, Admin, Authentification, Intégration
 
 ## 📊 Répartition des Tests
 
-### Core Application (491 tests ✅)
+### Core Application (656 tests ✅)
 ```
 core/tests/
 ├── models/          # 120+ tests - Modèles de données
@@ -155,7 +155,7 @@ authentication/
 
 ### Tests Complets
 ```bash
-# Tous les tests (506)
+# Tous les tests (698)
 docker-compose exec web python manage.py test
 
 # Avec arrêt au premier échec
@@ -170,7 +170,7 @@ docker-compose exec web python manage.py test --keepdb
 
 ### Tests par Application
 ```bash
-# Tests Core (491 tests)
+# Tests Core (656 tests)
 docker-compose exec web python manage.py test core.tests
 
 # Tests Authentication (42 tests)
@@ -265,7 +265,7 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 - **Tests unitaires** : ~0.01-0.05s chacun
 - **Tests d'intégration** : ~0.1-0.3s chacun
 - **Tests d'admin** : ~0.05-0.15s chacun
-- **Suite complète** : ~73 secondes (506 tests)
+- **Suite complète** : ~117 secondes (698 tests)
 
 ### Fiabilité
 - **Stabilité** : 506/506 tests passent constamment
@@ -453,7 +453,7 @@ self.assertTrue(result)
 
 ## 🏆 Conclusion
 
-Cette suite de tests de **506 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
+Cette suite de tests de **698 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
 
 - **Fonctionnalités métier** : Gestion complète des sages-femmes, actes, prestations
 - **Sécurité** : Authentification et permissions robustes
