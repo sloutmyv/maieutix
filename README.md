@@ -49,10 +49,11 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Prestations par cadre d'exercice** : Organisation structurée des prestations
 - **Champs étendus** : Suffixe, origine (LM/AT/MT/GP), statut actif/inactif, prescription obligatoire
 - **Calculs automatiques** : Tarifs calculés automatiquement (cotation × coût conventionnel)
-- **Interface moderne** : Formulaires et vues de détail avec design cohérent
+- **Interface moderne** : Formulaires et vues de détail avec design cohérent harmonisé
 - **Recherche globale** : Recherche sur actes, cadres d'exercice, désignations et suffixes
+- **Tri interactif** : Tri par colonnes cliquables (cadre, désignation, origine, acte, suffixe, prescription, cotation)
 - **Filtrage intelligent** : Les prestations inactives sont automatiquement masquées
-- **Filtres personnalisés** : Formatage automatique des textes de limites
+- **Affichage complet** : Désignations affichées intégralement sans troncature
 
 ### 📋 Gestion des Cadres d'Exercice
 - **Configuration flexible** : Définition des différents cadres d'exercice
@@ -200,7 +201,7 @@ maieutix/
 - `DELETE /administration/acte/{id}/delete/` - Suppression
 
 ### CRUD Prestations (HTMX)
-- `GET /administration/prestations/list/` - Liste avec recherche globale
+- `GET /administration/prestations/list/` - Liste avec recherche globale et tri interactif
 - `GET /administration/prestation/create/` - Formulaire création
 - `GET /administration/prestation/{id}/update/` - Formulaire modification
 - `GET /administration/prestation/{id}/detail/` - Vue détaillée
@@ -353,9 +354,11 @@ Pour plus de détails, voir `tests_readme.md`.
 ### Composants UI
 - **Navigation** : Navbar responsive avec logo
 - **Modals** : Formulaires en overlay avec HTMX
-- **Tables** : Listes avec tri, recherche et pagination
+- **Tables** : Listes avec tri interactif, recherche et pagination
+- **Tri dynamique** : En-têtes cliquables avec indicateurs visuels (▲▼)
 - **Notifications** : Système de feedback utilisateur
 - **Statuts** : Badges colorés pour les états
+- **Interface harmonisée** : Design cohérent entre toutes les pages d'administration
 
 ## Règles Métier
 

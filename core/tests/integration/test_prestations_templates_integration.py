@@ -141,7 +141,7 @@ class PrestationsListTemplateTest(BasePrestationTemplateTest):
         # Vérifier les éléments de l'interface
         self.assertContains(response, 'Administration - Prestations')
         self.assertContains(response, 'Ajouter une prestation')
-        self.assertContains(response, 'Rechercher par acte, cadre')
+        self.assertContains(response, 'Rechercher une prestation...')
     
     def test_affichage_cadres_exercice(self):
         """Test de l'affichage des cadres d'exercice"""
@@ -218,7 +218,7 @@ class PrestationsListTemplateTest(BasePrestationTemplateTest):
         self.assertEqual(response.status_code, 200)
         
         # Vérifier le champ de recherche
-        self.assertContains(response, 'placeholder="Rechercher par acte, cadre')
+        self.assertContains(response, 'placeholder="Rechercher une prestation...')
         
         # Vérifier la présence du tableau
         self.assertContains(response, 'Cadre d\'exercice')

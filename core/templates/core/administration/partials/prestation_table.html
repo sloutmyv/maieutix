@@ -2,26 +2,103 @@
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    hx-get="{% url 'administration:prestation_list' %}?sort=cadre_exercice&direction={% if current_sort == 'cadre_exercice' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#prestations-table"
+                    hx-include="[name='search']"
+                    title="Cliquer pour trier">
                     Cadre d'exercice
+                    <span class="ml-1 inline-block">
+                        {% if current_sort == 'cadre_exercice' %}
+                            {% if current_direction == 'asc' %}▲{% else %}▼{% endif %}
+                        {% else %}
+                            <span class="text-gray-300">▲▼</span>
+                        {% endif %}
+                    </span>
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    hx-get="{% url 'administration:prestation_list' %}?sort=designation&direction={% if current_sort == 'designation' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#prestations-table"
+                    hx-include="[name='search']"
+                    title="Cliquer pour trier">
                     Désignation
+                    <span class="ml-1 inline-block">
+                        {% if current_sort == 'designation' %}
+                            {% if current_direction == 'asc' %}▲{% else %}▼{% endif %}
+                        {% else %}
+                            <span class="text-gray-300">▲▼</span>
+                        {% endif %}
+                    </span>
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    hx-get="{% url 'administration:prestation_list' %}?sort=origine&direction={% if current_sort == 'origine' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#prestations-table"
+                    hx-include="[name='search']"
+                    title="Cliquer pour trier">
                     Origine
+                    <span class="ml-1 inline-block">
+                        {% if current_sort == 'origine' %}
+                            {% if current_direction == 'asc' %}▲{% else %}▼{% endif %}
+                        {% else %}
+                            <span class="text-gray-300">▲▼</span>
+                        {% endif %}
+                    </span>
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    hx-get="{% url 'administration:prestation_list' %}?sort=acte&direction={% if current_sort == 'acte' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#prestations-table"
+                    hx-include="[name='search']"
+                    title="Cliquer pour trier">
                     Acte
+                    <span class="ml-1 inline-block">
+                        {% if current_sort == 'acte' %}
+                            {% if current_direction == 'asc' %}▲{% else %}▼{% endif %}
+                        {% else %}
+                            <span class="text-gray-300">▲▼</span>
+                        {% endif %}
+                    </span>
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    hx-get="{% url 'administration:prestation_list' %}?sort=suffixe&direction={% if current_sort == 'suffixe' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#prestations-table"
+                    hx-include="[name='search']"
+                    title="Cliquer pour trier">
                     Suffixe
+                    <span class="ml-1 inline-block">
+                        {% if current_sort == 'suffixe' %}
+                            {% if current_direction == 'asc' %}▲{% else %}▼{% endif %}
+                        {% else %}
+                            <span class="text-gray-300">▲▼</span>
+                        {% endif %}
+                    </span>
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    hx-get="{% url 'administration:prestation_list' %}?sort=prescription&direction={% if current_sort == 'prescription' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#prestations-table"
+                    hx-include="[name='search']"
+                    title="Cliquer pour trier">
                     Prescription
+                    <span class="ml-1 inline-block">
+                        {% if current_sort == 'prescription' %}
+                            {% if current_direction == 'asc' %}▲{% else %}▼{% endif %}
+                        {% else %}
+                            <span class="text-gray-300">▲▼</span>
+                        {% endif %}
+                    </span>
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    hx-get="{% url 'administration:prestation_list' %}?sort=cotation&direction={% if current_sort == 'cotation' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#prestations-table"
+                    hx-include="[name='search']"
+                    title="Cliquer pour trier">
                     Cotation
+                    <span class="ml-1 inline-block">
+                        {% if current_sort == 'cotation' %}
+                            {% if current_direction == 'asc' %}▲{% else %}▼{% endif %}
+                        {% else %}
+                            <span class="text-gray-300">▲▼</span>
+                        {% endif %}
+                    </span>
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Tarif calculé
@@ -41,7 +118,7 @@
                 </td>
                 <td class="px-6 py-4">
                     <div class="text-sm text-gray-900">
-                        {{ prestation.designation|truncatechars:60 }}
+                        {{ prestation.designation }}
                     </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">

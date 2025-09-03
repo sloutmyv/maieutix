@@ -949,7 +949,9 @@ def administration_prestations_view(request):
         'section': 'administration',
         'prestations': prestations,
         'cadres_exercice': cadres_exercice,
-        'actes': actes
+        'actes': actes,
+        'current_sort': 'cadre_exercice',
+        'current_direction': 'asc'
     }
     return render(request, 'core/administration/prestations.html', context)
 
@@ -959,7 +961,31 @@ def prestation_list_view(request):
     if not check_titulaire_permission(request):
         return HttpResponse("Non autorisé", status=403)
     
-    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').filter(actif=True).order_by('cadre_exercice__label', 'designation')
+    prestations = Prestation.objects.select_related('cadre_exercice', 'acte').filter(actif=True)
+    
+    # Gestion du tri
+    sort_field = request.GET.get('sort', 'cadre_exercice__label')
+    sort_direction = request.GET.get('direction', 'asc')
+    
+    # Champs triables autorisés
+    sortable_fields = {
+        'cadre_exercice': 'cadre_exercice__label',
+        'designation': 'designation',
+        'origine': 'origine',
+        'acte': 'acte__code',
+        'suffixe': 'suffixe',
+        'prescription': 'prescription',
+        'cotation': 'cotation',
+    }
+    
+    # Validation du champ de tri
+    if sort_field in sortable_fields:
+        order_field = sortable_fields[sort_field]
+        if sort_direction == 'desc':
+            order_field = f'-{order_field}'
+        prestations = prestations.order_by(order_field, 'designation')
+    else:
+        prestations = prestations.order_by('cadre_exercice__label', 'designation')
     
     # Filtres
     search = request.GET.get('search', '').strip()
@@ -991,7 +1017,9 @@ def prestation_list_view(request):
             pass  # Ignorer les valeurs non numériques
     
     context = {
-        'prestations': prestations
+        'prestations': prestations,
+        'current_sort': sort_field,
+        'current_direction': sort_direction
     }
     return render(request, 'core/administration/partials/prestation_table.html', context)
 
