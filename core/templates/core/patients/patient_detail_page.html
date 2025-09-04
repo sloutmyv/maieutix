@@ -35,6 +35,18 @@
         
         <div class="flex space-x-3">
             <button 
+                onclick="alert('Fonctionnalité à venir')"
+                aria-label="Ajouter une feuille de soin"
+                style="background-color: #D9BA23;"
+                class="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+            >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Ajouter une feuille de soin
+            </button>
+
+            <button 
                 hx-get="{% url 'patients:patient_edit' patient.pk %}"
                 hx-target="#modal-container"
                 hx-swap="innerHTML"
@@ -352,6 +364,13 @@ function showTab(tabName) {
     activeButton.classList.remove('border-transparent', 'text-gray-500');
 }
 
+// Gestion des modals patients
+document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.target.id === 'modal-container') {
+        initPatientForm();
+    }
+});
+
 // Gestion de la réponse HTMX pour les actions
 document.body.addEventListener('htmx:afterRequest', function(evt) {
     if (evt.detail.xhr.status === 200) {
@@ -361,6 +380,197 @@ document.body.addEventListener('htmx:afterRequest', function(evt) {
         }
     }
 });
+
+function initPatientForm() {
+    // Gestion de l'affichage des champs spécifiques selon le type de patient
+    function toggleSpecificFields(preserveValues = false) {
+        const typeField = document.querySelector('#patient-modal [name="type_patient"]');
+        const grossesseDiv = document.querySelector('#patient-modal #grossesse-field');
+        const mereDiv = document.querySelector('#patient-modal #mere-field');
+        
+        if (!typeField || !grossesseDiv || !mereDiv) return;
+        
+        const typeValue = typeField.value;
+        
+        if (typeValue === 'femme') {
+            grossesseDiv.style.display = 'block';
+            mereDiv.style.display = 'none';
+            if (!preserveValues) {
+                const mereInput = document.querySelector('#patient-modal [name="mere"]');
+                if (mereInput) mereInput.value = '';
+                if (typeof clearMereSelection === 'function') clearMereSelection();
+            }
+        } else if (typeValue === 'bebe') {
+            grossesseDiv.style.display = 'none';
+            mereDiv.style.display = 'block';
+            // Un bébé ne peut jamais être titulaire de l'assurance
+            const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
+            if (titulaireCheckbox) {
+                titulaireCheckbox.checked = false;
+                toggleAssureInfo();
+            }
+            if (!preserveValues) {
+                const grossesseInput = document.querySelector('#patient-modal [name="date_debut_grossesse"]');
+                if (grossesseInput && grossesseInput.value) {
+                    grossesseInput.value = '';
+                }
+            }
+            if (preserveValues) {
+                initMereSelection();
+            }
+        }
+    }
+    
+    // Initialiser la sélection de mère en mode édition
+    function initMereSelection() {
+        const mereInput = document.querySelector('#patient-modal [name="mere"]');
+        const selectedMereDiv = document.querySelector('#patient-modal #selected-mere');
+        const selectedMereName = document.querySelector('#patient-modal #selected-mere-name');
+        
+        if (mereInput && mereInput.value && mereInput.value !== '') {
+            const mereId = mereInput.value;
+            
+            fetch(`/patients/search-meres/?q=`)
+                .then(response => response.json())
+                .then(allMeres => {
+                    const mere = allMeres.find(m => m.id == mereId);
+                    if (mere && selectedMereDiv && selectedMereName) {
+                        selectedMereName.textContent = mere.nom_complet;
+                        selectedMereDiv.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    const mereSelect = document.querySelector('#patient-modal select[name="mere"]');
+                    if (mereSelect) {
+                        const selectedOption = mereSelect.querySelector(`option[value="${mereId}"]`);
+                        if (selectedOption && selectedMereDiv && selectedMereName) {
+                            selectedMereName.textContent = selectedOption.textContent.trim();
+                            selectedMereDiv.classList.remove('hidden');
+                        }
+                    }
+                });
+        }
+    }
+    
+    // Gestion de l'affichage des informations assuré
+    function toggleAssureInfo() {
+        const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
+        const identiteDiv = document.querySelector('#patient-modal #assure-identite');
+        const adresseLabel = document.querySelector('#patient-modal #adresse-label');
+        
+        if (!titulaireCheckbox || !identiteDiv || !adresseLabel) return;
+        
+        if (titulaireCheckbox.checked) {
+            identiteDiv.style.display = 'none';
+            adresseLabel.textContent = 'Adresse du patient';
+        } else {
+            identiteDiv.style.display = 'block';
+            adresseLabel.textContent = 'Adresse de l\'assuré';
+        }
+    }
+    
+    // Initialisation avec gestion du mode édition
+    const typeField = document.querySelector('#patient-modal [name="type_patient"]');
+    const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
+    
+    // Vérifier si c'est un formulaire d'édition
+    const isEditMode = document.querySelector('#patient-modal form').action.includes('/edit/');
+    
+    if (typeField) {
+        toggleSpecificFields(isEditMode);
+        typeField.addEventListener('change', () => toggleSpecificFields(false));
+    }
+    
+    if (titulaireCheckbox) {
+        toggleAssureInfo();
+        titulaireCheckbox.addEventListener('change', toggleAssureInfo);
+    }
+    
+    // Autocomplétion pour la recherche de mère
+    const mereSearchInput = document.querySelector('#patient-modal #mere-search');
+    const mereDropdown = document.querySelector('#patient-modal #mere-dropdown');
+    const mereHiddenInput = document.querySelector('#patient-modal [name="mere"]');
+    const selectedMereDiv = document.querySelector('#patient-modal #selected-mere');
+    const selectedMereName = document.querySelector('#patient-modal #selected-mere-name');
+    
+    let searchTimeout;
+    
+    if (mereSearchInput) {
+        mereSearchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                mereDropdown.classList.add('hidden');
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                searchMeres(query);
+            }, 300);
+        });
+        
+        mereSearchInput.addEventListener('blur', function() {
+            setTimeout(() => {
+                mereDropdown.classList.add('hidden');
+            }, 200);
+        });
+        
+        mereSearchInput.addEventListener('focus', function() {
+            if (this.value.trim().length >= 2) {
+                mereDropdown.classList.remove('hidden');
+            }
+        });
+    }
+    
+    // Recherche des mères via AJAX
+    function searchMeres(query) {
+        fetch(`/patients/search-meres/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayMereResults(data);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la recherche:', error);
+            });
+    }
+    
+    // Affichage des résultats
+    function displayMereResults(meres) {
+        if (meres.length === 0) {
+            mereDropdown.innerHTML = '<div class="p-2 text-gray-500 text-sm">Aucune femme trouvée</div>';
+        } else {
+            mereDropdown.innerHTML = meres.map(mere => `
+                <div class="p-2 hover:bg-gray-100 cursor-pointer text-sm" 
+                     onclick="selectMere(${mere.id}, '${mere.nom_complet}')">
+                    <div class="font-medium">${mere.nom_complet}</div>
+                    <div class="text-gray-500 text-xs">Née le ${mere.date_naissance_formatted}</div>
+                </div>
+            `).join('');
+        }
+        mereDropdown.classList.remove('hidden');
+    }
+    
+    // Sélection d'une mère
+    window.selectMere = function(id, nomComplet) {
+        if (mereHiddenInput && selectedMereName && selectedMereDiv) {
+            mereHiddenInput.value = id;
+            selectedMereName.textContent = nomComplet;
+            selectedMereDiv.classList.remove('hidden');
+            mereSearchInput.value = '';
+            mereDropdown.classList.add('hidden');
+        }
+    };
+    
+    // Effacer la sélection
+    window.clearMereSelection = function() {
+        if (mereHiddenInput && selectedMereDiv) {
+            mereHiddenInput.value = '';
+            selectedMereDiv.classList.add('hidden');
+            if (mereSearchInput) mereSearchInput.value = '';
+        }
+    };
+}
 </script>
 
 <style>

@@ -32,17 +32,17 @@ class PatientForm(ModelForm):
             'type_patient': forms.Select(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'nom': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'prenom': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
-            'date_naissance': forms.DateInput(attrs={'type': 'date', 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
+            'date_naissance': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'nom_jf': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'profession': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'telephone': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'numero_ep': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
-            'date_debut_grossesse': forms.DateInput(attrs={'type': 'date', 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
+            'date_debut_grossesse': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'mere': forms.Select(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'est_assure_titulaire': forms.CheckboxInput(attrs={'class': 'mt-1'}),
             'nom_assure': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'prenom_assure': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
-            'date_naissance_assure': forms.DateInput(attrs={'type': 'date', 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
+            'date_naissance_assure': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'rue_assure': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'code_postal_assure': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
             'commune_assure': forms.TextInput(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
@@ -223,18 +223,22 @@ def search_meres(request):
     """
     query = request.GET.get('q', '').strip()
     
-    if len(query) < 2:
-        return JsonResponse([])
-    
     # Rechercher parmi toutes les femmes actives
     meres = Patient.objects.filter(
         type_patient='femme',
         is_active=True
-    ).filter(
-        Q(nom__icontains=query) | 
-        Q(prenom__icontains=query) |
-        Q(nom_jf__icontains=query)
-    ).order_by('nom', 'prenom')[:10]  # Limiter à 10 résultats
+    )
+    
+    if query and len(query) >= 2:
+        meres = meres.filter(
+            Q(nom__icontains=query) | 
+            Q(prenom__icontains=query) |
+            Q(nom_jf__icontains=query)
+        )
+    
+    # Limiter les résultats
+    limit = 10 if query else 50  # Plus de résultats si pas de recherche (pour l'initialisation)
+    meres = meres.order_by('nom', 'prenom')[:limit]
     
     results = []
     for mere in meres:

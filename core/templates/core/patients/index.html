@@ -69,7 +69,7 @@ document.body.addEventListener('htmx:afterSwap', function(evt) {
 
 function initPatientForm() {
     // Gestion de l'affichage des champs spécifiques selon le type de patient
-    function toggleSpecificFields() {
+    function toggleSpecificFields(preserveValues = false) {
         const typeField = document.querySelector('#patient-modal [name="type_patient"]');
         const grossesseDiv = document.querySelector('#patient-modal #grossesse-field');
         const mereDiv = document.querySelector('#patient-modal #mere-field');
@@ -81,16 +81,65 @@ function initPatientForm() {
         if (typeValue === 'femme') {
             grossesseDiv.style.display = 'block';
             mereDiv.style.display = 'none';
-            // Réinitialiser le champ mère
-            const mereInput = document.querySelector('#patient-modal [name="mere"]');
-            if (mereInput) mereInput.value = '';
-            if (typeof clearMereSelection === 'function') clearMereSelection();
+            // Réinitialiser uniquement le champ mère lors du changement de type (pas en mode préservation)
+            if (!preserveValues) {
+                const mereInput = document.querySelector('#patient-modal [name="mere"]');
+                if (mereInput) mereInput.value = '';
+                if (typeof clearMereSelection === 'function') clearMereSelection();
+            }
         } else if (typeValue === 'bebe') {
             grossesseDiv.style.display = 'none';
             mereDiv.style.display = 'block';
-            // Réinitialiser le champ grossesse
-            const grossesseInput = document.querySelector('#patient-modal [name="date_debut_grossesse"]');
-            if (grossesseInput) grossesseInput.value = '';
+            // Un bébé ne peut jamais être titulaire de l'assurance
+            const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
+            if (titulaireCheckbox) {
+                titulaireCheckbox.checked = false;
+                toggleAssureInfo();
+            }
+            // Réinitialiser uniquement le champ grossesse lors du changement de type (pas en mode préservation)
+            if (!preserveValues) {
+                const grossesseInput = document.querySelector('#patient-modal [name="date_debut_grossesse"]');
+                if (grossesseInput && grossesseInput.value) {
+                    grossesseInput.value = '';
+                }
+            }
+            // En mode édition, afficher la mère sélectionnée si elle existe
+            if (preserveValues) {
+                initMereSelection();
+            }
+        }
+    }
+    
+    // Initialiser la sélection de mère en mode édition
+    function initMereSelection() {
+        const mereInput = document.querySelector('#patient-modal [name="mere"]');
+        const selectedMereDiv = document.querySelector('#patient-modal #selected-mere');
+        const selectedMereName = document.querySelector('#patient-modal #selected-mere-name');
+        
+        if (mereInput && mereInput.value && mereInput.value !== '') {
+            // Récupérer les infos de la mère via API
+            const mereId = mereInput.value;
+            
+            fetch(`/patients/search-meres/?q=`)
+                .then(response => response.json())
+                .then(allMeres => {
+                    const mere = allMeres.find(m => m.id == mereId);
+                    if (mere && selectedMereDiv && selectedMereName) {
+                        selectedMereName.textContent = mere.nom_complet;
+                        selectedMereDiv.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    // Si l'API échoue, essayer de récupérer depuis un select existant
+                    const mereSelect = document.querySelector('#patient-modal select[name="mere"]');
+                    if (mereSelect) {
+                        const selectedOption = mereSelect.querySelector(`option[value="${mereId}"]`);
+                        if (selectedOption && selectedMereDiv && selectedMereName) {
+                            selectedMereName.textContent = selectedOption.textContent.trim();
+                            selectedMereDiv.classList.remove('hidden');
+                        }
+                    }
+                });
         }
     }
     
@@ -111,13 +160,17 @@ function initPatientForm() {
         }
     }
     
-    // Initialisation
+    // Initialisation avec gestion du mode édition
     const typeField = document.querySelector('#patient-modal [name="type_patient"]');
     const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
     
+    // Vérifier si c'est un formulaire d'édition
+    const isEditMode = document.querySelector('#patient-modal form').action.includes('/edit/');
+    
     if (typeField) {
-        toggleSpecificFields();
-        typeField.addEventListener('change', toggleSpecificFields);
+        // Préserver les valeurs en mode édition
+        toggleSpecificFields(isEditMode);
+        typeField.addEventListener('change', () => toggleSpecificFields(false));
     }
     
     if (titulaireCheckbox) {

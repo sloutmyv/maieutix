@@ -151,6 +151,8 @@ class Patient(models.Model):
                 raise ValidationError("La mère d'un bébé doit être une femme.")
             if self.date_debut_grossesse:
                 raise ValidationError("Un bébé ne peut pas avoir de date de début de grossesse.")
+            if self.est_assure_titulaire:
+                raise ValidationError("Un bébé ne peut pas être assuré titulaire.")
         
         if self.type_patient == 'femme' and self.mere:
             raise ValidationError("Une femme ne peut pas avoir de mère assignée.")
