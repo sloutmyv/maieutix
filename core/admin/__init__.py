@@ -6,5 +6,6 @@ from .cadre_exercice import CadreExerciceAdmin
 from .prestation import PrestationAdmin
 from .condition_paiement import ConditionPaiementAdmin
 from .caisse import CaisseAdmin
+from .patient import PatientAdmin
 
-__all__ = ['CabinetAdmin', 'SageFemmeAdmin', 'PeriodeActiviteAdmin', 'PeriodeActiviteInline', 'ActeAdmin', 'TarifPeriodeAdmin', 'CadreExerciceAdmin', 'PrestationAdmin', 'ConditionPaiementAdmin', 'CaisseAdmin']
+__all__ = ['CabinetAdmin', 'SageFemmeAdmin', 'PeriodeActiviteAdmin', 'PeriodeActiviteInline', 'ActeAdmin', 'TarifPeriodeAdmin', 'CadreExerciceAdmin', 'PrestationAdmin', 'ConditionPaiementAdmin', 'CaisseAdmin', 'PatientAdmin']

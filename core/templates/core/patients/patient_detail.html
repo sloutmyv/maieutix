@@ -1,0 +1,174 @@
+<!-- Modal -->
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" id="patient-detail-modal">
+    <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+        <!-- Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900">
+                    {{ patient.nom_complet }}
+                    {% if patient.type_patient == 'femme' %}
+                        <span class="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-pink-100 text-pink-800">
+                            Femme
+                        </span>
+                    {% else %}
+                        <span class="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            Bébé
+                        </span>
+                    {% endif %}
+                </h3>
+                <p class="text-sm text-gray-500 mt-1">
+                    {{ patient.age_detail }}
+                    {% if patient.profession %} • {{ patient.profession }}{% endif %}
+                </p>
+            </div>
+            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" 
+                    onclick="document.getElementById('patient-detail-modal').remove()">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 max-h-96 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Informations personnelles -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-900 border-b pb-2">Informations personnelles</h4>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="font-medium text-gray-700">Date de naissance :</span>
+                            <p class="text-gray-900">{{ patient.date_naissance|date:"d/m/Y" }}</p>
+                        </div>
+                        
+                        {% if patient.nom_jf %}
+                        <div>
+                            <span class="font-medium text-gray-700">Nom de jeune fille :</span>
+                            <p class="text-gray-900">{{ patient.nom_jf }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if patient.telephone %}
+                        <div>
+                            <span class="font-medium text-gray-700">Téléphone :</span>
+                            <p class="text-gray-900">{{ patient.telephone }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if patient.numero_ep %}
+                        <div>
+                            <span class="font-medium text-gray-700">Numéro EP :</span>
+                            <p class="text-gray-900">{{ patient.numero_ep }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Informations spécifiques -->
+                    {% if patient.type_patient == 'femme' and patient.date_debut_grossesse %}
+                    <div class="mt-4">
+                        <span class="font-medium text-gray-700">Date de début de grossesse :</span>
+                        <p class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if patient.mere %}
+                    <div class="mt-4">
+                        <span class="font-medium text-gray-700">Mère :</span>
+                        <p class="text-gray-900">{{ patient.mere.nom_complet }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Assurance -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-900 border-b pb-2">Assurance</h4>
+                    
+                    <div class="text-sm space-y-3">
+                        <div>
+                            <span class="font-medium text-gray-700">Statut :</span>
+                            <p class="text-gray-900">
+                                {% if patient.est_assure_titulaire %}
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                        Assuré titulaire
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        Ayant droit
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        {% if patient.caisse %}
+                        <div>
+                            <span class="font-medium text-gray-700">Caisse :</span>
+                            <p class="text-gray-900">{{ patient.caisse.nom }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if not patient.est_assure_titulaire %}
+                        <div class="bg-gray-50 p-3 rounded-md">
+                            <h5 class="font-medium text-gray-700 mb-2">Assuré titulaire :</h5>
+                            <p class="text-gray-900">{{ patient.prenom_assure }} {{ patient.nom_assure }}</p>
+                            {% if patient.date_naissance_assure %}
+                                <p class="text-sm text-gray-600">Né(e) le {{ patient.date_naissance_assure|date:"d/m/Y" }}</p>
+                            {% endif %}
+                            
+                            {% if patient.rue_assure or patient.code_postal_assure or patient.commune_assure %}
+                            <div class="mt-2">
+                                <span class="font-medium text-gray-700">Adresse :</span>
+                                <p class="text-gray-900">
+                                    {% if patient.rue_assure %}{{ patient.rue_assure }}<br>{% endif %}
+                                    {% if patient.code_postal_assure %}{{ patient.code_postal_assure }}{% endif %}
+                                    {% if patient.commune_assure %} {{ patient.commune_assure }}{% endif %}
+                                </p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bébés associés (pour les femmes) -->
+            {% if patient.type_patient == 'femme' and bebes %}
+            <div class="mt-8">
+                <h4 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Bébés associés</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for bebe in bebes %}
+                    <div class="bg-blue-50 p-3 rounded-md">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ bebe.nom_complet }}</p>
+                                <p class="text-sm text-gray-600">{{ bebe.date_naissance|date:"d/m/Y" }}</p>
+                                <p class="text-xs text-gray-500">{{ bebe.age_detail }}</p>
+                            </div>
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                Bébé
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b">
+            <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10" 
+                    onclick="document.getElementById('patient-detail-modal').remove()">
+                Fermer
+            </button>
+            <button 
+                hx-get="{% url 'patients:patient_edit' patient.pk %}"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                style="background-color: #2D4B73;"
+                class="text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:opacity-90"
+                onclick="document.getElementById('patient-detail-modal').remove()">
+                Modifier
+            </button>
+        </div>
+    </div>
+</div>

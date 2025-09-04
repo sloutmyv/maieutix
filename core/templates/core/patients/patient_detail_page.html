@@ -1,0 +1,377 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ patient.nom_complet }} - Maieutix{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header avec couleur de fond légère -->
+    <div class="mb-8 flex justify-between items-center bg-gradient-to-r from-accent/5 to-highlight/5 p-6 rounded-lg border border-accent/20">
+        <div>
+            <div class="flex items-center space-x-4 mb-2">
+                <a href="{% url 'patients:patients_view' %}" 
+                   class="inline-flex items-center text-accent hover:text-primary transition-colors">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Patients
+                </a>
+            </div>
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold text-primary">
+                    {{ patient.nom_complet }}
+                </h1>
+                {% if patient.type_patient == 'femme' %}
+                    <span class="ml-4 inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-pink-100 text-pink-800">
+                        Femme
+                    </span>
+                {% else %}
+                    <span class="ml-4 inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
+                        Bébé
+                    </span>
+                {% endif %}
+            </div>
+            <p class="text-accent">{{ patient.age_detail }} • Né(e) le {{ patient.date_naissance|date:"d/m/Y" }}</p>
+        </div>
+        
+        <div class="flex space-x-3">
+            <button 
+                hx-get="{% url 'patients:patient_edit' patient.pk %}"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                aria-label="Modifier le patient"
+                style="background-color: #2D4B73;"
+                class="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+            >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Modifier
+            </button>
+            
+            <button 
+                hx-post="{% url 'patients:patient_toggle_active' patient.pk %}"
+                hx-confirm="Êtes-vous sûr de vouloir {% if patient.is_active %}désactiver{% else %}réactiver{% endif %} ce patient ?"
+                class="inline-flex items-center px-4 py-2 {% if patient.is_active %}bg-orange-600 hover:bg-orange-700{% else %}bg-green-600 hover:bg-green-700{% endif %} text-white text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+            >
+                {% if patient.is_active %}
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"></path>
+                    </svg>
+                    Désactiver
+                {% else %}
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Réactiver
+                {% endif %}
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenu principal avec onglets -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+        <!-- Onglets -->
+        <div class="border-b border-gray-200">
+            <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                <button onclick="showTab('informations')" 
+                        class="tab-button active border-b-2 py-4 px-1 text-sm font-medium transition-colors" 
+                        data-tab="informations">
+                    Informations détaillées
+                </button>
+                <button onclick="showTab('dossier')" 
+                        class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium transition-colors" 
+                        data-tab="dossier">
+                    {% if patient.type_patient == 'femme' %}
+                        Dossier patiente
+                    {% else %}
+                        Dossier bébé
+                    {% endif %}
+                </button>
+                <button onclick="showTab('documents')" 
+                        class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium transition-colors" 
+                        data-tab="documents">
+                    Documents
+                </button>
+            </nav>
+        </div>
+
+        <!-- Contenu des onglets -->
+        <div class="p-6">
+            <!-- Onglet Informations détaillées -->
+            <div id="tab-informations" class="tab-content">
+                <div class="space-y-8">
+                    <!-- Informations du patient -->
+                    <div class="space-y-6">
+                        <h4 class="text-lg font-semibold text-primary border-b border-accent/20 pb-2">Informations du patient</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                            <div class="space-y-3">
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Nom :</span>
+                                    <span class="text-gray-900">{{ patient.nom }}</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Prénom :</span>
+                                    <span class="text-gray-900">{{ patient.prenom }}</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Date de naissance :</span>
+                                    <span class="text-gray-900">{{ patient.date_naissance|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Âge :</span>
+                                    <span class="text-gray-900">{{ patient.age_detail }}</span>
+                                </div>
+                                {% if patient.nom_jf %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Nom JF :</span>
+                                    <span class="text-gray-900">{{ patient.nom_jf }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="space-y-3">
+                                {% if patient.profession %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Profession :</span>
+                                    <span class="text-gray-900">{{ patient.profession }}</span>
+                                </div>
+                                {% endif %}
+                                {% if patient.telephone %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Téléphone :</span>
+                                    <span class="text-gray-900">{{ patient.telephone }}</span>
+                                </div>
+                                {% endif %}
+                                {% if patient.numero_ep %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Numéro EP :</span>
+                                    <span class="text-gray-900">{{ patient.numero_ep }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Informations spécifiques -->
+                        {% if patient.type_patient == 'femme' and patient.date_debut_grossesse %}
+                        <div class="bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-lg border border-pink-200">
+                            <h5 class="text-sm font-medium text-pink-800 mb-3">Grossesse en cours</h5>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Début :</span>
+                                    <span class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Terme prévu :</span>
+                                    <span class="text-gray-900">{{ patient.date_terme|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Âge grossesse :</span>
+                                    <span class="text-gray-900">{{ patient.age_grossesse }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Informations de l'assurance -->
+                    <div class="space-y-6">
+                        <h4 class="text-lg font-semibold text-primary border-b border-accent/20 pb-2">Informations de l'assurance</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-600 w-32">Statut :</span>
+                                    <div>
+                                        {% if patient.est_assure_titulaire %}
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                Titulaire
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                Ayant droit
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                {% if patient.caisse %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Caisse :</span>
+                                    <span class="text-gray-900">{{ patient.caisse.nom }}</span>
+                                </div>
+                                {% endif %}
+
+                                <!-- Informations de l'assuré titulaire si différent -->
+                                {% if not patient.est_assure_titulaire %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Nom assuré :</span>
+                                    <span class="text-gray-900">{{ patient.prenom_assure }} {{ patient.nom_assure }}</span>
+                                </div>
+                                {% if patient.date_naissance_assure %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Né(e) le :</span>
+                                    <span class="text-gray-900">{{ patient.date_naissance_assure|date:"d/m/Y" }}</span>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <div class="space-y-3">
+                                {% if not patient.est_assure_titulaire and patient.rue_assure or patient.code_postal_assure or patient.commune_assure %}
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Adresse :</span>
+                                    <div class="text-gray-900">
+                                        {% if patient.rue_assure %}{{ patient.rue_assure }}<br>{% endif %}
+                                        {% if patient.code_postal_assure and patient.commune_assure %}
+                                            {{ patient.code_postal_assure }} {{ patient.commune_assure }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mère associée (pour les bébés) -->
+                {% if patient.type_patient == 'bebe' and patient.mere %}
+                <div class="mt-8 border-t border-accent/20 pt-6">
+                    <h4 class="text-lg font-semibold text-primary border-b border-accent/20 pb-2 mb-4">Mère</h4>
+                    <div class="max-w-xs">
+                        <a href="{% url 'patients:patient_detail' patient.mere.pk %}" class="block">
+                            <div class="bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-lg border border-pink-200 hover:from-pink-100 hover:to-pink-150 transition-colors cursor-pointer">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium text-primary hover:text-accent transition-colors">
+                                            {{ patient.mere.nom_complet }}
+                                        </div>
+                                        <p class="text-xs text-gray-600">{{ patient.mere.date_naissance|date:"d/m/Y" }}</p>
+                                        <p class="text-xs text-gray-500">{{ patient.mere.age_detail }}</p>
+                                        {% if patient.mere.telephone %}
+                                            <p class="text-xs text-gray-500 mt-1">{{ patient.mere.telephone }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-pink-100 text-pink-800">
+                                        Femme
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Bébés associés (pour les femmes) -->
+                {% if patient.type_patient == 'femme' and bebes %}
+                <div class="mt-8 border-t border-accent/20 pt-6">
+                    <h4 class="text-lg font-semibold text-primary border-b border-accent/20 pb-2 mb-4">Enfants</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for bebe in bebes %}
+                        <a href="{% url 'patients:patient_detail' bebe.pk %}" class="block">
+                            <div class="bg-gradient-to-r from-accent/5 to-highlight/5 p-3 rounded-lg border border-accent/20 hover:from-accent/10 hover:to-highlight/10 transition-colors cursor-pointer">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium text-primary hover:text-accent transition-colors">
+                                            {{ bebe.nom_complet }}
+                                        </div>
+                                        <p class="text-xs text-gray-600">{{ bebe.date_naissance|date:"d/m/Y" }}</p>
+                                        <p class="text-xs text-gray-500">{{ bebe.age_detail }}</p>
+                                    </div>
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        Bébé
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Onglet Dossier patient -->
+            <div id="tab-dossier" class="tab-content hidden">
+                <div class="text-center py-12">
+                    {% if patient.type_patient == 'femme' %}
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Dossier patiente</h3>
+                        <p class="text-gray-500">Cette section sera développée prochainement pour inclure l'historique médical, les consultations, le suivi de grossesse et les prescriptions de la patiente.</p>
+                    {% else %}
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Dossier bébé</h3>
+                        <p class="text-gray-500">Cette section sera développée prochainement pour inclure l'historique médical, le suivi de croissance, les vaccinations et les prescriptions du bébé.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Onglet Documents -->
+            <div id="tab-documents" class="tab-content hidden">
+                <div class="text-center py-12">
+                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 2a1 1 0 000 2h6a1 1 0 100-2H9z"></path>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h8a1 1 0 001-1V3a2 2 0 012 2v6.5a1.5 1.5 0 01-1.5 1.5H7.5A1.5 1.5 0 016 10V5a2 2 0 01-2 0z" clip-rule="evenodd"></path>
+                        <path d="m4 15 1-1h.5a.5.5 0 01.5.5v.5h8v-.5a.5.5 0 01.5-.5H15l1 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Documents</h3>
+                    <p class="text-gray-500">Cette section sera développée prochainement pour gérer les documents du patient : comptes-rendus, ordonnances, résultats d'examens, certificats, etc.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal container pour l'édition -->
+<div id="modal-container"></div>
+
+<script>
+function showTab(tabName) {
+    // Masquer tous les contenus d'onglet
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // Désactiver tous les boutons d'onglet
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.classList.remove('active', 'border-primary', 'text-primary');
+        button.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Afficher le contenu de l'onglet sélectionné
+    document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+    
+    // Activer le bouton de l'onglet sélectionné
+    const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+    activeButton.classList.add('active', 'border-primary', 'text-primary');
+    activeButton.classList.remove('border-transparent', 'text-gray-500');
+}
+
+// Gestion de la réponse HTMX pour les actions
+document.body.addEventListener('htmx:afterRequest', function(evt) {
+    if (evt.detail.xhr.status === 200) {
+        const response = JSON.parse(evt.detail.xhr.responseText);
+        if (response.success && response.redirect) {
+            window.location.href = response.redirect;
+        }
+    }
+});
+</script>
+
+<style>
+.tab-button.active {
+    border-bottom-color: #2D4B73 !important;
+    color: #2D4B73 !important;
+}
+
+.tab-button:hover:not(.active) {
+    color: #7A90A4 !important;
+    border-bottom-color: #7A90A4 !important;
+}
+</style>
+{% endblock %}

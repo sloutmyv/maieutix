@@ -60,6 +60,13 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Administration simple** : Gestion via l'interface Django Admin uniquement
 - **Structure modulaire** : Label et description pour chaque cadre
 
+### 🏥 Gestion des Patients
+- **Types de patients** : Femmes et bébés avec logique métier spécialisée
+- **Relation mère-enfant** : Association automatique des bébés à leur mère
+- **Recherche intelligente** : Autocomplétion pour la sélection des mères
+- **Gestion d'assurance flexible** : Assuré titulaire ou tiers avec validation
+- **Interface moderne** : Design cohérent avec système de formulaires conditionnels
+
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
 - **Caisses configurables** : Association des caisses aux conditions de paiement éligibles
@@ -132,7 +139,8 @@ maieutix/
 │   │   ├── prestation.py          # Gestion des prestations
 │   │   ├── cadre_exercice.py     # Gestion des cadres d'exercice
 │   │   ├── condition_paiement.py  # Gestion des conditions de paiement
-│   │   └── caisse.py             # Gestion des caisses
+│   │   ├── caisse.py             # Gestion des caisses
+│   │   └── patient.py            # Gestion des patients
 │   ├── views/                     # Vues organisées par domaine
 │   │   ├── administration.py      # Interface d'administration
 │   │   └── home.py               # Page d'accueil
@@ -144,7 +152,8 @@ maieutix/
 │   │   ├── prestation.py          # Admin Prestations
 │   │   ├── cadre_exercice.py     # Admin Cadres d'exercice
 │   │   ├── condition_paiement.py  # Admin Conditions de paiement
-│   │   └── caisse.py             # Admin Caisses
+│   │   ├── caisse.py             # Admin Caisses
+│   │   └── patient.py            # Admin Patients
 │   ├── tests/                     # Tests organisés (327 tests ✅)
 │   │   ├── models/                # Tests des modèles
 │   │   ├── views/                 # Tests des vues
@@ -174,6 +183,7 @@ maieutix/
 - **/administration/actes/** - Interface de gestion des actes médicaux
 - **/administration/prestations/** - Interface de gestion des prestations
 - **/administration/caisses/** - Interface de gestion des caisses
+- **/patients/** - Interface de gestion des patients
 - **/auth/connexion/** - Page de connexion
 - **/auth/deconnexion/** - Déconnexion
 - **/admin/** - Interface Django Admin
@@ -213,6 +223,14 @@ maieutix/
 - `GET /administration/caisse/{id}/update/` - Formulaire modification
 - `GET /administration/caisse/{id}/detail/` - Vue détaillée avec conditions associées
 - `DELETE /administration/caisse/{id}/delete/` - Suppression
+
+### CRUD Patients (HTMX)
+- `GET /patients/` - Liste avec recherche globale et filtrage
+- `GET /patients/create/` - Formulaire création avec champs conditionnels
+- `GET /patients/{id}/edit/` - Formulaire modification
+- `GET /patients/{id}/` - Vue détaillée du patient
+- `POST /patients/{id}/toggle-active/` - Activation/désactivation
+- `GET /patients/search-meres/` - API autocomplétion pour recherche de mères
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire

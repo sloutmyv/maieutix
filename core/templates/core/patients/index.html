@@ -3,16 +3,212 @@
 {% block title %}{{ page_title }} - Maieutix{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-primary mb-2">{{ page_title }}</h1>
-        <p class="text-accent">Gestion des patientes</p>
+<div class="max-w-7xl mx-auto">
+    <!-- Header avec couleur de fond légère -->
+    <div class="mb-8 flex justify-between items-center bg-gradient-to-r from-accent/5 to-highlight/5 p-6 rounded-lg border border-accent/20">
+        <div>
+            <h1 class="text-3xl font-bold text-primary">{{ page_title }}</h1>
+            <p class="text-accent">Gestion des patientes et de leurs informations</p>
+            <p class="text-sm text-primary mt-1 font-medium">{{ patients.count }} patient{{ patients.count|pluralize }} au total</p>
+        </div>
+        <button 
+            hx-get="{% url 'patients:patient_create' %}"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            aria-label="Ajouter un nouveau patient"
+            style="background-color: #2D4B73;"
+            class="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 shadow-sm"
+        >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Ajouter un patient
+        </button>
     </div>
-    
-    <!-- Contenu temporaire -->
-    <div class="card">
-        <h2 class="text-xl font-semibold text-primary mb-4">Section en développement</h2>
-        <p class="text-accent">Cette section sera développée prochainement.</p>
+
+    <!-- Barre de recherche -->
+    <div class="mb-6">
+        <div class="relative w-full">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input 
+                type="text" 
+                name="search"
+                value="{{ search_query }}"
+                placeholder="Rechercher un patient (nom, prénom, téléphone, nom de la mère...)..."
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                hx-get="{% url 'patients:patients_view' %}"
+                hx-target="#patients-table"
+                hx-swap="innerHTML"
+                hx-trigger="keyup changed delay:300ms"
+            >
+        </div>
+    </div>
+
+    <!-- Tableau des patients -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+        <div id="patients-table">
+            {% include 'core/patients/partials/patient_table.html' %}
+        </div>
     </div>
 </div>
+
+<!-- Modal container -->
+<div id="modal-container"></div>
+
+<script>
+document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.target.id === 'modal-container') {
+        // Le formulaire patient a été chargé, initialiser le JavaScript
+        initPatientForm();
+    }
+});
+
+function initPatientForm() {
+    // Gestion de l'affichage des champs spécifiques selon le type de patient
+    function toggleSpecificFields() {
+        const typeField = document.querySelector('#patient-modal [name="type_patient"]');
+        const grossesseDiv = document.querySelector('#patient-modal #grossesse-field');
+        const mereDiv = document.querySelector('#patient-modal #mere-field');
+        
+        if (!typeField || !grossesseDiv || !mereDiv) return;
+        
+        const typeValue = typeField.value;
+        
+        if (typeValue === 'femme') {
+            grossesseDiv.style.display = 'block';
+            mereDiv.style.display = 'none';
+            // Réinitialiser le champ mère
+            const mereInput = document.querySelector('#patient-modal [name="mere"]');
+            if (mereInput) mereInput.value = '';
+            if (typeof clearMereSelection === 'function') clearMereSelection();
+        } else if (typeValue === 'bebe') {
+            grossesseDiv.style.display = 'none';
+            mereDiv.style.display = 'block';
+            // Réinitialiser le champ grossesse
+            const grossesseInput = document.querySelector('#patient-modal [name="date_debut_grossesse"]');
+            if (grossesseInput) grossesseInput.value = '';
+        }
+    }
+    
+    // Gestion de l'affichage des informations assuré
+    function toggleAssureInfo() {
+        const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
+        const identiteDiv = document.querySelector('#patient-modal #assure-identite');
+        const adresseLabel = document.querySelector('#patient-modal #adresse-label');
+        
+        if (!titulaireCheckbox || !identiteDiv || !adresseLabel) return;
+        
+        if (titulaireCheckbox.checked) {
+            identiteDiv.style.display = 'none';
+            adresseLabel.textContent = 'Adresse du patient';
+        } else {
+            identiteDiv.style.display = 'block';
+            adresseLabel.textContent = 'Adresse de l\'assuré';
+        }
+    }
+    
+    // Initialisation
+    const typeField = document.querySelector('#patient-modal [name="type_patient"]');
+    const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
+    
+    if (typeField) {
+        toggleSpecificFields();
+        typeField.addEventListener('change', toggleSpecificFields);
+    }
+    
+    if (titulaireCheckbox) {
+        toggleAssureInfo();
+        titulaireCheckbox.addEventListener('change', toggleAssureInfo);
+    }
+    
+    // Autocomplétion pour la recherche de mère
+    const mereSearchInput = document.querySelector('#patient-modal #mere-search');
+    const mereDropdown = document.querySelector('#patient-modal #mere-dropdown');
+    const mereHiddenInput = document.querySelector('#patient-modal [name="mere"]');
+    const selectedMereDiv = document.querySelector('#patient-modal #selected-mere');
+    const selectedMereName = document.querySelector('#patient-modal #selected-mere-name');
+    
+    let searchTimeout;
+    
+    if (mereSearchInput) {
+        mereSearchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                mereDropdown.classList.add('hidden');
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                searchMeres(query);
+            }, 300);
+        });
+        
+        mereSearchInput.addEventListener('blur', function() {
+            setTimeout(() => {
+                mereDropdown.classList.add('hidden');
+            }, 200);
+        });
+        
+        mereSearchInput.addEventListener('focus', function() {
+            if (this.value.trim().length >= 2) {
+                mereDropdown.classList.remove('hidden');
+            }
+        });
+    }
+    
+    // Recherche des mères via AJAX
+    function searchMeres(query) {
+        fetch(`/patients/search-meres/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayMereResults(data);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la recherche:', error);
+            });
+    }
+    
+    // Affichage des résultats
+    function displayMereResults(meres) {
+        if (meres.length === 0) {
+            mereDropdown.innerHTML = '<div class="p-2 text-gray-500 text-sm">Aucune femme trouvée</div>';
+        } else {
+            mereDropdown.innerHTML = meres.map(mere => `
+                <div class="p-2 hover:bg-gray-100 cursor-pointer text-sm" 
+                     onclick="selectMere(${mere.id}, '${mere.nom_complet}')">
+                    <div class="font-medium">${mere.nom_complet}</div>
+                    <div class="text-gray-500 text-xs">Née le ${mere.date_naissance_formatted}</div>
+                </div>
+            `).join('');
+        }
+        mereDropdown.classList.remove('hidden');
+    }
+    
+    // Sélection d'une mère
+    window.selectMere = function(id, nomComplet) {
+        if (mereHiddenInput && selectedMereName && selectedMereDiv) {
+            mereHiddenInput.value = id;
+            selectedMereName.textContent = nomComplet;
+            selectedMereDiv.classList.remove('hidden');
+            mereSearchInput.value = '';
+            mereDropdown.classList.add('hidden');
+        }
+    };
+    
+    // Effacer la sélection
+    window.clearMereSelection = function() {
+        if (mereHiddenInput && selectedMereDiv) {
+            mereHiddenInput.value = '';
+            selectedMereDiv.classList.add('hidden');
+            if (mereSearchInput) mereSearchInput.value = '';
+        }
+    };
+}
+</script>
 {% endblock %}
