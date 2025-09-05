@@ -1,20 +1,15 @@
-"""
-Filtres personnalisés pour les templates Django
-"""
-
 from django import template
-import re
+from datetime import date
 
 register = template.Library()
 
 @register.filter
-def replace_periods_with_breaks(value):
+def is_past_due(value):
     """
-    Remplace les points (avec ou sans espace après) par des sauts de ligne HTML
+    Vérifie si une date est dépassée (dans le passé par rapport à aujourd'hui)
     """
     if not value:
-        return value
+        return False
     
-    # Remplace ". " par ".<br>" et "." en fin de phrase par ".<br>"
-    result = re.sub(r'\.(\s+|(?=[A-Z])|$)', '.<br>', str(value))
-    return result
+    today = date.today()
+    return value < today

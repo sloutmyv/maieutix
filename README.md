@@ -61,11 +61,15 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Structure modulaire** : Label et description pour chaque cadre
 
 ### 🏥 Gestion des Patients
-- **Types de patients** : Femmes et bébés avec logique métier spécialisée
-- **Relation mère-enfant** : Association automatique des bébés à leur mère
-- **Recherche intelligente** : Autocomplétion pour la sélection des mères
-- **Gestion d'assurance flexible** : Assuré titulaire ou tiers avec validation
-- **Interface moderne** : Design cohérent avec système de formulaires conditionnels
+- **Types de patients** : Femmes et bébés avec logique métier spécialisée et règles d'assurance
+- **Relation mère-enfant** : Association automatique des bébés à leur mère avec héritage des informations
+- **Recherche intelligente** : Autocomplétion pour la sélection des mères avec pré-remplissage automatique
+- **Formulaires adaptatifs** : Champs conditionnels selon le type (masquage nom JF, profession pour bébés)
+- **Gestion d'assurance stricte** : Bébés toujours ayants droit, validation des règles métier
+- **Sécurisation des dates** : Validation côté serveur et client pour empêcher dates futures
+- **Alertes grossesses** : Affichage en rouge des grossesses dépassées avec indicateur visuel
+- **Gestion des patients inactifs** : Affichage grisé avec possibilité de réactivation
+- **Interface moderne** : Design cohérent avec système de formulaires conditionnels et modales
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage

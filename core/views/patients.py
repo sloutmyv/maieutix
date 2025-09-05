@@ -19,6 +19,22 @@ from core.models import Patient, Caisse
 class PatientForm(ModelForm):
     """Formulaire pour les patients"""
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from datetime import date
+        today = date.today().strftime('%Y-%m-%d')
+        
+        # Limiter les dates au jour actuel (pas de dates futures)
+        self.fields['date_naissance'].widget.attrs['max'] = today
+        self.fields['date_debut_grossesse'].widget.attrs['max'] = today  
+        self.fields['date_naissance_assure'].widget.attrs['max'] = today
+        
+        # Limiter les choix de mère aux femmes actives uniquement
+        self.fields['mere'].queryset = Patient.objects.filter(type_patient='femme', is_active=True)
+        self.fields['mere'].empty_label = "Sélectionner une mère"
+        self.fields['caisse'].queryset = Caisse.objects.all()
+        self.fields['caisse'].empty_label = "Sélectionner une caisse"
+    
     class Meta:
         model = Patient
         fields = [
@@ -49,13 +65,6 @@ class PatientForm(ModelForm):
             'caisse': forms.Select(attrs={'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'}),
         }
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Limiter les choix de mère aux femmes actives uniquement
-        self.fields['mere'].queryset = Patient.objects.filter(type_patient='femme', is_active=True)
-        self.fields['mere'].empty_label = "Sélectionner une mère"
-        self.fields['caisse'].queryset = Caisse.objects.all()
-        self.fields['caisse'].empty_label = "Sélectionner une caisse"
 
 
 @login_required
@@ -65,8 +74,8 @@ def patients_view(request):
     """
     search_query = request.GET.get('search', '')
     
-    # Filtrage des patients actifs
-    patients = Patient.objects.filter(is_active=True).select_related('mere', 'caisse')
+    # Inclure tous les patients (actifs et inactifs)
+    patients = Patient.objects.all().select_related('mere', 'caisse')
     
     if search_query:
         patients = patients.filter(
@@ -133,7 +142,7 @@ def patient_edit(request, patient_id):
     """
     Vue pour modifier un patient
     """
-    patient = get_object_or_404(Patient, id=patient_id, is_active=True)
+    patient = get_object_or_404(Patient, id=patient_id)
     
     if request.method == 'POST':
         form = PatientForm(request.POST, instance=patient)
@@ -169,7 +178,7 @@ def patient_detail(request, patient_id):
     """
     Vue pour afficher les détails d'un patient sur une page dédiée
     """
-    patient = get_object_or_404(Patient, id=patient_id, is_active=True)
+    patient = get_object_or_404(Patient, id=patient_id)
     
     context = {
         'patient': patient,
@@ -186,7 +195,7 @@ def patient_detail_modal(request, patient_id):
     """
     Vue pour afficher les détails d'un patient en modal (conservée pour compatibilité)
     """
-    patient = get_object_or_404(Patient, id=patient_id, is_active=True)
+    patient = get_object_or_404(Patient, id=patient_id)
     
     context = {
         'patient': patient,
@@ -212,7 +221,8 @@ def patient_toggle_active(request, patient_id):
     
     return JsonResponse({
         'success': True,
-        'is_active': patient.is_active
+        'is_active': patient.is_active,
+        'redirect': '/patients/'
     })
 
 
@@ -249,5 +259,29 @@ def search_meres(request):
         })
     
     return JsonResponse(results, safe=False)
+
+
+@login_required
+def patient_details_for_baby(request, patient_id):
+    """
+    Vue pour récupérer les détails d'une mère pour pré-remplir les infos du bébé
+    """
+    try:
+        mere = get_object_or_404(Patient, id=patient_id, type_patient='femme')
+        
+        data = {
+            'telephone': mere.telephone,
+            'caisse_id': mere.caisse.id if mere.caisse else None,
+            'nom_assure': mere.nom_assure,
+            'prenom_assure': mere.prenom_assure,
+            'date_naissance_assure': mere.date_naissance_assure.strftime('%Y-%m-%d') if mere.date_naissance_assure else None,
+            'rue_assure': mere.rue_assure,
+            'code_postal_assure': mere.code_postal_assure,
+            'commune_assure': mere.commune_assure,
+        }
+        
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=404)
 
 

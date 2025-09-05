@@ -67,6 +67,21 @@ document.body.addEventListener('htmx:afterSwap', function(evt) {
     }
 });
 
+// Gestion de la réponse HTMX pour les actions de toggle
+document.body.addEventListener('htmx:afterRequest', function(evt) {
+    if (evt.detail.xhr.status === 200) {
+        try {
+            const response = JSON.parse(evt.detail.xhr.responseText);
+            if (response.success && evt.detail.elt.getAttribute('hx-post') && evt.detail.elt.getAttribute('hx-post').includes('toggle-active')) {
+                // Recharger la liste des patients
+                htmx.ajax('GET', '{% url "patients:patients_view" %}', '#patients-table');
+            }
+        } catch (e) {
+            // Si ce n'est pas du JSON, ne rien faire
+        }
+    }
+});
+
 function initPatientForm() {
     // Gestion de l'affichage des champs spécifiques selon le type de patient
     function toggleSpecificFields(preserveValues = false) {
@@ -78,9 +93,18 @@ function initPatientForm() {
         
         const typeValue = typeField.value;
         
+        // Champs spécifiques aux femmes (à masquer pour bébés)
+        const nomJfDiv = document.querySelector('#patient-modal [name="nom_jf"]')?.closest('div');
+        const professionDiv = document.querySelector('#patient-modal [name="profession"]')?.closest('div');
+        const numeroEpDiv = document.querySelector('#patient-modal [name="numero_ep"]')?.closest('div');
+        
         if (typeValue === 'femme') {
             grossesseDiv.style.display = 'block';
             mereDiv.style.display = 'none';
+            // Afficher les champs spécifiques aux femmes
+            if (nomJfDiv) nomJfDiv.style.display = 'block';
+            if (professionDiv) professionDiv.style.display = 'block';
+            if (numeroEpDiv) numeroEpDiv.style.display = 'block';
             // Réinitialiser uniquement le champ mère lors du changement de type (pas en mode préservation)
             if (!preserveValues) {
                 const mereInput = document.querySelector('#patient-modal [name="mere"]');
@@ -90,6 +114,10 @@ function initPatientForm() {
         } else if (typeValue === 'bebe') {
             grossesseDiv.style.display = 'none';
             mereDiv.style.display = 'block';
+            // Masquer les champs spécifiques aux femmes
+            if (nomJfDiv) nomJfDiv.style.display = 'none';
+            if (professionDiv) professionDiv.style.display = 'none';
+            if (numeroEpDiv) numeroEpDiv.style.display = 'none';
             // Un bébé ne peut jamais être titulaire de l'assurance
             const titulaireCheckbox = document.querySelector('#patient-modal [name="est_assure_titulaire"]');
             if (titulaireCheckbox) {
@@ -251,8 +279,75 @@ function initPatientForm() {
             selectedMereDiv.classList.remove('hidden');
             mereSearchInput.value = '';
             mereDropdown.classList.add('hidden');
+            
+            // Récupérer les infos de la mère pour pré-remplir les champs du bébé
+            fillBabyInfoFromMother(id);
         }
     };
+    
+    // Remplir les informations du bébé avec celles de la mère
+    function fillBabyInfoFromMother(mereId) {
+        fetch(`/patients/search-meres/?q=`)
+            .then(response => response.json())
+            .then(allMeres => {
+                const mere = allMeres.find(m => m.id == mereId);
+                if (mere) {
+                    // Récupérer les détails complets de la mère
+                    fetch(`/patients/${mereId}/details-for-baby/`)
+                        .then(response => response.json())
+                        .then(mereDetails => {
+                            // Pré-remplir le téléphone si vide
+                            const telephoneInput = document.querySelector('#patient-modal [name="telephone"]');
+                            if (telephoneInput && !telephoneInput.value && mereDetails.telephone) {
+                                telephoneInput.value = mereDetails.telephone;
+                            }
+                            
+                            // Pré-remplir la caisse
+                            const caisseSelect = document.querySelector('#patient-modal [name="caisse"]');
+                            if (caisseSelect && mereDetails.caisse_id) {
+                                caisseSelect.value = mereDetails.caisse_id;
+                            }
+                            
+                            // Pré-remplir les informations d'assurance avec celles de la mère
+                            if (mereDetails.nom_assure) {
+                                const nomAssureInput = document.querySelector('#patient-modal [name="nom_assure"]');
+                                if (nomAssureInput) nomAssureInput.value = mereDetails.nom_assure;
+                            }
+                            
+                            if (mereDetails.prenom_assure) {
+                                const prenomAssureInput = document.querySelector('#patient-modal [name="prenom_assure"]');
+                                if (prenomAssureInput) prenomAssureInput.value = mereDetails.prenom_assure;
+                            }
+                            
+                            if (mereDetails.date_naissance_assure) {
+                                const dateNaissanceAssureInput = document.querySelector('#patient-modal [name="date_naissance_assure"]');
+                                if (dateNaissanceAssureInput) dateNaissanceAssureInput.value = mereDetails.date_naissance_assure;
+                            }
+                            
+                            if (mereDetails.rue_assure) {
+                                const rueAssureInput = document.querySelector('#patient-modal [name="rue_assure"]');
+                                if (rueAssureInput) rueAssureInput.value = mereDetails.rue_assure;
+                            }
+                            
+                            if (mereDetails.code_postal_assure) {
+                                const codePostalAssureInput = document.querySelector('#patient-modal [name="code_postal_assure"]');
+                                if (codePostalAssureInput) codePostalAssureInput.value = mereDetails.code_postal_assure;
+                            }
+                            
+                            if (mereDetails.commune_assure) {
+                                const communeAssureInput = document.querySelector('#patient-modal [name="commune_assure"]');
+                                if (communeAssureInput) communeAssureInput.value = mereDetails.commune_assure;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la récupération des détails de la mère:', error);
+                        });
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des mères:', error);
+            });
+    }
     
     // Effacer la sélection
     window.clearMereSelection = function() {

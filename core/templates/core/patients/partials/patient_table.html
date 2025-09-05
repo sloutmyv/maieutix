@@ -30,7 +30,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
             {% for patient in patients %}
-            <tr class="hover:bg-gray-50">
+            <tr class="{% if not patient.is_active %}opacity-50 bg-gray-50{% else %}hover:bg-gray-50{% endif %}">
                 <td class="px-6 py-4 whitespace-nowrap">
                     {% if patient.type_patient == 'femme' %}
                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-pink-100 text-pink-800">
@@ -43,8 +43,13 @@
                     {% endif %}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">
+                    <div class="text-sm font-medium {% if patient.is_active %}text-gray-900{% else %}text-gray-500{% endif %}">
                         {{ patient.prenom }} {{ patient.nom }}
+                        {% if not patient.is_active %}
+                            <span class="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                Inactif
+                            </span>
+                        {% endif %}
                     </div>
                     {% if patient.nom_jf %}
                         <div class="text-sm text-gray-500">
@@ -105,6 +110,7 @@
                         </button>
                         <button 
                             hx-post="{% url 'patients:patient_toggle_active' patient.pk %}"
+                            hx-swap="none"
                             hx-confirm="Êtes-vous sûr de vouloir {% if patient.is_active %}désactiver{% else %}réactiver{% endif %} ce patient ?"
                             class="{% if patient.is_active %}text-orange-600 hover:text-orange-800{% else %}text-green-600 hover:text-green-800{% endif %} transition-colors"
                             title="{% if patient.is_active %}Désactiver{% else %}Réactiver{% endif %}"

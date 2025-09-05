@@ -5,8 +5,8 @@ from core.models import Patient
 
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ['nom_complet_display', 'type_patient', 'age_display', 'mere_display', 'caisse', 'created_at']
-    list_filter = ['type_patient', 'caisse', 'est_assure_titulaire', 'created_at']
+    list_display = ['nom_complet_display', 'type_patient', 'age_display', 'mere_display', 'caisse', 'is_active', 'created_at']
+    list_filter = ['type_patient', 'is_active', 'caisse', 'est_assure_titulaire', 'created_at']
     search_fields = ['nom', 'prenom', 'nom_jf', 'mere__nom', 'mere__prenom']
     readonly_fields = ['created_at', 'updated_at', 'age_display']
     
@@ -36,6 +36,9 @@ class PatientAdmin(admin.ModelAdmin):
         ('Adresse assuré', {
             'fields': ('rue_assure', 'code_postal_assure', 'commune_assure'),
             'classes': ('collapse',)
+        }),
+        ('Statut', {
+            'fields': ('is_active',)
         }),
         ('Métadonnées', {
             'fields': ('created_at', 'updated_at'),

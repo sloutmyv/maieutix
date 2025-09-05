@@ -142,6 +142,19 @@ class Patient(models.Model):
     
     def clean(self):
         from django.core.exceptions import ValidationError
+        from datetime import date
+        
+        # Validation des dates
+        today = date.today()
+        
+        if self.date_naissance and self.date_naissance > today:
+            raise ValidationError("La date de naissance ne peut pas être dans le futur.")
+        
+        if self.date_debut_grossesse and self.date_debut_grossesse > today:
+            raise ValidationError("La date de début de grossesse ne peut pas être dans le futur.")
+        
+        if self.date_naissance_assure and self.date_naissance_assure > today:
+            raise ValidationError("La date de naissance de l'assuré ne peut pas être dans le futur.")
         
         # Validation des règles métier
         if self.type_patient == 'bebe':
