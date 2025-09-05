@@ -74,6 +74,12 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Tests complets** : 104 tests exhaustifs (19 modèles + 19 formulaires + 27 vues + 27 admin + 12 intégration)
 - **Validation robuste** : Règles métier strictes avec validation des numéros de téléphone français
 - **API REST** : Endpoints pour recherche de mères et récupération de détails pour pré-remplissage
+- **Dossiers médicaux complets** : Page de détail avec onglets organisés (Informations, Historique, Échographie, Dossier)
+- **Antécédents médicaux** : Formulaire complet avec sections biométrie, ATCD médicaux/obstétricaux/familiaux/chirurgicaux
+- **Calcul IMC automatique** : Interface compacte avec calcul temps réel et interprétation (surpoids, normal, etc.)
+- **Frottis cervico-vaginaux** : Gestion dynamique des FCV avec ajout/suppression en live
+- **Sauvegarde automatique** : Auto-save des antécédents avec feedback utilisateur
+- **Interface ultra-compacte** : Design minimaliste optimisé pour l'efficacité médicale
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -148,7 +154,8 @@ maieutix/
 │   │   ├── cadre_exercice.py     # Gestion des cadres d'exercice
 │   │   ├── condition_paiement.py  # Gestion des conditions de paiement
 │   │   ├── caisse.py             # Gestion des caisses
-│   │   └── patient.py            # Gestion des patients
+│   │   ├── patient.py            # Gestion des patients
+│   │   └── antecedents.py        # Gestion des antécédents médicaux
 │   ├── views/                     # Vues organisées par domaine
 │   │   ├── administration.py      # Interface d'administration
 │   │   └── home.py               # Page d'accueil
@@ -161,7 +168,8 @@ maieutix/
 │   │   ├── cadre_exercice.py     # Admin Cadres d'exercice
 │   │   ├── condition_paiement.py  # Admin Conditions de paiement
 │   │   ├── caisse.py             # Admin Caisses
-│   │   └── patient.py            # Admin Patients
+│   │   ├── patient.py            # Admin Patients
+│   │   └── antecedents.py        # Admin Antécédents médicaux
 │   ├── tests/                     # Tests organisés (802+ tests ✅)
 │   │   ├── models/                # Tests des modèles (120+ tests)
 │   │   │   └── test_patient.py    # 19 tests modèle Patient ✨
@@ -242,10 +250,12 @@ maieutix/
 - `GET /patients/` - Liste avec recherche globale et filtrage (inclut patients inactifs)
 - `GET /patients/create/` - Formulaire création avec champs conditionnels selon le type
 - `GET /patients/{id}/edit/` - Formulaire modification avec validation complète
-- `GET /patients/{id}/` - Vue détaillée du patient avec bébés associés (si mère)
+- `GET /patients/{id}/` - Vue détaillée du patient avec onglets (Informations, Historique, Échographie, Dossier)
 - `POST /patients/{id}/toggle-active/` - Activation/désactivation avec JSON response
 - `GET /patients/search-meres/` - API autocomplétion pour recherche de mères (femmes actives seulement)
 - `GET /patients/{id}/details-for-baby/` - API pour récupération des détails mère (pré-remplissage bébé)
+- `GET /patients/{id}/antecedents/` - API pour récupération des antécédents existants
+- `POST /patients/save-antecedents/` - API AJAX pour sauvegarde des antécédents avec auto-save
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire

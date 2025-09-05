@@ -13,7 +13,7 @@ from django.forms import ModelForm
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect
 from datetime import date
-from core.models import Patient, Caisse
+from core.models import Patient, Caisse, Antecedents, FrottisCV
 
 
 class PatientForm(ModelForm):
@@ -283,5 +283,147 @@ def patient_details_for_baby(request, patient_id):
         return JsonResponse(data)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=404)
+
+
+@login_required
+@require_http_methods(["GET"])
+def patient_antecedents(request, patient_id):
+    """
+    Vue pour récupérer les antécédents d'un patient
+    """
+    patient = get_object_or_404(Patient, id=patient_id, type_patient='femme')
+    
+    try:
+        antecedents = patient.antecedents
+        frottis = antecedents.frottis.all()
+        
+        data = {
+            'antecedents': {
+                'taille': antecedents.taille,
+                'poids': antecedents.poids,
+                'medecin_traitant': antecedents.medecin_traitant,
+                'gynecologue': antecedents.gynecologue,
+                'allergie': antecedents.allergie,
+                'asthme': antecedents.asthme,
+                'raa': antecedents.raa,
+                'diabete': antecedents.diabete,
+                'hta': antecedents.hta,
+                'epilepsie': antecedents.epilepsie,
+                'infection_urinaire': antecedents.infection_urinaire,
+                'atcd_obstetricaux': antecedents.atcd_obstetricaux,
+                'fcv_notes': antecedents.fcv_notes,
+                'atcd_fam_diabete': antecedents.atcd_fam_diabete,
+                'atcd_fam_hta': antecedents.atcd_fam_hta,
+                'atcd_fam_cancer_sein': antecedents.atcd_fam_cancer_sein,
+                'atcd_fam_hypercholesterolemie': antecedents.atcd_fam_hypercholesterolemie,
+                'atcd_fam_autre': antecedents.atcd_fam_autre,
+                'atcd_chirurgicaux': antecedents.atcd_chirurgicaux,
+                'contraception': antecedents.contraception,
+            },
+            'frottis': [
+                {
+                    'date_frottis': frottis_item.date_frottis.strftime('%Y-%m-%d'),
+                    'resultat': frottis_item.resultat
+                } for frottis_item in frottis
+            ]
+        }
+        
+        return JsonResponse(data)
+        
+    except Antecedents.DoesNotExist:
+        return JsonResponse({
+            'antecedents': None,
+            'frottis': []
+        })
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def save_antecedents(request):
+    """
+    Vue pour sauvegarder les antécédents d'un patient
+    """
+    patient_id = request.POST.get('patient_id')
+    if not patient_id:
+        return JsonResponse({'success': False, 'error': 'Patient ID manquant'})
+    
+    patient = get_object_or_404(Patient, id=patient_id, type_patient='femme')
+    
+    try:
+        # Récupérer ou créer les antécédents
+        antecedents, created = Antecedents.objects.get_or_create(patient=patient)
+        
+        # Données biométriques
+        taille = request.POST.get('taille')
+        poids = request.POST.get('poids')
+        if taille:
+            antecedents.taille = float(taille) if taille else None
+        if poids:
+            antecedents.poids = float(poids) if poids else None
+        
+        # Médecins
+        antecedents.medecin_traitant = request.POST.get('medecin_traitant', '')
+        antecedents.gynecologue = request.POST.get('gynecologue', '')
+        
+        # ATCD médicaux
+        antecedents.allergie = request.POST.get('allergie', '')
+        antecedents.asthme = request.POST.get('asthme') == 'true'
+        antecedents.raa = request.POST.get('raa') == 'true'
+        antecedents.diabete = request.POST.get('diabete') == 'true'
+        antecedents.hta = request.POST.get('hta') == 'true'
+        antecedents.epilepsie = request.POST.get('epilepsie') == 'true'
+        antecedents.infection_urinaire = request.POST.get('infection_urinaire') == 'true'
+        
+        # ATCD obstétricaux
+        antecedents.atcd_obstetricaux = request.POST.get('atcd_obstetricaux', '')
+        
+        # FCV
+        antecedents.fcv_notes = request.POST.get('fcv_notes', '')
+        
+        # ATCD familiaux
+        antecedents.atcd_fam_diabete = request.POST.get('atcd_fam_diabete') == 'true'
+        antecedents.atcd_fam_hta = request.POST.get('atcd_fam_hta') == 'true'
+        antecedents.atcd_fam_cancer_sein = request.POST.get('atcd_fam_cancer_sein') == 'true'
+        antecedents.atcd_fam_hypercholesterolemie = request.POST.get('atcd_fam_hypercholesterolemie') == 'true'
+        antecedents.atcd_fam_autre = request.POST.get('atcd_fam_autre', '')
+        
+        # ATCD chirurgicaux
+        antecedents.atcd_chirurgicaux = request.POST.get('atcd_chirurgicaux', '')
+        
+        # Contraception
+        antecedents.contraception = request.POST.get('contraception', '')
+        
+        antecedents.save()
+        
+        # Gérer les frottis
+        # Supprimer les anciens frottis avant de créer les nouveaux
+        antecedents.frottis.all().delete()
+        
+        # Créer les nouveaux frottis
+        frottis_counter = 0
+        while True:
+            date_key = f'frottis_date_{frottis_counter}'
+            resultat_key = f'frottis_resultat_{frottis_counter}'
+            
+            if date_key not in request.POST:
+                break
+                
+            date_frottis = request.POST.get(date_key)
+            resultat = request.POST.get(resultat_key)
+            
+            if date_frottis and resultat:
+                FrottisCV.objects.create(
+                    antecedents=antecedents,
+                    date_frottis=date_frottis,
+                    resultat=resultat
+                )
+            
+            frottis_counter += 1
+        
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 
