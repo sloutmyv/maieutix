@@ -6,7 +6,8 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 698/698 tests passent (100% ✅)
+- **Tests** : 802+ tests passent (100% ✅) - Couverture complète avec 104 nouveaux tests patients
+- **Gestion Patients** : Système complet avec tests exhaustifs (model/form/view/admin/intégration)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
 - **Architecture** : Modulaire et extensible
@@ -60,16 +61,19 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Administration simple** : Gestion via l'interface Django Admin uniquement
 - **Structure modulaire** : Label et description pour chaque cadre
 
-### 🏥 Gestion des Patients
+### 🏥 Gestion des Patients ✨ NOUVEAU
 - **Types de patients** : Femmes et bébés avec logique métier spécialisée et règles d'assurance
 - **Relation mère-enfant** : Association automatique des bébés à leur mère avec héritage des informations
 - **Recherche intelligente** : Autocomplétion pour la sélection des mères avec pré-remplissage automatique
 - **Formulaires adaptatifs** : Champs conditionnels selon le type (masquage nom JF, profession pour bébés)
-- **Gestion d'assurance stricte** : Bébés toujours ayants droit, validation des règles métier
+- **Gestion d'assurance stricte** : Bébés toujours ayants droit, validation des règles métier complètes
 - **Sécurisation des dates** : Validation côté serveur et client pour empêcher dates futures
 - **Alertes grossesses** : Affichage en rouge des grossesses dépassées avec indicateur visuel
 - **Gestion des patients inactifs** : Affichage grisé avec possibilité de réactivation
 - **Interface moderne** : Design cohérent avec système de formulaires conditionnels et modales
+- **Tests complets** : 104 tests exhaustifs (19 modèles + 19 formulaires + 27 vues + 27 admin + 12 intégration)
+- **Validation robuste** : Règles métier strictes avec validation des numéros de téléphone français
+- **API REST** : Endpoints pour recherche de mères et récupération de détails pour pré-remplissage
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -158,11 +162,17 @@ maieutix/
 │   │   ├── condition_paiement.py  # Admin Conditions de paiement
 │   │   ├── caisse.py             # Admin Caisses
 │   │   └── patient.py            # Admin Patients
-│   ├── tests/                     # Tests organisés (327 tests ✅)
-│   │   ├── models/                # Tests des modèles
-│   │   ├── views/                 # Tests des vues
-│   │   ├── admin/                 # Tests de l'interface admin
-│   │   └── integration/           # Tests d'intégration
+│   ├── tests/                     # Tests organisés (802+ tests ✅)
+│   │   ├── models/                # Tests des modèles (120+ tests)
+│   │   │   └── test_patient.py    # 19 tests modèle Patient ✨
+│   │   ├── views/                 # Tests des vues (130+ tests)
+│   │   │   └── test_patient_views.py  # 27 tests vues Patient ✨
+│   │   ├── admin/                 # Tests de l'interface admin (50+ tests)
+│   │   │   └── test_patient_admin.py  # 27 tests admin Patient ✨
+│   │   ├── forms/                 # Tests des formulaires ✨ NOUVEAU
+│   │   │   └── test_patient_forms.py  # 19 tests formulaires Patient
+│   │   └── integration/           # Tests d'intégration (40+ tests)
+│   │       └── test_patient_integration.py  # 12 tests intégration Patient ✨
 │   ├── templates/core/            # Templates organisés
 │   │   ├── base.html              # Template de base
 │   │   ├── home.html              # Page d'accueil
@@ -228,13 +238,14 @@ maieutix/
 - `GET /administration/caisse/{id}/detail/` - Vue détaillée avec conditions associées
 - `DELETE /administration/caisse/{id}/delete/` - Suppression
 
-### CRUD Patients (HTMX)
-- `GET /patients/` - Liste avec recherche globale et filtrage
-- `GET /patients/create/` - Formulaire création avec champs conditionnels
-- `GET /patients/{id}/edit/` - Formulaire modification
-- `GET /patients/{id}/` - Vue détaillée du patient
-- `POST /patients/{id}/toggle-active/` - Activation/désactivation
-- `GET /patients/search-meres/` - API autocomplétion pour recherche de mères
+### CRUD Patients (HTMX) ✨ NOUVEAU
+- `GET /patients/` - Liste avec recherche globale et filtrage (inclut patients inactifs)
+- `GET /patients/create/` - Formulaire création avec champs conditionnels selon le type
+- `GET /patients/{id}/edit/` - Formulaire modification avec validation complète
+- `GET /patients/{id}/` - Vue détaillée du patient avec bébés associés (si mère)
+- `POST /patients/{id}/toggle-active/` - Activation/désactivation avec JSON response
+- `GET /patients/search-meres/` - API autocomplétion pour recherche de mères (femmes actives seulement)
+- `GET /patients/{id}/details-for-baby/` - API pour récupération des détails mère (pré-remplissage bébé)
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire
@@ -340,21 +351,35 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **698 tests** tous passent
-- **Tests unitaires** : Modèles, vues, admin
-- **Tests d'intégration** : Templates, navigation, API
+- **802+ tests** tous passent - +104 tests patients ajoutés
+- **Tests unitaires** : Modèles, vues, admin, formulaires
+- **Tests d'intégration** : Templates, navigation, API, workflows complets
 - **Tests fonctionnels** : Authentification, permissions à deux niveaux
-- **Tests de validation** : Règles métier, contraintes DB
+- **Tests de validation** : Règles métier strictes, contraintes DB, validation téléphone français
+- **Tests patients exhaustifs** : Création/modification/suppression femmes et bébés, relations mère-enfant
 
 ### Organisation des Tests
 ```
 core/tests/
 ├── models/                    # Tests des modèles (120+ tests)
-├── views/                     # Tests des vues (130+ tests)  
+│   └── test_patient.py        # 19 tests Patient ✨ NOUVEAU
+├── views/                     # Tests des vues (130+ tests)
+│   └── test_patient_views.py  # 27 tests vues Patient ✨ NOUVEAU
 ├── admin/                     # Tests de l'admin (50+ tests)
-└── integration/              # Tests d'intégration (27+ tests)
+│   └── test_patient_admin.py  # 27 tests admin Patient ✨ NOUVEAU
+├── forms/                     # Tests des formulaires ✨ NOUVEAU
+│   └── test_patient_forms.py  # 19 tests formulaires Patient
+└── integration/              # Tests d'intégration (40+ tests)
+    └── test_patient_integration.py  # 12 tests intégration Patient ✨ NOUVEAU
 authentication/tests.py        # Tests d'authentification (28 tests)
 ```
+
+### Tests Patients - Détails de Couverture ✨
+- **Modèles** : Validation des règles métier, relations mère-enfant, calculs d'âge
+- **Formulaires** : Validation des champs, widgets, logique conditionnelle selon le type
+- **Vues** : CRUD complet, API endpoints, authentification, HTMX responses
+- **Admin** : Interface admin, méthodes personnalisées, filtres, recherche, fieldsets
+- **Intégration** : Workflows complets, création mère → bébé, activation/désactivation
 
 Pour plus de détails, voir `tests_readme.md`.
 

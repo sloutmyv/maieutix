@@ -9,10 +9,11 @@ class PatientAdmin(admin.ModelAdmin):
     list_filter = ['type_patient', 'is_active', 'caisse', 'est_assure_titulaire', 'created_at']
     search_fields = ['nom', 'prenom', 'nom_jf', 'mere__nom', 'mere__prenom']
     readonly_fields = ['created_at', 'updated_at', 'age_display']
+    date_hierarchy = 'created_at'
     
     fieldsets = (
         ('Informations principales', {
-            'fields': ('type_patient', 'nom', 'prenom', 'date_naissance', 'age_display')
+            'fields': ('type_patient', 'nom', 'prenom', 'date_naissance')
         }),
         ('Informations complémentaires', {
             'fields': ('nom_jf', 'profession', 'telephone', 'numero_ep'),
@@ -78,6 +79,21 @@ class PatientAdmin(admin.ModelAdmin):
             form.base_fields['mere'].queryset = Patient.objects.filter(type_patient='femme')
         
         return form
+    
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        
+        # Ajouter age_display seulement pour les objets existants (modification)
+        if obj:
+            fieldsets = list(fieldsets)
+            # Modifier le premier fieldset pour inclure age_display
+            first_fieldset = fieldsets[0]
+            fields = list(first_fieldset[1]['fields'])
+            if 'age_display' not in fields:
+                fields.append('age_display')
+            fieldsets[0] = (first_fieldset[0], {'fields': tuple(fields)})
+        
+        return fieldsets
     
     def save_model(self, request, obj, form, change):
         # Validation supplémentaire côté admin
