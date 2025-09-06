@@ -369,7 +369,8 @@ class AntecedentsAdminIntegrationTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Normal - Test admin')
-        self.assertContains(response, '2024-06-15')
+        # La date est affichée au format français 15/06/2024
+        self.assertContains(response, '15/06/2024')
     
     def test_admin_antecedents_search_functionality(self):
         """Test fonctionnalité de recherche dans l'admin antécédents"""

@@ -80,6 +80,10 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Frottis cervico-vaginaux** : Gestion dynamique des FCV avec ajout/suppression en live
 - **Sauvegarde automatique** : Auto-save des antécédents avec feedback utilisateur
 - **Interface ultra-compacte** : Design minimaliste optimisé pour l'efficacité médicale
+- **Consultations gynécologiques** : Système complet de consultation avec formulaire inline compact
+- **Gestion dynamique** : Ajout/suppression de consultations sans rechargement de page
+- **Traçabilité complète** : Enregistrement automatique de la sage-femme créatrice et horodatage
+- **Interface harmonisée** : Contraste amélioré et design cohérent avec modals de détail minimalistes
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -256,6 +260,11 @@ maieutix/
 - `GET /patients/{id}/details-for-baby/` - API pour récupération des détails mère (pré-remplissage bébé)
 - `GET /patients/{id}/antecedents/` - API pour récupération des antécédents existants
 - `POST /patients/save-antecedents/` - API AJAX pour sauvegarde des antécédents avec auto-save
+- `GET /patients/{id}/consultations/` - API pour récupération de l'historique des consultations gynécologiques
+- `GET /patients/{id}/consultation/quick-form/` - API pour affichage du formulaire de consultation inline
+- `POST /patients/{id}/consultation/save-quick/` - API AJAX pour sauvegarde des consultations avec traçabilité
+- `GET /patients/consultation/{id}/` - API pour affichage modal de détail d'une consultation
+- `POST /patients/consultation/{id}/delete/` - API pour suppression de consultation avec confirmation
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire

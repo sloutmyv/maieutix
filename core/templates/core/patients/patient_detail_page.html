@@ -360,7 +360,7 @@
                     </div>
 
                     <!-- Filtres et recherche -->
-                    <div class="bg-gray-50 p-4 rounded-lg border">
+                    <div class="bg-gray-100 p-4 rounded-lg border border-gray-300">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label for="search-fds" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
@@ -397,7 +397,7 @@
                     <!-- Liste des feuilles de soin -->
                     <div class="space-y-4">
                         <!-- Message si aucune feuille de soin -->
-                        <div class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                        <div class="text-center py-8 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300">
                             <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
@@ -504,13 +504,13 @@
                                 Affichage de 1 à 10 sur 25 feuilles de soin
                             </div>
                             <div class="flex space-x-2">
-                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50" disabled>
+                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-100 disabled:opacity-50" disabled>
                                     Précédent
                                 </button>
                                 <button class="px-3 py-1 text-sm bg-primary text-white rounded">1</button>
-                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50">2</button>
-                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50">3</button>
-                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50">
+                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-100">2</button>
+                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-100">3</button>
+                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-100">
                                     Suivant
                                 </button>
                             </div>
@@ -532,7 +532,7 @@
                         <div class="flex space-x-2">
                             <button 
                                 onclick="expandAllSections()"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4a1 1 0 011-1h4M4 8h16M4 8v8m16-8v8M4 16l4 4m0-4H4m16 0l-4 4m0-4h4"></path>
@@ -541,7 +541,7 @@
                             </button>
                             <button 
                                 onclick="collapseAllSections()"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
@@ -555,7 +555,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleSection('antecedents')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -576,7 +576,7 @@
                                     <input type="hidden" name="patient_id" value="{{ patient.pk }}">
                                     
                                     <!-- Ligne 1: Biométrie + ATCD médicaux + ATCD obstétricaux -->
-                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 p-2 bg-gray-50 rounded text-xs">
+                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 p-2 bg-gray-100 rounded text-xs border border-gray-300">
                                         <!-- Biométrie + Médecins -->
                                         <div>
                                             <h6 class="font-semibold text-gray-900 mb-2 border-b border-gray-200 pb-1">Biométrie</h6>
@@ -654,6 +654,12 @@
                                                     Inf. urinaires
                                                 </label>
                                             </div>
+                                            <div class="mt-2">
+                                                <label for="atcd_medicaux_notes" class="block text-xs text-gray-600 mb-1">Notes</label>
+                                                <textarea id="atcd_medicaux_notes" name="atcd_medicaux_notes" rows="2"
+                                                         class="w-full px-1 py-0.5 text-xs border border-gray-300 rounded"
+                                                         placeholder="Notes complémentaires sur les antécédents médicaux"></textarea>
+                                            </div>
                                         </div>
 
                                         <!-- ATCD obstétricaux + Contraception -->
@@ -674,7 +680,7 @@
                                     </div>
 
                                     <!-- Ligne 2: FCV + ATCD familiaux + Chirurgie -->
-                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 p-2 bg-gray-50 rounded text-xs">
+                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 p-2 bg-gray-100 rounded text-xs border border-gray-300">
                                         <!-- FCV -->
                                         <div>
                                             <h6 class="font-semibold text-gray-900 mb-2 border-b border-gray-200 pb-1">FCV</h6>
@@ -723,10 +729,10 @@
                                                 </label>
                                             </div>
                                             <div>
-                                                <label for="atcd_fam_autre" class="block text-xs text-gray-600 mb-1">Autres</label>
+                                                <label for="atcd_fam_autre" class="block text-xs text-gray-600 mb-1">Notes/Autres antécédents</label>
                                                 <textarea id="atcd_fam_autre" name="atcd_fam_autre" rows="3"
                                                          class="w-full px-1 py-0.5 text-xs border border-gray-300 rounded"
-                                                         placeholder="Autres ATCD familiaux"></textarea>
+                                                         placeholder="Notes et autres antécédents familiaux"></textarea>
                                             </div>
                                         </div>
 
@@ -752,7 +758,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleSection('gyneco')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-pink-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -768,9 +774,40 @@
                         </button>
                         <div id="gyneco-content" class="hidden px-4 pb-4">
                             <div class="border-t border-gray-100 pt-4">
-                                <p class="text-sm text-gray-500 italic">
-                                    Contenu à développer : historique des consultations gynécologiques, examens cliniques, frottis, mammographies, etc.
-                                </p>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h6 class="text-sm font-medium text-gray-900">Historique des consultations</h6>
+                                    
+                                    <!-- Bouton ajouter consultation -->
+                                    {% if patient.type_patient == 'femme' %}
+                                    <button 
+                                        hx-get="{% url 'patients:consultation_quick_form' patient.pk %}"
+                                        hx-target="#consultation-form-container"
+                                        hx-swap="innerHTML"
+                                        onclick="document.getElementById('consultation-form-container').classList.remove('hidden')"
+                                        style="background-color: #E91E63;"
+                                        class="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded hover:opacity-90 transition-all duration-200"
+                                    >
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Ajouter consultation
+                                    </button>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Container pour le formulaire inline -->
+                                <div id="consultation-form-container" class="hidden mb-4">
+                                    <!-- Le formulaire sera chargé ici -->
+                                </div>
+                                
+                                <div id="consultations-history" 
+                                     hx-get="{% url 'patients:patient_consultations' patient.pk %}" 
+                                     hx-trigger="revealed, consultation-added from:window"
+                                     hx-swap="innerHTML">
+                                    <div class="flex justify-center py-8">
+                                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-pink-500"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -779,7 +816,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleSection('obstetrical')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -806,7 +843,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleSection('entretien-prenatal')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -833,7 +870,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleSection('preparation-naissance')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-purple-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -860,7 +897,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleSection('reeducation')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-orange-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -902,7 +939,7 @@
                         <div class="flex space-x-2">
                             <button 
                                 onclick="expandAllBabySections()"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4a1 1 0 011-1h4M4 8h16M4 8v8m16-8v8M4 16l4 4m0-4H4m16 0l-4 4m0-4h4"></path>
@@ -911,7 +948,7 @@
                             </button>
                             <button 
                                 onclick="collapseAllBabySections()"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
@@ -925,7 +962,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleBabySection('suivi-developpement')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -985,7 +1022,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <button 
                             onclick="toggleBabySection('vaccins')"
-                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors"
                         >
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1027,7 +1064,7 @@
                                     </div>
 
                                     <!-- État vaccinal -->
-                                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <div class="bg-gray-100 p-3 rounded-lg border border-gray-300">
                                         <h6 class="text-sm font-medium text-gray-800 mb-2">💉 État vaccinal</h6>
                                         <p class="text-sm text-amber-600">
                                             ⚠️ Aucune vaccination enregistrée
@@ -1102,7 +1139,7 @@
                     {% endif %}
 
                     <!-- Filtres -->
-                    <div class="bg-gray-50 p-4 rounded-lg border">
+                    <div class="bg-gray-100 p-4 rounded-lg border border-gray-300">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="search-echo" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
@@ -1127,7 +1164,7 @@
                     <!-- Liste des échographies -->
                     <div class="space-y-4">
                         <!-- Message si aucune échographie -->
-                        <div class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                        <div class="text-center py-8 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300">
                             <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                             </svg>
@@ -1327,6 +1364,15 @@ document.body.addEventListener('htmx:afterRequest', function(evt) {
         } catch (e) {
             // Si ce n'est pas du JSON, ne rien faire
         }
+    }
+});
+
+// Gestion de la fermeture du formulaire de consultation
+document.body.addEventListener('consultation-form-close', function() {
+    const formContainer = document.getElementById('consultation-form-container');
+    if (formContainer) {
+        formContainer.classList.add('hidden');
+        formContainer.innerHTML = '';
     }
 });
 

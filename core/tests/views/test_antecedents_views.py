@@ -42,11 +42,15 @@ class AntecedentsViewsTest(TestCase):
             date_debut=date.today()
         )
         
-        # Créer l'utilisateur
+        # Créer l'utilisateur associé à la sage-femme
         User = get_user_model()
-        self.user = User.objects.get(email="sophie.martin@test.com")
-        self.user.set_password("testpass123")
-        self.user.save()
+        self.user = User.objects.create_user(
+            email="sophie.martin@test.com",
+            password="testpass123",
+            must_change_password=False
+        )
+        self.sagefemme.user = self.user
+        self.sagefemme.save()
         
         # Se connecter
         self.client.login(email="sophie.martin@test.com", password="testpass123")

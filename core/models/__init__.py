@@ -8,6 +8,7 @@ from .condition_paiement import ConditionPaiement
 from .caisse import Caisse
 from .patient import Patient
 from .antecedents import Antecedents, FrottisCV
+from .consultation_gynecologique import ConsultationGynecologique
 # from .user import SageFemmeUser
 
-__all__ = ['Cabinet', 'SageFemme', 'PeriodeActivite', 'Acte', 'TarifPeriode', 'CadreExercice', 'Prestation', 'ConditionPaiement', 'Caisse', 'Patient', 'Antecedents', 'FrottisCV']  # , 'SageFemmeUser']
+__all__ = ['Cabinet', 'SageFemme', 'PeriodeActivite', 'Acte', 'TarifPeriode', 'CadreExercice', 'Prestation', 'ConditionPaiement', 'Caisse', 'Patient', 'Antecedents', 'FrottisCV', 'ConsultationGynecologique']  # , 'SageFemmeUser']

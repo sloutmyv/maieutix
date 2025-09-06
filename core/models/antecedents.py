@@ -72,6 +72,12 @@ class Antecedents(models.Model):
         default=False,
         verbose_name="Infections urinaires récidivantes"
     )
+    atcd_medicaux_notes = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Notes",
+        help_text="Notes complémentaires sur les antécédents médicaux"
+    )
     
     # ATCD obstétricaux
     atcd_obstetricaux = models.TextField(
@@ -109,7 +115,7 @@ class Antecedents(models.Model):
     atcd_fam_autre = models.TextField(
         blank=True,
         null=True,
-        verbose_name="Autres antécédents familiaux"
+        verbose_name="Notes/Autres antécédents"
     )
     
     # ATCD chirurgicaux

@@ -310,6 +310,7 @@ def patient_antecedents(request, patient_id):
                 'hta': antecedents.hta,
                 'epilepsie': antecedents.epilepsie,
                 'infection_urinaire': antecedents.infection_urinaire,
+                'atcd_medicaux_notes': antecedents.atcd_medicaux_notes,
                 'atcd_obstetricaux': antecedents.atcd_obstetricaux,
                 'fcv_notes': antecedents.fcv_notes,
                 'atcd_fam_diabete': antecedents.atcd_fam_diabete,
@@ -374,6 +375,7 @@ def save_antecedents(request):
         antecedents.hta = request.POST.get('hta') == 'true'
         antecedents.epilepsie = request.POST.get('epilepsie') == 'true'
         antecedents.infection_urinaire = request.POST.get('infection_urinaire') == 'true'
+        antecedents.atcd_medicaux_notes = request.POST.get('atcd_medicaux_notes', '')
         
         # ATCD obstétricaux
         antecedents.atcd_obstetricaux = request.POST.get('atcd_obstetricaux', '')

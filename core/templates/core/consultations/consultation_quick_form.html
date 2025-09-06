@@ -1,0 +1,90 @@
+<!-- Formulaire rapide de consultation -->
+<div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+    <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-medium text-gray-900">Ajouter une consultation</h3>
+        <button type="button" 
+                onclick="document.getElementById('consultation-quick-form-container').classList.add('hidden')"
+                class="text-gray-400 hover:text-gray-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    
+    {% if error %}
+        <div class="mb-3 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p class="text-sm text-red-600">{{ error }}</p>
+        </div>
+    {% endif %}
+    
+    <form hx-post="{% url 'patients:save_quick_consultation' patient.id %}" 
+          hx-target="this" 
+          hx-swap="outerHTML">
+        
+        <!-- Date -->
+        <div class="mb-3">
+            <label class="block text-xs font-medium text-gray-700 mb-1">
+                Date de consultation
+            </label>
+            {{ form.date_consultation }}
+        </div>
+        
+        <!-- Tension -->
+        <div class="grid grid-cols-2 gap-2 mb-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">
+                    Tension sys.
+                </label>
+                {{ form.tension_systolique }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">
+                    Tension dia.
+                </label>
+                {{ form.tension_diastolique }}
+            </div>
+        </div>
+        
+        <!-- Poids -->
+        <div class="mb-3">
+            <label class="block text-xs font-medium text-gray-700 mb-1">
+                Poids (kg)
+            </label>
+            {{ form.poids }}
+        </div>
+        
+        <!-- Motif -->
+        <div class="mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1">
+                Motif <span class="text-red-500">*</span>
+            </label>
+            {{ form.motif }}
+            {% if form.motif.errors %}
+                <p class="mt-1 text-xs text-red-600">{{ form.motif.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex justify-end space-x-2">
+            <button type="button" 
+                    onclick="document.getElementById('consultation-quick-form-container').classList.add('hidden')"
+                    class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50">
+                Annuler
+            </button>
+            <button type="submit" 
+                    style="background-color: #2D4B73;"
+                    class="px-3 py-1.5 text-xs font-medium text-white rounded hover:opacity-90">
+                Enregistrer
+            </button>
+        </div>
+        
+        <!-- Erreurs globales -->
+        {% if form.non_field_errors %}
+            <div class="mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
+                {% for error in form.non_field_errors %}
+                    <p class="text-xs text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </form>
+</div>
