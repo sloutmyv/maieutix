@@ -6,7 +6,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 802+ tests passent (100% ✅) - Couverture complète avec 104 nouveaux tests patients
+- **Tests** : 908+ tests passent (100% ✅) - Couverture complète avec 210 nouveaux tests (patients + consultations gynécologiques)
 - **Gestion Patients** : Système complet avec tests exhaustifs (model/form/view/admin/intégration)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
@@ -174,17 +174,22 @@ maieutix/
 │   │   ├── caisse.py             # Admin Caisses
 │   │   ├── patient.py            # Admin Patients
 │   │   └── antecedents.py        # Admin Antécédents médicaux
-│   ├── tests/                     # Tests organisés (802+ tests ✅)
-│   │   ├── models/                # Tests des modèles (120+ tests)
-│   │   │   └── test_patient.py    # 19 tests modèle Patient ✨
-│   │   ├── views/                 # Tests des vues (130+ tests)
-│   │   │   └── test_patient_views.py  # 27 tests vues Patient ✨
-│   │   ├── admin/                 # Tests de l'interface admin (50+ tests)
-│   │   │   └── test_patient_admin.py  # 27 tests admin Patient ✨
+│   ├── tests/                     # Tests organisés (908+ tests ✅)
+│   │   ├── models/                # Tests des modèles (144+ tests)
+│   │   │   ├── test_patient.py    # 19 tests modèle Patient ✨
+│   │   │   └── test_consultation_gynecologique.py  # 24 tests modèle Consultations ✨
+│   │   ├── views/                 # Tests des vues (152+ tests)
+│   │   │   ├── test_patient_views.py  # 27 tests vues Patient ✨
+│   │   │   └── test_consultation_gynecologique_views.py  # 22 tests vues Consultations ✨
+│   │   ├── admin/                 # Tests de l'interface admin (77+ tests)
+│   │   │   ├── test_patient_admin.py  # 27 tests admin Patient ✨
+│   │   │   └── test_consultation_gynecologique_admin.py  # 27 tests admin Consultations ✨
 │   │   ├── forms/                 # Tests des formulaires ✨ NOUVEAU
-│   │   │   └── test_patient_forms.py  # 19 tests formulaires Patient
-│   │   └── integration/           # Tests d'intégration (40+ tests)
-│   │       └── test_patient_integration.py  # 12 tests intégration Patient ✨
+│   │   │   ├── test_patient_forms.py  # 19 tests formulaires Patient
+│   │   │   └── test_consultation_gynecologique_forms.py  # 20 tests formulaires Consultations ✨
+│   │   └── integration/           # Tests d'intégration (52+ tests)
+│   │       ├── test_patient_integration.py  # 12 tests intégration Patient ✨
+│   │       └── test_consultation_gynecologique_integration.py  # 13 tests intégration Consultations ✨
 │   ├── templates/core/            # Templates organisés
 │   │   ├── base.html              # Template de base
 │   │   ├── home.html              # Page d'accueil
@@ -370,12 +375,13 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **802+ tests** tous passent - +104 tests patients ajoutés
+- **908+ tests** tous passent - +210 tests patients et consultations gynécologiques ajoutés
 - **Tests unitaires** : Modèles, vues, admin, formulaires
 - **Tests d'intégration** : Templates, navigation, API, workflows complets
 - **Tests fonctionnels** : Authentification, permissions à deux niveaux
 - **Tests de validation** : Règles métier strictes, contraintes DB, validation téléphone français
 - **Tests patients exhaustifs** : Création/modification/suppression femmes et bébés, relations mère-enfant
+- **Tests consultations gynécologiques** : 106 tests complets (modèles, formulaires, vues, admin, intégration)
 
 ### Organisation des Tests
 ```

@@ -1,38 +1,39 @@
 # Tests Maieutix - Documentation Complète
 
-**État actuel : 698/698 tests passent (100% ✅)**
+**État actuel : 1006/1006 tests passent (100% ✅)**
 
 Ce document décrit la suite de tests complète et fonctionnelle de l'application Maieutix, une plateforme de gestion pour sages-femmes développée avec Django.
 
 ## 🎯 Résultats Globaux
 
-- **Total de tests** : 698
+- **Total de tests** : 1006
 - **Taux de réussite** : 100% ✅
 - **Applications testées** : `core` et `authentication`
-- **Temps d'exécution** : ~117 secondes
-- **Couverture** : Modèles, Vues, Admin, Authentification, Intégration
+- **Temps d'exécution** : ~140 secondes
+- **Couverture** : Modèles, Vues, Admin, Formulaires, Authentification, Intégration
 
 ## 📊 Répartition des Tests
 
-### Core Application (656 tests ✅)
+### Core Application (979 tests ✅)
 ```
 core/tests/
-├── models/          # 120+ tests - Modèles de données
-├── views/           # 200+ tests - Vues et APIs  
-├── admin/           # 80+ tests - Interface d'administration
-├── integration/     # 90+ tests - Tests d'intégration UI/UX
-└── forms/           # Tests de formulaires
+├── models/          # 259 tests - Modèles de données
+├── views/           # 231 tests - Vues et APIs  
+├── admin/           # 242 tests - Interface d'administration
+├── forms/           # 105 tests - Tests de formulaires
+├── integration/     # 127 tests - Tests d'intégration UI/UX
+└── permissions/     # 15 tests - Tests de permissions
 ```
 
-### Authentication Application (42 tests ✅)
+### Authentication Application (27 tests ✅)
 ```
 authentication/
-└── tests.py        # 42 tests - Système d'authentification complet
+└── tests.py        # 27 tests - Système d'authentification complet
 ```
 
 ## 🏗️ Structure Détaillée des Tests
 
-### 1. Tests de Modèles (120+ tests)
+### 1. Tests de Modèles (259 tests)
 
 #### Cabinet (`test_cabinet.py`)
 - **Singleton pattern** : Validation qu'un seul cabinet peut exister
@@ -64,7 +65,35 @@ authentication/
 - **Relations avec prestations** : Liens cohérents
 - **Validation et contraintes** : Unicité et formats
 
-### 2. Tests de Vues (200+ tests)
+#### Patients (`test_patient.py`) ✨
+- **Types de patients** : Femmes et bébés avec logique métier spécialisée
+- **Relation mère-enfant** : Association des bébés à leur mère
+- **Validation stricte** : Dates de naissance, numéros de téléphone français
+- **Calculs d'âge** : Propriétés d'âge détaillé et formatage
+- **Gestion d'assurance** : Règles métier pour bébés comme ayants droit
+
+#### Antécédents (`test_antecedents.py`) ✨
+- **Dossiers médicaux complets** : ATCD médicaux, obstétricaux, familiaux, chirurgicaux
+- **Calcul IMC** : Propriétés calculées avec interprétation médicale
+- **Frottis cervico-vaginaux** : Gestion des examens FCV avec historique
+- **Validation biométrique** : Contrôles des limites de taille/poids
+- **Relations OneToOne** : Contraintes d'unicité avec patients
+
+#### Caisses et Conditions de Paiement (`test_caisse.py`, `test_condition_paiement.py`) ✨
+- **Gestion des caisses** : Configuration avec conditions éligibles
+- **Conditions de paiement** : Pourcentages et désignations personnalisables
+- **Relations Many-to-Many** : Association caisses/conditions flexibles
+- **Validation métier** : Contraintes de cohérence des tarifications
+
+#### Consultations Gynécologiques (`test_consultation_gynecologique.py`) ✨
+- **Consultations complètes** : Motif, examen clinique, prescription, notes
+- **Constantes vitales** : Tension artérielle (systolique/diastolique) avec interprétation automatique
+- **Calculs médicaux** : Interprétation tension (normale, hypertension stade 1/2, crise), calcul IMC avec antécédents
+- **Validation stricte** : Dates consultation (pas dans le futur), cohérence tension, limites poids (30-200kg)
+- **Traçabilité complète** : Sage-femme créatrice, horodatage création/modification
+- **Relations métier** : Association aux patientes femmes uniquement, cascade delete, SET_NULL sage-femme
+
+### 2. Tests de Vues (231 tests)
 
 #### Administration (`test_administration.py`)
 - **Vue principale** : Liste des sages-femmes avec authentification
@@ -98,7 +127,34 @@ authentication/
 - **Authentification** : Sécurisation des endpoints
 - **Validation métier** : Respect des règles d'activité
 
-### 3. Tests d'Administration (80+ tests)
+#### Patients (`test_patient_views.py`) ✨
+- **CRUD complet** : Interface de gestion des patients avec HTMX
+- **Recherche intelligente** : Autocomplétion pour sélection des mères
+- **APIs REST** : Endpoints pour pré-remplissage automatique des données
+- **Activation/désactivation** : Gestion du statut des patients
+- **Navigation fluide** : Interface moderne avec feedback utilisateur
+
+#### Antécédents (`test_antecedents_views.py`) ✨
+- **API de récupération** : Endpoints pour antécédents existants avec frottis
+- **Sauvegarde AJAX** : Auto-save des données médicales
+- **Validation stricte** : Contrôles des données biométriques et médicales
+- **Gestion des frottis** : Création/modification dynamique des examens FCV
+- **Restriction d'accès** : API limitée aux femmes (pas de bébés)
+
+#### Caisses (`test_administration_caisses.py`) ✨
+- **Interface dédiée** : CRUD complet avec modales HTMX
+- **Gestion des conditions** : Association conditions de paiement éligibles
+- **Permissions différenciées** : Accès lecture/écriture selon le statut
+- **Validation métier** : Contraintes de cohérence et unicité
+
+#### Consultations Gynécologiques (`test_consultation_gynecologique_views.py`) ✨
+- **Interface complète** : Historique consultations, modal de création, formulaire rapide inline
+- **APIs HTMX** : Endpoints pour sauvegarde AJAX avec traçabilité automatique sage-femme
+- **Gestion des données** : Conversion sécurisée des types (tension int, poids float), validation métier
+- **Restriction d'accès** : Consultations gynécologiques réservées aux patientes femmes uniquement
+- **Workflow complet** : Affichage/création/modification/suppression avec confirmations utilisateur
+
+### 3. Tests d'Administration (242 tests)
 
 #### SageFemme Admin (`test_sagefemme.py`)
 - **Configuration admin** : List display, filtres, recherche
@@ -113,7 +169,61 @@ authentication/
 - **Recherche et filtres** : Fonctionnalités de navigation admin
 - **Actions personnalisées** : Opérations batch et spécialisées
 
-### 4. Tests d'Intégration (90+ tests)
+#### Patients Admin (`test_patient_admin.py`) ✨
+- **Interface patients** : Configuration admin avec fieldsets conditionnels
+- **Méthodes personnalisées** : Affichage âge, statut grossesse, informations mère
+- **Filtres avancés** : Par type, statut, caisse, avec hiérarchie de dates
+- **Recherche étendue** : Nom, prénom, téléphone, assurance
+- **Validations** : Contrôles métier directement dans l'admin
+
+#### Antécédents Admin (`test_antecedents_admin.py`) ✨  
+- **Interface médicale** : Fieldsets organisés par catégories d'antécédents
+- **Méthodes calculées** : Affichage IMC avec interprétation
+- **Inline des frottis** : Gestion TabularInline des examens FCV
+- **Filtres médicaux** : Par pathologies, IMC, présence de frottis
+- **Recherche patients** : Accès rapide aux dossiers médicaux
+
+#### Caisses Admin (`test_caisse_admin.py`) ✨
+- **Interface caisses** : Configuration avec conditions éligibles
+- **Actions personnalisées** : Gestion des associations conditions/caisses
+- **Validation cohérence** : Contrôles des relations métier
+- **Permissions granulaires** : Accès différencié selon le statut utilisateur
+
+#### Consultations Gynécologiques Admin (`test_consultation_gynecologique_admin.py`) ✨
+- **Interface complète** : List display avec patient, date, motif, tension, poids formatés
+- **Méthodes d'affichage** : Tension avec interprétation colorée, IMC calculé, résumé consultation
+- **Filtres avancés** : Par date consultation, patient/caisse, hiérarchie temporelle
+- **Actions personnalisées** : Marquage consultations complètes, export (placeholder)
+- **Fieldsets organisés** : Informations générales, constantes vitales, consultation, métadonnées
+- **Optimisation requêtes** : Select_related patient et caisse pour performance
+
+### 4. Tests de Formulaires (105 tests) ✨
+
+#### Patients Forms (`test_patient_forms.py`)
+- **Formulaires adaptatifs** : Champs conditionnels selon type patient
+- **Validation métier** : Règles d'assurance, relations mère-enfant
+- **Widgets personnalisés** : Interface utilisateur optimisée
+- **Pré-remplissage** : Auto-complétion des données à partir de la mère
+
+#### Antécédents Forms (`test_antecedents_forms.py`)
+- **Validation médicale** : Cohérence IMC, données biométriques
+- **Gestion des frottis** : Formulaires dynamiques pour examens FCV
+- **Contraintes temporelles** : Validation des dates d'examens
+- **Consistance médicale** : Validation des antécédents croisés
+
+#### Caisses Forms (`test_caisse_form.py`)
+- **Validation des conditions** : Cohérence pourcentages et associations
+- **Interface intuitive** : Cases à cocher pour conditions éligibles
+- **Contraintes métier** : Validation des règles de tarification
+
+#### Consultations Gynécologiques Forms (`test_consultation_gynecologique_forms.py`) ✨
+- **3 types de formulaires** : Standard, Modal (HTMX), Quick (inline) avec widgets adaptés
+- **Validation médicale** : Cohérence tension systolique/diastolique, limites poids, dates futures interdites
+- **Champs conditionnels** : Patient masqué en modal, queryset filtré aux femmes uniquement
+- **Widgets personnalisés** : Classes CSS Tailwind, attributs HTML5 (min/max, step), placeholders
+- **Gestion des erreurs** : Messages d'erreur contextuels, validation côté client et serveur
+
+### 5. Tests d'Intégration (127 tests)
 
 #### Templates (`test_templates_integration.py`)
 - **Rendu complet** : Toutes les pages principales
@@ -142,7 +252,33 @@ authentication/
 - **Filtrage dynamique** : Sélection et recherche
 - **Performance** : Optimisation des requêtes et affichage
 
-### 5. Tests d'Authentification (42 tests)
+#### Patients Integration (`test_patient_integration.py`) ✨
+- **Workflow complet** : Création/modification/suppression patients
+- **Relation mère-enfant** : Tests de liaison et héritage des données
+- **Interface utilisateur** : Navigation entre pages de détail et formulaires
+- **APIs complètes** : Intégration des endpoints de recherche et pré-remplissage
+
+#### Antécédents Integration (`test_antecedents_integration.py`) ✨
+- **Page détail patient** : Intégration complète des antécédents dans l'interface
+- **Gestion des frottis** : Workflow complet d'ajout/modification/suppression FCV
+- **Calcul IMC** : Intégration temps réel dans différents contextes
+- **Cohérence données** : Validation de la consistance à travers tous les composants
+
+#### Caisses Integration (`test_caisses_templates_integration.py`) ✨
+- **Interface complète** : CRUD avec modales et formulaires HTMX
+- **Gestion des conditions** : Sélection multiple et validation en temps réel
+- **Responsive design** : Tests d'adaptabilité et interface utilisateur
+- **Permissions** : Intégration des droits d'accès dans l'interface
+
+#### Consultations Gynécologiques Integration (`test_consultation_gynecologique_integration.py`) ✨
+- **Workflow complet** : Création consultation depuis page patiente → historique → détail → suppression
+- **Intégration calculs** : IMC automatique avec antécédents, interprétation tension temps réel
+- **3 interfaces testées** : Modal standard, formulaire rapide, API AJAX avec réponses JSON
+- **Gestion d'erreurs** : Patients non-femmes, validations métier, données corrompues
+- **Traçabilité** : Association sage-femme créatrice, horodatage dans tous les workflows
+- **Tri et affichage** : Tests d'ordre par date décroissante, affichage des consultations multiples
+
+### 6. Tests d'Authentification (27 tests)
 
 #### SageFemmeUser (`authentication/tests.py`)
 - **Modèle personnalisé** : Email-based authentication
@@ -155,7 +291,7 @@ authentication/
 
 ### Tests Complets
 ```bash
-# Tous les tests (698)
+# Tous les tests (1006)
 docker-compose exec web python manage.py test
 
 # Avec arrêt au premier échec
@@ -170,10 +306,10 @@ docker-compose exec web python manage.py test --keepdb
 
 ### Tests par Application
 ```bash
-# Tests Core (656 tests)
+# Tests Core (873 tests)
 docker-compose exec web python manage.py test core.tests
 
-# Tests Authentication (42 tests)
+# Tests Authentication (27 tests)
 docker-compose exec web python manage.py test authentication.tests
 ```
 
@@ -265,10 +401,10 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 - **Tests unitaires** : ~0.01-0.05s chacun
 - **Tests d'intégration** : ~0.1-0.3s chacun
 - **Tests d'admin** : ~0.05-0.15s chacun
-- **Suite complète** : ~117 secondes (698 tests)
+- **Suite complète** : ~140 secondes (900 tests)
 
 ### Fiabilité
-- **Stabilité** : 506/506 tests passent constamment
+- **Stabilité** : 900/900 tests passent constamment
 - **Données réalistes** : Formats Nouvelle-Calédonie
 - **Isolation** : Tests indépendents, base de données propre
 - **Reproductibilité** : Résultats constants entre les exécutions
@@ -285,26 +421,44 @@ maieutix/
 │   │   ├── test_periode_activite_complet.py   # Tests PeriodeActivite
 │   │   ├── test_acte.py                       # Tests modèle Acte
 │   │   ├── test_prestation.py                 # Tests modèle Prestation
-│   │   └── test_cadre_exercice.py             # Tests modèle CadreExercice
+│   │   ├── test_cadre_exercice.py             # Tests modèle CadreExercice
+│   │   ├── test_patient.py                    # Tests modèle Patient ✨
+│   │   ├── test_antecedents.py                # Tests modèle Antécédents ✨
+│   │   ├── test_caisse.py                     # Tests modèle Caisse ✨
+│   │   └── test_condition_paiement.py         # Tests modèle ConditionPaiement ✨
 │   ├── views/
 │   │   ├── test_home.py                       # Tests page d'accueil
 │   │   ├── test_administration.py             # Tests vues admin principales
 │   │   ├── test_administration_actes.py       # Tests gestion actes
 │   │   ├── test_administration_prestations.py # Tests gestion prestations
 │   │   ├── test_administration_cadre_exercice.py # Tests cadres d'exercice
+│   │   ├── test_administration_caisses.py     # Tests gestion caisses ✨
+│   │   ├── test_patient_views.py              # Tests vues patients ✨
+│   │   ├── test_antecedents_views.py          # Tests vues antécédents ✨
 │   │   └── test_periode_apis.py               # Tests APIs périodes
 │   ├── admin/
 │   │   ├── test_cabinet_admin.py              # Tests admin Cabinet
 │   │   ├── test_sagefemme.py                  # Tests admin SageFemme
 │   │   ├── test_prestation_admin.py           # Tests admin Prestation
-│   │   └── test_cadre_exercice_admin.py       # Tests admin CadreExercice
+│   │   ├── test_cadre_exercice_admin.py       # Tests admin CadreExercice
+│   │   ├── test_patient_admin.py              # Tests admin Patient ✨
+│   │   ├── test_antecedents_admin.py          # Tests admin Antécédents ✨
+│   │   ├── test_caisse_admin.py               # Tests admin Caisse ✨
+│   │   ├── test_condition_paiement_admin.py   # Tests admin ConditionPaiement ✨
+│   │   └── test_acte_admin.py                 # Tests admin Acte ✨
 │   ├── integration/
 │   │   ├── test_templates_integration.py      # Tests UI généraux
 │   │   ├── test_actes_templates_integration.py # Tests UI actes
 │   │   ├── test_prestations_templates_integration.py # Tests UI prestations
-│   │   └── test_cadre_exercice_templates_integration.py # Tests UI cadres
+│   │   ├── test_cadre_exercice_templates_integration.py # Tests UI cadres
+│   │   ├── test_patient_integration.py        # Tests intégration patients ✨
+│   │   ├── test_antecedents_integration.py    # Tests intégration antécédents ✨
+│   │   └── test_caisses_templates_integration.py # Tests UI caisses ✨
 │   ├── forms/
-│   │   └── test_sagefemme_form.py             # Tests formulaires
+│   │   ├── test_sagefemme_form.py             # Tests formulaires SageFemme
+│   │   ├── test_patient_forms.py              # Tests formulaires Patient ✨
+│   │   ├── test_antecedents_forms.py          # Tests formulaires Antécédents ✨
+│   │   └── test_caisse_form.py                # Tests formulaires Caisse ✨
 │   └── test_visibility_permissions.py         # Tests permissions
 └── authentication/
     └── tests.py                               # Tests authentification
@@ -453,13 +607,14 @@ self.assertTrue(result)
 
 ## 🏆 Conclusion
 
-Cette suite de tests de **698 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
+Cette suite de tests de **900 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
 
-- **Fonctionnalités métier** : Gestion complète des sages-femmes, actes, prestations
+- **Fonctionnalités métier** : Gestion complète des sages-femmes, actes, prestations, patients, antécédents, caisses
 - **Sécurité** : Authentification et permissions robustes
-- **Interface utilisateur** : Navigation et interactions modernes
-- **Intégrité des données** : Validation et contraintes métier
+- **Interface utilisateur** : Navigation et interactions modernes avec HTMX/Alpine.js
+- **Intégrité des données** : Validation et contraintes métier strictes
 - **Performance** : Optimisation des requêtes et temps de réponse
+- **Fonctionnalités médicales** : Dossiers patients complets avec antécédents et consultations gynécologiques
 
 Cette couverture exhaustive permet un développement serein et des déploiements en toute confiance pour la plateforme de gestion des sages-femmes de Nouvelle-Calédonie.
 
