@@ -429,3 +429,68 @@ def save_antecedents(request):
         return JsonResponse({'success': False, 'error': str(e)})
 
 
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def update_ddg(request, patient_id):
+    """
+    Met à jour la date de début de grossesse d'une patiente via AJAX
+    """
+    try:
+        patient = get_object_or_404(Patient, id=patient_id)
+        
+        # Vérifier que c'est une femme
+        if patient.type_patient != 'femme':
+            return JsonResponse({'success': False, 'error': 'Seules les femmes peuvent avoir une DDG'})
+        
+        new_ddg = request.POST.get('date_debut_grossesse')
+        
+        if new_ddg:
+            # Valider la date (pas dans le futur)
+            from datetime import datetime
+            try:
+                ddg_date = datetime.strptime(new_ddg, '%Y-%m-%d').date()
+                if ddg_date > date.today():
+                    return JsonResponse({'success': False, 'error': 'La date de début de grossesse ne peut pas être dans le futur'})
+                
+                patient.date_debut_grossesse = ddg_date
+            except ValueError:
+                return JsonResponse({'success': False, 'error': 'Format de date invalide'})
+        else:
+            # Effacer la DDG si vide
+            patient.date_debut_grossesse = None
+        
+        patient.save()
+        
+        # Retourner les données mises à jour pour rafraîchir l'interface
+        response_data = {
+            'success': True,
+            'ddg': patient.date_debut_grossesse.strftime('%Y-%m-%d') if patient.date_debut_grossesse else '',
+            'ddg_display': patient.date_debut_grossesse.strftime('%d/%m/%Y') if patient.date_debut_grossesse else '',
+            'age_grossesse': patient.age_grossesse if patient.date_debut_grossesse else '',
+        }
+        
+        if patient.date_debut_grossesse:
+            from datetime import timedelta
+            terme = patient.date_debut_grossesse + timedelta(days=273)
+            response_data['terme'] = terme.strftime('%d/%m/%Y')
+        
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@require_http_methods(["GET"])
+def reload_pregnancy_calendar(request, patient_id):
+    """
+    Recharge uniquement le calendrier de grossesse d'une patiente
+    """
+    patient = get_object_or_404(Patient, id=patient_id, type_patient='femme')
+    
+    return render(request, 'core/patients/partials/calendrier_grossesse_compact.html', {
+        'patient': patient
+    })
+
+

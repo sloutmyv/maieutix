@@ -84,6 +84,10 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Gestion dynamique** : Ajout/suppression de consultations sans rechargement de page
 - **Traçabilité complète** : Enregistrement automatique de la sage-femme créatrice et horodatage
 - **Interface harmonisée** : Contraste amélioré et design cohérent avec modals de détail minimalistes
+- **Consultations obstétricales** ✨ NOUVEAU : Interface pour le suivi de grossesse avec calendrier médical interactif
+- **Calendrier de grossesse intelligent** : Calcul automatique des jalons médicaux (HT21, MST2, échographies, HGPO, Rophylac)
+- **Gestion DDG dynamique** : Modification de la date de début de grossesse avec synchronisation temps réel
+- **Mise à jour sans rechargement** : Interface AJAX pour maintenir l'utilisateur sur l'onglet actuel
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -270,6 +274,8 @@ maieutix/
 - `POST /patients/{id}/consultation/save-quick/` - API AJAX pour sauvegarde des consultations avec traçabilité
 - `GET /patients/consultation/{id}/` - API pour affichage modal de détail d'une consultation
 - `POST /patients/consultation/{id}/delete/` - API pour suppression de consultation avec confirmation
+- `POST /patients/{id}/update-ddg/` - API AJAX pour mise à jour de la date de début de grossesse ✨ NOUVEAU
+- `GET /patients/{id}/reload-pregnancy-calendar/` - API pour rechargement du calendrier de grossesse ✨ NOUVEAU
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire

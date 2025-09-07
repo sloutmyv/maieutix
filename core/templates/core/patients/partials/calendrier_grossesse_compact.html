@@ -1,0 +1,217 @@
+{% comment %}
+Calendrier de grossesse compact - Version intégrée avec le modèle Patient existant
+{% endcomment %}
+{% load date_extras %}
+
+{% if patient.date_debut_grossesse %}
+    <!-- Grossesse en cours -->
+    <div class="space-y-3">
+        <!-- Date de début de grossesse avec mode édition -->
+        <div class="flex justify-between items-center mb-2">
+            <div class="text-sm flex items-center">
+                <span class="font-medium text-gray-900 mr-2">DDG :</span>
+                
+                <!-- Mode affichage (par défaut) -->
+                <div id="ddg-display-{{ patient.id }}" class="flex items-center">
+                    <span class="text-gray-700">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
+                    <button onclick="enableDDGEdit({{ patient.id }})" 
+                            class="ml-2 text-xs text-blue-600 hover:text-blue-800 underline">
+                        Modifier
+                    </button>
+                </div>
+                
+                <!-- Mode édition (caché par défaut) -->
+                <div id="ddg-edit-{{ patient.id }}" class="hidden flex items-center space-x-2">
+                    <input type="date" 
+                           id="ddg-input-{{ patient.id }}" 
+                           class="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           value="{{ patient.date_debut_grossesse|date:'Y-m-d' }}"
+                           max="{% now 'Y-m-d' %}">
+                    <button onclick="saveDDG({{ patient.id }})" 
+                            class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">
+                        Sauver
+                    </button>
+                    <button onclick="cancelDDGEdit({{ patient.id }})" 
+                            class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+            <div id="ddg-status-{{ patient.id }}" class="text-xs">
+                <!-- Statut de sauvegarde -->
+            </div>
+        </div>
+        
+        <!-- Informations générales de grossesse -->
+        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-gray-100 px-2 py-1 rounded border border-gray-300">
+                <div class="font-semibold text-blue-600">{{ patient.age_grossesse }}</div>
+                <div class="text-gray-600">SA actuelle</div>
+            </div>
+            <div class="bg-gray-100 px-2 py-1 rounded border border-gray-300">
+                {% with patient.date_debut_grossesse|add_days:273 as terme_corrige %}
+                {% if terme_corrige %}
+                    <div class="font-semibold text-green-600">{{ terme_corrige|duree_grossesse_restante }}</div>
+                    <div class="text-gray-600">Restant</div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <div class="bg-gray-100 px-2 py-1 rounded border border-gray-300">
+                {% with patient.date_debut_grossesse|add_days:273 as terme_corrige %}
+                <div class="font-semibold text-purple-600">{{ terme_corrige|date:"d/m/Y" }}</div>
+                <div class="text-gray-600">Terme prévu</div>
+                {% endwith %}
+            </div>
+        </div>
+
+        <!-- Jalons médicaux compacts avec fond gris -->
+        <div class="bg-gray-100 rounded-lg p-3 space-y-2 border border-gray-300">
+            <h6 class="text-xs font-semibold text-gray-800 mb-2 border-b border-gray-200 pb-1">Jalons médicaux</h6>
+            
+            {% comment %}Calculs des dates importantes{% endcomment %}
+            {% today as today %}
+            {% with patient.date_debut_grossesse as ddg %}
+                {% if ddg %}
+                    <!-- HT21 (11-13SA+6j) : DDG+63 à DDG+83 jours -->
+                    {% with ddg|add_days:63 as ht21_debut %}
+                    {% with ddg|add_days:83 as ht21_fin %}
+                    <div class="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if today >= ht21_debut and today <= ht21_fin %}bg-blue-500{% elif today > ht21_fin %}bg-green-500{% else %}bg-gray-300{% endif %}"></span>
+                            <span class="font-medium">HT21</span>
+                            <span class="text-gray-500 ml-1">(11-13SA+6j)</span>
+                        </span>
+                        <span class="text-gray-700 font-mono">{{ ht21_debut|date:"d/m" }}-{{ ht21_fin|date:"d/m/y" }}</span>
+                    </div>
+                    {% endwith %}
+                    {% endwith %}
+
+                    <!-- MST2 (14-17SA+6j) : DDG+84 à DDG+111 jours -->
+                    {% with ddg|add_days:84 as mst2_debut %}
+                    {% with ddg|add_days:111 as mst2_fin %}
+                    <div class="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if today >= mst2_debut and today <= mst2_fin %}bg-blue-500{% elif today > mst2_fin %}bg-green-500{% else %}bg-gray-300{% endif %}"></span>
+                            <span class="font-medium">MST2</span>
+                            <span class="text-gray-500 ml-1">(14-17SA+6j)</span>
+                        </span>
+                        <span class="text-gray-700 font-mono">{{ mst2_debut|date:"d/m" }}-{{ mst2_fin|date:"d/m/y" }}</span>
+                    </div>
+                    {% endwith %}
+                    {% endwith %}
+
+                    <!-- Echo T1 (12SA) : DDG+70 jours -->
+                    {% with ddg|add_days:70 as echo_t1 %}
+                    <div class="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if today >= echo_t1 %}bg-green-500{% else %}bg-gray-300{% endif %}"></span>
+                            <span class="font-medium">Écho T1</span>
+                            <span class="text-gray-500 ml-1">(12SA)</span>
+                        </span>
+                        <span class="text-gray-700 font-mono">{{ echo_t1|date:"d/m/Y" }}</span>
+                    </div>
+                    {% endwith %}
+
+                    <!-- Echo T2 (22SA) : DDG+140 jours -->
+                    {% with ddg|add_days:140 as echo_t2 %}
+                    <div class="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if today >= echo_t2 %}bg-green-500{% else %}bg-gray-300{% endif %}"></span>
+                            <span class="font-medium">Écho T2</span>
+                            <span class="text-gray-500 ml-1">(22SA)</span>
+                        </span>
+                        <span class="text-gray-700 font-mono">{{ echo_t2|date:"d/m/Y" }}</span>
+                    </div>
+                    {% endwith %}
+
+                    <!-- HGPO (24SA+) : DDG+154 jours -->
+                    {% with ddg|add_days:154 as hgpo_date %}
+                    <div class="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if today >= hgpo_date %}bg-blue-500{% else %}bg-gray-300{% endif %}"></span>
+                            <span class="font-medium">HGPO</span>
+                            <span class="text-gray-500 ml-1">(24SA+)</span>
+                        </span>
+                        <span class="text-gray-700 font-mono">{{ hgpo_date|date:"d/m/Y" }}</span>
+                    </div>
+                    {% endwith %}
+
+                    <!-- Rophylac 300 si Rh- (28SA) : DDG+182 jours -->
+                    {% with ddg|add_days:182 as rophylac_date %}
+                    <div class="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if today >= rophylac_date %}bg-orange-500{% else %}bg-gray-300{% endif %}"></span>
+                            <span class="font-medium">Rophylac 300</span>
+                            <span class="text-gray-500 ml-1">(28SA, si Rh-)</span>
+                        </span>
+                        <span class="text-gray-700 font-mono">{{ rophylac_date|date:"d/m/Y" }}</span>
+                    </div>
+                    {% endwith %}
+
+                    <!-- Echo T3 (32SA) : DDG+210 jours -->
+                    {% with ddg|add_days:210 as echo_t3 %}
+                    <div class="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if today >= echo_t3 %}bg-green-500{% else %}bg-gray-300{% endif %}"></span>
+                            <span class="font-medium">Écho T3</span>
+                            <span class="text-gray-500 ml-1">(32SA)</span>
+                        </span>
+                        <span class="text-gray-700 font-mono">{{ echo_t3|date:"d/m/Y" }}</span>
+                    </div>
+                    {% endwith %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+{% else %}
+    <!-- Pas de grossesse en cours -->
+    <div class="text-center py-4 bg-gray-100 rounded-lg border border-gray-300">
+        <svg class="w-6 h-6 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 2h6M5 12h14l1.5 7H3.5L5 12z"></path>
+        </svg>
+        <h6 class="text-sm font-medium text-gray-900 mb-1">Aucune grossesse en cours</h6>
+        <p class="text-xs text-gray-600 mb-3">
+            Saisir une date de début de grossesse pour activer le suivi
+        </p>
+        
+        <!-- Interface d'ajout de DDG -->
+        <div id="ddg-add-interface-{{ patient.id }}">
+            <!-- Mode simple (par défaut) -->
+            <div id="ddg-add-button-{{ patient.id }}" class="text-center">
+                <button onclick="showDDGAddForm({{ patient.id }})" 
+                        class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 transition-colors">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Ajouter DDG
+                </button>
+            </div>
+            
+            <!-- Mode saisie (caché par défaut) -->
+            <div id="ddg-add-form-{{ patient.id }}" class="hidden">
+                <div class="flex justify-center items-center space-x-2 mb-2">
+                    <label for="ddg-input-new-{{ patient.id }}" class="text-xs font-medium text-gray-700">DDG :</label>
+                    <input type="date" 
+                           id="ddg-input-new-{{ patient.id }}" 
+                           class="text-xs border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           max="{% now 'Y-m-d' %}">
+                </div>
+                <div class="flex justify-center space-x-2">
+                    <button onclick="saveDDGNew({{ patient.id }})" 
+                            class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">
+                        Enregistrer
+                    </button>
+                    <button onclick="cancelDDGAdd({{ patient.id }})" 
+                            class="px-3 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ddg-status-{{ patient.id }}" class="text-xs mt-2">
+            <!-- Statut de sauvegarde -->
+        </div>
+    </div>
+{% endif %}

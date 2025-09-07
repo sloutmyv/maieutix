@@ -6,7 +6,7 @@ from django.urls import path
 from core.views.patients import (
     patients_view, patient_create, patient_edit, 
     patient_detail, patient_detail_modal, patient_toggle_active,
-    search_meres, patient_details_for_baby, patient_antecedents, save_antecedents
+    search_meres, patient_details_for_baby, patient_antecedents, save_antecedents, update_ddg, reload_pregnancy_calendar
 )
 from core.views.consultation_gynecologique import (
     patient_consultations, consultation_modal, save_consultation,
@@ -27,6 +27,10 @@ urlpatterns = [
     # Antécédents
     path('<int:patient_id>/antecedents/', patient_antecedents, name='patient_antecedents'),
     path('save-antecedents/', save_antecedents, name='save_antecedents'),
+    
+    # Date de début de grossesse
+    path('<int:patient_id>/update-ddg/', update_ddg, name='update_ddg'),
+    path('<int:patient_id>/reload-pregnancy-calendar/', reload_pregnancy_calendar, name='reload_pregnancy_calendar'),
     
     # Consultations gynécologiques
     path('<int:patient_id>/consultations/', patient_consultations, name='patient_consultations'),

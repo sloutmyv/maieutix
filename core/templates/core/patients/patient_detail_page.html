@@ -2,6 +2,11 @@
 
 {% block title %}{{ patient.nom_complet }} - Maieutix{% endblock %}
 
+{% block extra_css %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'core/css/consultation_obstetricale.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="max-w-7xl mx-auto">
     <!-- Header avec couleur de fond légère -->
@@ -186,7 +191,7 @@
                             <div class="space-y-2 text-sm">
                                 <div class="flex">
                                     <span class="font-medium text-gray-600 w-32">Début :</span>
-                                    <span class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
+                                    <span id="ddg-display-main-overdue-{{ patient.id }}" class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
                                 </div>
                                 <div class="flex">
                                     <span class="font-medium text-gray-600 w-32">Terme prévu :</span>
@@ -204,7 +209,7 @@
                             <div class="space-y-2 text-sm">
                                 <div class="flex">
                                     <span class="font-medium text-gray-600 w-32">Début :</span>
-                                    <span class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
+                                    <span id="ddg-display-main-ongoing-{{ patient.id }}" class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
                                 </div>
                                 <div class="flex">
                                     <span class="font-medium text-gray-600 w-32">Terme prévu :</span>
@@ -832,9 +837,46 @@
                         </button>
                         <div id="obstetrical-content" class="hidden px-4 pb-4">
                             <div class="border-t border-gray-100 pt-4">
-                                <p class="text-sm text-gray-500 italic">
-                                    Contenu à développer : suivi de grossesse, consultations prénatales, mesures biométriques, examens complémentaires.
-                                </p>
+                                {% comment %}
+                                Section Consultations obstétricales - VERSION TEST SIMPLIFIEE
+                                {% endcomment %}
+                                
+                                <!-- Restriction aux femmes uniquement -->
+                                {% if patient.type_patient == 'femme' %}
+                                    <div class="space-y-4">
+                                        <!-- Calendrier de grossesse compact -->
+                                        <div class="bg-white border border-gray-200 rounded-lg p-3">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h6 class="text-sm font-semibold text-gray-900 flex items-center">
+                                                    📅 Suivi de grossesse
+                                                </h6>
+                                            </div>
+                                            <div id="pregnancy-calendar-{{ patient.id }}">
+                                                {% include 'core/patients/partials/calendrier_grossesse_compact.html' %}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Historique des consultations obstétricales -->
+                                        <div class="bg-white border border-gray-200 rounded-lg p-3">
+                                            <h6 class="text-sm font-semibold text-gray-900 mb-3">Consultations obstétricales</h6>
+                                            <div class="bg-gray-50 rounded p-3 text-center">
+                                                <p class="text-xs text-gray-600 mb-2">Interface en cours de développement</p>
+                                                <small class="text-gray-500">Formulaires et historique des consultations à venir</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <!-- Message pour les bébés -->
+                                    <div class="text-center py-8 bg-yellow-50 rounded-lg border border-yellow-200">
+                                        <svg class="w-12 h-12 text-yellow-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        <h3 class="text-lg font-medium text-yellow-800 mb-2">Consultations obstétricales non applicables</h3>
+                                        <p class="text-yellow-700">
+                                            Les consultations obstétricales sont réservées aux patientes femmes.
+                                        </p>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -1124,7 +1166,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div>
                                 <span class="font-medium text-gray-600">Début de grossesse :</span>
-                                <p class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</p>
+                                <p id="ddg-display-echo-{{ patient.id }}" class="text-gray-900">{{ patient.date_debut_grossesse|date:"d/m/Y" }}</p>
                             </div>
                             <div>
                                 <span class="font-medium text-gray-600">Terme prévu :</span>
@@ -1857,6 +1899,174 @@ document.addEventListener('DOMContentLoaded', function() {
         loadAntecedents(patientId);
     }
 });
+
+{% comment %}Script pour les consultations obstétricales - TEMPORAIREMENT DESACTIVE{% endcomment %}
+{% comment %}{% include 'core/patients/partials/consultation_obstetricale_script.html' %}{% endcomment %}
+
+// Script pour la gestion de la DDG (Date de Début de Grossesse)
+
+// Fonctions pour le mode édition (patients avec DDG existante)
+function enableDDGEdit(patientId) {
+    document.getElementById(`ddg-display-${patientId}`).classList.add('hidden');
+    document.getElementById(`ddg-edit-${patientId}`).classList.remove('hidden');
+    
+    // Focus sur le champ de date
+    document.getElementById(`ddg-input-${patientId}`).focus();
+}
+
+function cancelDDGEdit(patientId) {
+    document.getElementById(`ddg-edit-${patientId}`).classList.add('hidden');
+    document.getElementById(`ddg-display-${patientId}`).classList.remove('hidden');
+    
+    // Réinitialiser le champ à sa valeur d'origine
+    const input = document.getElementById(`ddg-input-${patientId}`);
+    input.value = input.defaultValue;
+}
+
+function saveDDG(patientId) {
+    const newDate = document.getElementById(`ddg-input-${patientId}`).value;
+    updateDDG(patientId, newDate, true); // true = recharger après sauvegarde
+}
+
+// Fonctions pour l'ajout de DDG (patients sans DDG)
+function showDDGAddForm(patientId) {
+    document.getElementById(`ddg-add-button-${patientId}`).classList.add('hidden');
+    document.getElementById(`ddg-add-form-${patientId}`).classList.remove('hidden');
+    
+    // Focus sur le champ de date
+    document.getElementById(`ddg-input-new-${patientId}`).focus();
+}
+
+function cancelDDGAdd(patientId) {
+    document.getElementById(`ddg-add-form-${patientId}`).classList.add('hidden');
+    document.getElementById(`ddg-add-button-${patientId}`).classList.remove('hidden');
+    
+    // Vider le champ
+    document.getElementById(`ddg-input-new-${patientId}`).value = '';
+}
+
+function saveDDGNew(patientId) {
+    const newDate = document.getElementById(`ddg-input-new-${patientId}`).value;
+    if (!newDate) {
+        alert('Veuillez sélectionner une date');
+        return;
+    }
+    updateDDG(patientId, newDate, true); // true = recharger après sauvegarde
+}
+
+// Fonction centrale de mise à jour DDG
+function updateDDG(patientId, newDate, shouldReload = false) {
+    const statusDiv = document.getElementById(`ddg-status-${patientId}`);
+    
+    // Afficher le statut de chargement
+    statusDiv.innerHTML = '<span class="text-blue-600">⏳ Sauvegarde...</span>';
+    
+    // Données à envoyer
+    const formData = new FormData();
+    formData.append('date_debut_grossesse', newDate);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    // Envoi AJAX
+    fetch(`/patients/${patientId}/update-ddg/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Succès - afficher le statut de confirmation
+            statusDiv.innerHTML = '<span class="text-green-600">✓ Sauvegardé</span>';
+            
+            // Mettre à jour immédiatement l'affichage DDG dans les autres onglets
+            updateDDGDisplays(patientId, data.ddg_display);
+            
+            if (shouldReload) {
+                // Recharger seulement le calendrier de grossesse
+                setTimeout(() => {
+                    reloadPregnancyCalendar(patientId);
+                }, 500);
+            } else {
+                // Masquer le statut après 2 secondes
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                }, 2000);
+            }
+        } else {
+            // Erreur - afficher le message d'erreur
+            statusDiv.innerHTML = `<span class="text-red-600">❌ ${data.error}</span>`;
+            
+            // Masquer l'erreur après 5 secondes
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la sauvegarde:', error);
+        statusDiv.innerHTML = '<span class="text-red-600">❌ Erreur de connexion</span>';
+        
+        // Masquer l'erreur après 5 secondes
+        setTimeout(() => {
+            statusDiv.innerHTML = '';
+        }, 5000);
+    });
+}
+
+// Fonction pour mettre à jour l'affichage DDG dans tous les onglets
+function updateDDGDisplays(patientId, newDDGDisplay) {
+    // Mettre à jour l'affichage dans l'onglet informations détaillées
+    const ddgOverdueElement = document.getElementById(`ddg-display-main-overdue-${patientId}`);
+    const ddgOngoingElement = document.getElementById(`ddg-display-main-ongoing-${patientId}`);
+    const ddgEchoElement = document.getElementById(`ddg-display-echo-${patientId}`);
+    
+    if (ddgOverdueElement) {
+        ddgOverdueElement.textContent = newDDGDisplay;
+    }
+    if (ddgOngoingElement) {
+        ddgOngoingElement.textContent = newDDGDisplay;
+    }
+    if (ddgEchoElement) {
+        ddgEchoElement.textContent = newDDGDisplay;
+    }
+}
+
+// Fonction pour recharger seulement le calendrier de grossesse
+function reloadPregnancyCalendar(patientId) {
+    const calendarContainer = document.getElementById(`pregnancy-calendar-${patientId}`);
+    
+    if (!calendarContainer) {
+        console.error('Container du calendrier de grossesse non trouvé');
+        return;
+    }
+    
+    // Afficher un indicateur de chargement
+    calendarContainer.innerHTML = '<div class="text-center py-4"><span class="text-blue-600">⏳ Mise à jour du calendrier...</span></div>';
+    
+    // Charger le nouveau contenu
+    fetch(`/patients/${patientId}/reload-pregnancy-calendar/`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(html => {
+        calendarContainer.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Erreur lors du rechargement du calendrier:', error);
+        calendarContainer.innerHTML = '<div class="text-center py-4"><span class="text-red-600">❌ Erreur lors du chargement</span></div>';
+    });
+}
+
 </script>
 
 <style>
