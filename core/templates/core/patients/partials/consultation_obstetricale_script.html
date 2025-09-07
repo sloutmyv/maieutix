@@ -1,0 +1,165 @@
+{% comment %}
+Script JavaScript pour les consultations obstétricales - Version prototype
+{% endcomment %}
+
+// Gestion du formulaire de consultation obstétricale
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Fonction pour masquer le formulaire
+    function hideObstetricalForm() {
+        const container = document.getElementById('consultation-obstetricale-form-container');
+        if (container) {
+            container.classList.add('hidden');
+        }
+    }
+    
+    // Fonction pour afficher le formulaire
+    function showObstetricalForm() {
+        const container = document.getElementById('consultation-obstetricale-form-container');
+        if (container) {
+            container.classList.remove('hidden');
+        }
+    }
+    
+    // Gestionnaire pour le formulaire de consultation obstétricale
+    const obstetricalForm = document.getElementById('consultation-obstetricale-form');
+    if (obstetricalForm) {
+        obstetricalForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulation de sauvegarde (remplacer par vraie logique AJAX)
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            
+            // Animation de chargement
+            submitButton.textContent = 'Sauvegarde...';
+            submitButton.disabled = true;
+            
+            // Simuler un délai de sauvegarde
+            setTimeout(() => {
+                // Affichage d'une notification de succès
+                showNotification('Consultation obstétricale sauvegardée avec succès', 'success');
+                
+                // Masquer le formulaire
+                hideObstetricalForm();
+                
+                // Réinitialiser le bouton
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+                
+                // Réinitialiser le formulaire
+                this.reset();
+                
+                // TODO: Recharger l'historique des consultations
+                
+            }, 1500);
+        });
+    }
+    
+    // Auto-calculation des SA à partir de la date de consultation (exemple)
+    const dateConsultationInput = document.querySelector('#consultation-obstetricale-form input[type="date"]');
+    if (dateConsultationInput) {
+        dateConsultationInput.addEventListener('change', function() {
+            // TODO: Calculer automatiquement les SA à partir de la DDG
+            // Pour l'instant, c'est juste une démo visuelle
+            console.log('Date de consultation modifiée:', this.value);
+        });
+    }
+    
+    // Validation des constantes vitales
+    const tensionSystoliqueInput = document.querySelector('#consultation-obstetricale-form input[placeholder="120"]');
+    const tensionDiastoliqueInput = document.querySelector('#consultation-obstetricale-form input[placeholder="80"]');
+    
+    if (tensionSystoliqueInput && tensionDiastoliqueInput) {
+        function validateTension() {
+            const systolique = parseInt(tensionSystoliqueInput.value);
+            const diastolique = parseInt(tensionDiastoliqueInput.value);
+            
+            if (systolique && diastolique && systolique <= diastolique) {
+                tensionDiastoliqueInput.setCustomValidity('La tension diastolique doit être inférieure à la systolique');
+            } else {
+                tensionDiastoliqueInput.setCustomValidity('');
+            }
+        }
+        
+        tensionSystoliqueInput.addEventListener('input', validateTension);
+        tensionDiastoliqueInput.addEventListener('input', validateTension);
+    }
+    
+    // Fonction utilitaire pour afficher les notifications (à intégrer avec le système existant)
+    function showNotification(message, type = 'info') {
+        // Pour l'instant, simple alert (remplacer par le système de notifications existant)
+        console.log(`${type.toUpperCase()}: ${message}`);
+        
+        // Création d'une notification temporaire simple
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full`;
+        
+        if (type === 'success') {
+            notification.className += ' bg-green-500 text-white';
+        } else if (type === 'error') {
+            notification.className += ' bg-red-500 text-white';
+        } else {
+            notification.className += ' bg-blue-500 text-white';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Animation d'entrée
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Animation de sortie et suppression
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+});
+
+// Fonctions globales pour le calendrier de grossesse
+function modifierDDG() {
+    const nouvelleDDG = prompt('Entrez la nouvelle date de début de grossesse (JJ/MM/AAAA):');
+    if (nouvelleDDG) {
+        alert(`DDG modifiée: ${nouvelleDDG}\nTODO: Recalculer automatiquement tous les jalons`);
+        // TODO: Implémenter la logique de recalcul des jalons
+    }
+}
+
+function marquerJalonRealise() {
+    alert('TODO: Modal pour marquer un jalon comme réalisé avec date et notes');
+    // TODO: Implémenter la modal de marquage des jalons
+}
+
+function ajouterJalonPersonnalise() {
+    const typeJalon = prompt('Type de jalon personnalisé:');
+    if (typeJalon) {
+        alert(`Jalon "${typeJalon}" ajouté\nTODO: Implémenter l'ajout de jalons personnalisés`);
+        // TODO: Implémenter l'ajout de jalons personnalisés
+    }
+}
+
+// Fonctions pour la gestion des consultations dans l'historique
+function voirDetailsConsultation(consultationId) {
+    alert(`TODO: Modal de détail pour la consultation ${consultationId}`);
+    // TODO: Implémenter la modal de détail des consultations
+}
+
+function modifierConsultation(consultationId) {
+    alert(`TODO: Ouvrir le formulaire de modification pour la consultation ${consultationId}`);
+    // TODO: Implémenter la modification des consultations
+}
+
+function supprimerConsultation(consultationId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette consultation ?')) {
+        alert(`TODO: Supprimer la consultation ${consultationId}`);
+        // TODO: Implémenter la suppression avec AJAX
+    }
+}
