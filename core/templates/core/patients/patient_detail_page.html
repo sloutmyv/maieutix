@@ -870,10 +870,39 @@
                                         
                                         <!-- Historique des consultations obstétricales -->
                                         <div class="bg-white border border-gray-200 rounded-lg p-3">
-                                            <h6 class="text-sm font-semibold text-gray-900 mb-3">Consultations obstétricales</h6>
-                                            <div class="bg-gray-50 rounded p-3 text-center">
-                                                <p class="text-xs text-gray-600 mb-2">Interface en cours de développement</p>
-                                                <small class="text-gray-500">Formulaires et historique des consultations à venir</small>
+                                            <div class="flex justify-between items-center mb-4">
+                                                <h6 class="text-sm font-medium text-gray-900">Historique des consultations obstétricales</h6>
+                                                
+                                                <!-- Bouton ajouter consultation -->
+                                                {% if patient.type_patient == 'femme' %}
+                                                <button 
+                                                    hx-get="{% url 'patients:consultation_obstetricale_quick_form' patient.pk %}"
+                                                    hx-target="#consultation-obstetricale-form-container"
+                                                    hx-swap="innerHTML"
+                                                    onclick="document.getElementById('consultation-obstetricale-form-container').classList.remove('hidden')"
+                                                    style="background-color: #7C3AED;"
+                                                    class="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded hover:opacity-90 transition-all duration-200"
+                                                >
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                    </svg>
+                                                    Ajouter consultation
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <!-- Container pour le formulaire inline -->
+                                            <div id="consultation-obstetricale-form-container" class="hidden mb-4">
+                                                <!-- Le formulaire sera chargé ici -->
+                                            </div>
+                                            
+                                            <div id="consultations-obstetricales-history" 
+                                                 hx-get="{% url 'patients:patient_consultations_obstetricales' patient.pk %}" 
+                                                 hx-trigger="revealed, consultation-obstetricale-added from:window"
+                                                 hx-swap="innerHTML">
+                                                <div class="flex justify-center py-8">
+                                                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1427,6 +1456,13 @@ document.body.addEventListener('consultation-form-close', function() {
     if (formContainer) {
         formContainer.classList.add('hidden');
         formContainer.innerHTML = '';
+    }
+    
+    // Gestion pour les consultations obstétricales
+    const obsFormContainer = document.getElementById('consultation-obstetricale-form-container');
+    if (obsFormContainer) {
+        obsFormContainer.classList.add('hidden');
+        obsFormContainer.innerHTML = '';
     }
 });
 

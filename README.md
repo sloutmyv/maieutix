@@ -93,6 +93,11 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Auto-sauvegarde** : Sauvegarde automatique des données médicales avec feedback visuel utilisateur
 - **Listes déroulantes standardisées** : Valeurs pré-définies pour analyses médicales (GS/Rh, sérologies, etc.)
 - **Layout optimisé** : Organisation en 2 lignes de 5 éléments pour la section Sérologies & Dépistages
+- **Système de consultations obstétricales** ✨ NOUVEAU : Gestion complète des consultations de suivi de grossesse
+- **Interface unifiée** : Formulaires inline identiques aux consultations gynécologiques pour cohérence UX
+- **Historique complet** : Affichage chronologique avec détails (TA, poids, IMC, motif, examen, prescription)
+- **Actions CRUD complètes** : Création, lecture, modification et suppression avec confirmations utilisateur
+- **Différenciation visuelle** : Code couleur violet pour distinguer des consultations gynécologiques (rose)
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage

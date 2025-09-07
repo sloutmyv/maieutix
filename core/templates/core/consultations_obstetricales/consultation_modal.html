@@ -1,0 +1,162 @@
+<!-- Modal Consultation Obstétricale -->
+<div id="consultation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeModal()">
+    <div class="bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <!-- Header -->
+        <div class="flex justify-between items-center p-3 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-900">Nouvelle consultation obstétricale - {{ patient.nom_complet }}</h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form hx-post="{% url 'patients:consultation_obstetricale_modal' patient.id %}" 
+              hx-target="#modal-container"
+              hx-swap="innerHTML" 
+              class="p-3">
+            {% csrf_token %}
+            
+            <!-- Champ patient caché -->
+            {{ form.patient }}
+            <!-- Erreurs globales -->
+            {% if form.non_field_errors %}
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    {% for error in form.non_field_errors %}
+                        <p class="text-red-600 text-sm">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Date de consultation -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.date_consultation.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.date_consultation.label }}
+                        {% if form.date_consultation.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.date_consultation }}
+                    {% if form.date_consultation.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.date_consultation.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Tension systolique -->
+                <div>
+                    <label for="{{ form.tension_systolique.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.tension_systolique.label }}
+                    </label>
+                    {{ form.tension_systolique }}
+                    {% if form.tension_systolique.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.tension_systolique.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Tension diastolique -->
+                <div>
+                    <label for="{{ form.tension_diastolique.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.tension_diastolique.label }}
+                    </label>
+                    {{ form.tension_diastolique }}
+                    {% if form.tension_diastolique.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.tension_diastolique.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Poids -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.poids.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.poids.label }}
+                    </label>
+                    {{ form.poids }}
+                    {% if form.poids.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.poids.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Motif de consultation -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.motif.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.motif.label }}
+                        {% if form.motif.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ form.motif }}
+                    {% if form.motif.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.motif.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Examen clinique -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.examen.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.examen.label }}
+                    </label>
+                    {{ form.examen }}
+                    {% if form.examen.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.examen.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Prescription -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.prescription.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.prescription.label }}
+                    </label>
+                    {{ form.prescription }}
+                    {% if form.prescription.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.prescription.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Notes -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.notes.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.notes.label }}
+                    </label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.notes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-2 mt-4 pt-3 border-t border-gray-200">
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        style="background-color: #2D4B73;"
+                        class="px-3 py-1.5 text-xs font-medium text-white border border-transparent rounded hover:opacity-90 focus:outline-none focus:ring-1 transition-all">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // S'assurer que closeModal existe
+    if (typeof closeModal !== 'function') {
+        function closeModal() {
+            const modalContainer = document.getElementById('modal-container');
+            if (modalContainer) {
+                modalContainer.innerHTML = '';
+            }
+        }
+    }
+
+    // Gestion HTMX success - recharger l'historique des consultations
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.target.id === 'modal-container' && event.detail.xhr && event.detail.xhr.response) {
+            const response = event.detail.xhr.response;
+            if (response.includes('"success": true') || response.includes('consultation enregistrée')) {
+                // Déclencher un événement pour recharger les consultations
+                window.dispatchEvent(new CustomEvent('consultation-obstetricale-added'));
+            }
+        }
+    });
+</script>
