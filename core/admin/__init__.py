@@ -9,5 +9,6 @@ from .caisse import CaisseAdmin
 from .patient import PatientAdmin
 from .antecedents import AntecedentsAdmin, FrottisCVAdmin
 from .consultation_gynecologique import ConsultationGynecologiqueAdmin
+from .donnees_grossesse import DonneesGrossesseAdmin
 
-__all__ = ['CabinetAdmin', 'SageFemmeAdmin', 'PeriodeActiviteAdmin', 'PeriodeActiviteInline', 'ActeAdmin', 'TarifPeriodeAdmin', 'CadreExerciceAdmin', 'PrestationAdmin', 'ConditionPaiementAdmin', 'CaisseAdmin', 'PatientAdmin', 'AntecedentsAdmin', 'FrottisCVAdmin', 'ConsultationGynecologiqueAdmin']
+__all__ = ['CabinetAdmin', 'SageFemmeAdmin', 'PeriodeActiviteAdmin', 'PeriodeActiviteInline', 'ActeAdmin', 'TarifPeriodeAdmin', 'CadreExerciceAdmin', 'PrestationAdmin', 'ConditionPaiementAdmin', 'CaisseAdmin', 'PatientAdmin', 'AntecedentsAdmin', 'FrottisCVAdmin', 'ConsultationGynecologiqueAdmin', 'DonneesGrossesseAdmin']

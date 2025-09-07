@@ -856,6 +856,18 @@
                                             </div>
                                         </div>
                                         
+                                        <!-- Données médicales de grossesse -->
+                                        <div class="bg-white border border-gray-200 rounded-lg p-3">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h6 class="text-sm font-semibold text-gray-900 flex items-center">
+                                                    🧬 Données médicales
+                                                </h6>
+                                            </div>
+                                            <div id="donnees-grossesse-section-{{ patient.id }}">
+                                                {% include 'core/patients/partials/donnees_grossesse_compact.html' %}
+                                            </div>
+                                        </div>
+                                        
                                         <!-- Historique des consultations obstétricales -->
                                         <div class="bg-white border border-gray-200 rounded-lg p-3">
                                             <h6 class="text-sm font-semibold text-gray-900 mb-3">Consultations obstétricales</h6>
@@ -2066,6 +2078,180 @@ function reloadPregnancyCalendar(patientId) {
         calendarContainer.innerHTML = '<div class="text-center py-4"><span class="text-red-600">❌ Erreur lors du chargement</span></div>';
     });
 }
+
+// Fonctions pour les données de grossesse
+function saveDonneesGrossesse(patientId) {
+    const form = document.getElementById(`donnees-grossesse-form-${patientId}`);
+    const statusDiv = document.getElementById(`donnees-grossesse-status-${patientId}`);
+    
+    if (!form) return;
+    
+    // Afficher le statut de sauvegarde
+    statusDiv.innerHTML = '<span class="text-blue-600">💾 Sauvegarde...</span>';
+    
+    // Préparer les données du formulaire
+    const formData = new FormData(form);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    // Envoi AJAX
+    fetch('/patients/save-donnees-grossesse/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Succès - afficher confirmation
+            statusDiv.innerHTML = '<span class="text-green-600">✓ Sauvegardé</span>';
+            
+            // Appliquer le code couleur après sauvegarde
+            applyMedicalColorCoding(patientId);
+            
+            // Masquer le statut après 2 secondes
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 2000);
+        } else {
+            // Erreur
+            statusDiv.innerHTML = `<span class="text-red-600">❌ ${data.error}</span>`;
+            
+            // Masquer l'erreur après 5 secondes
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la sauvegarde:', error);
+        statusDiv.innerHTML = '<span class="text-red-600">❌ Erreur de connexion</span>';
+        
+        // Masquer l'erreur après 5 secondes
+        setTimeout(() => {
+            statusDiv.innerHTML = '';
+        }, 5000);
+    });
+}
+
+// Système de code couleur médical
+function applyMedicalColorCoding(patientId) {
+    const form = document.getElementById(`donnees-grossesse-form-${patientId}`);
+    if (!form) return;
+    
+    // Fonction helper pour appliquer les couleurs
+    function setFieldColor(fieldName, value, isAlert = false) {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        if (!field) return;
+        
+        // Reset classes
+        field.classList.remove('bg-red-50', 'border-red-300', 'text-red-700');
+        field.classList.remove('bg-orange-50', 'border-orange-300', 'text-orange-700');
+        field.classList.remove('bg-green-50', 'border-green-300', 'text-green-700');
+        
+        if (!value || value === '--') {
+            // Pas de valeur - couleur normale
+            return;
+        }
+        
+        if (isAlert) {
+            // Rouge - Alerte/Pathologique
+            field.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
+        } else {
+            // Vert - Normal/Protecteur
+            field.classList.add('bg-green-50', 'border-green-300', 'text-green-700');
+        }
+    }
+    
+    // Appliquer les codes couleur selon les valeurs
+    
+    // RAI - Positif = Alerte
+    const rai = form.querySelector('[name="rai"]')?.value;
+    setFieldColor('rai', rai, rai === 'Positif');
+    
+    // Toxo - Non immune = Surveillance
+    const toxo = form.querySelector('[name="toxo"]')?.value;
+    if (toxo === 'Non immune' || toxo === 'À refaire') {
+        const field = form.querySelector('[name="toxo"]');
+        field?.classList.add('bg-orange-50', 'border-orange-300', 'text-orange-700');
+    } else {
+        setFieldColor('toxo', toxo, false);
+    }
+    
+    // Rubéole - Non immune = Alerte
+    const rub = form.querySelector('[name="rub"]')?.value;
+    setFieldColor('rub', rub, rub === 'Non immune');
+    
+    // Ag HBs - Positif = Alerte
+    const agHbs = form.querySelector('[name="ag_hbs"]')?.value;
+    setFieldColor('ag_hbs', agHbs, agHbs === 'Positif');
+    
+    // Ac anti HBs - < 10 = Surveillance
+    const acHbs = form.querySelector('[name="ac_anti_hbs"]')?.value;
+    if (acHbs === '< 10 UI/L') {
+        const field = form.querySelector('[name="ac_anti_hbs"]');
+        field?.classList.add('bg-orange-50', 'border-orange-300', 'text-orange-700');
+    } else {
+        setFieldColor('ac_anti_hbs', acHbs, false);
+    }
+    
+    // VIH - Positif = Alerte
+    const vih = form.querySelector('[name="vih"]')?.value;
+    setFieldColor('vih', vih, vih === 'Positif');
+    
+    // TPHA/VDRL - Positif = Alerte
+    const tpha = form.querySelector('[name="tpha_vdrl"]')?.value;
+    setFieldColor('tpha_vdrl', tpha, tpha === 'Positif');
+    
+    // DPNI - Positif = Alerte
+    const dpni = form.querySelector('[name="dpni"]')?.value;
+    setFieldColor('dpni', dpni, dpni === 'Positif');
+    
+    // Glycémie à jeun - Analyser valeur numérique
+    const glyc = form.querySelector('[name="glyc_jeun"]')?.value;
+    if (glyc && !isNaN(parseFloat(glyc))) {
+        const glycVal = parseFloat(glyc);
+        setFieldColor('glyc_jeun', glyc, glycVal >= 0.92); // ≥ 0.92 g/L = alerte
+    }
+    
+    // Hémoglobine - Analyser valeur numérique
+    const hb = form.querySelector('[name="hb"]')?.value;
+    if (hb && !isNaN(parseFloat(hb))) {
+        const hbVal = parseFloat(hb);
+        if (hbVal < 11.0) {
+            // Anémie - orange (surveillance)
+            const field = form.querySelector('[name="hb"]');
+            field?.classList.add('bg-orange-50', 'border-orange-300', 'text-orange-700');
+        } else {
+            setFieldColor('hb', hb, false);
+        }
+    }
+    
+    // PV - Infections = Alerte, SB+ = Surveillance
+    const pv = form.querySelector('[name="pv"]')?.value;
+    if (pv === 'Infection' || pv === 'Mycose') {
+        setFieldColor('pv', pv, true); // Rouge
+    } else if (pv === 'Streptocoque B+') {
+        const field = form.querySelector('[name="pv"]');
+        field?.classList.add('bg-orange-50', 'border-orange-300', 'text-orange-700'); // Orange
+    } else {
+        setFieldColor('pv', pv, false); // Vert pour Normal/SB-
+    }
+    
+    // ECBU - Anomalies = Alerte
+    const ecbu = form.querySelector('[name="ecbu"]')?.value;
+    setFieldColor('ecbu', ecbu, ['Infection', 'Leucocytes+', 'Protéines+', 'Nitrites+'].includes(ecbu));
+}
+
+// Appliquer les couleurs au chargement initial et à chaque changement
+document.addEventListener('DOMContentLoaded', function() {
+    // Appliquer pour tous les patients sur la page
+    document.querySelectorAll('[id^="donnees-grossesse-form-"]').forEach(form => {
+        const patientId = form.id.split('-').pop();
+        applyMedicalColorCoding(patientId);
+    });
+});
 
 </script>
 

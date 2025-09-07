@@ -13,7 +13,7 @@ from django.forms import ModelForm
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect
 from datetime import date
-from core.models import Patient, Caisse, Antecedents, FrottisCV
+from core.models import Patient, Caisse, Antecedents, FrottisCV, DonneesGrossesse
 
 
 class PatientForm(ModelForm):
@@ -180,9 +180,18 @@ def patient_detail(request, patient_id):
     """
     patient = get_object_or_404(Patient, id=patient_id)
     
+    # Récupérer les données de grossesse si c'est une femme
+    donnees = None
+    if patient.type_patient == 'femme':
+        try:
+            donnees = patient.donnees_grossesse
+        except DonneesGrossesse.DoesNotExist:
+            donnees = None
+    
     context = {
         'patient': patient,
         'bebes': patient.get_bebes() if patient.type_patient == 'femme' else None,
+        'donnees': donnees,
         'page_title': f'Patient - {patient.nom_complet}',
         'section': 'patients'
     }
@@ -492,5 +501,100 @@ def reload_pregnancy_calendar(request, patient_id):
     return render(request, 'core/patients/partials/calendrier_grossesse_compact.html', {
         'patient': patient
     })
+
+
+@login_required
+@require_http_methods(["GET"])
+def patient_donnees_grossesse(request, patient_id):
+    """
+    Vue pour récupérer les données de grossesse d'une patiente
+    """
+    patient = get_object_or_404(Patient, id=patient_id, type_patient='femme')
+    
+    try:
+        donnees = patient.donnees_grossesse
+        
+        data = {
+            'donnees': {
+                'gestite_parite': donnees.gestite_parite,
+                'facteurs_risque': donnees.facteurs_risque,
+                'lieu_accouchement': donnees.lieu_accouchement,
+                'gs_rh': donnees.gs_rh,
+                'rai': donnees.rai,
+                'ht21': donnees.ht21,
+                'dpni': donnees.dpni,
+                'toxo': donnees.toxo,
+                'rub': donnees.rub,
+                'glyc_jeun': donnees.glyc_jeun,
+                'ag_hbs': donnees.ag_hbs,
+                'ac_anti_hbs': donnees.ac_anti_hbs,
+                'hgpo': donnees.hgpo,
+                'vih': donnees.vih,
+                'tpha_vdrl': donnees.tpha_vdrl,
+                'hb': donnees.hb,
+                'plaq': donnees.plaq,
+                'pv': donnees.pv,
+                'ecbu': donnees.ecbu,
+            }
+        }
+        
+        return JsonResponse(data)
+        
+    except DonneesGrossesse.DoesNotExist:
+        return JsonResponse({
+            'donnees': None
+        })
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_protect
+def save_donnees_grossesse(request):
+    """
+    Vue pour sauvegarder les données de grossesse d'une patiente
+    """
+    patient_id = request.POST.get('patient_id')
+    if not patient_id:
+        return JsonResponse({'success': False, 'error': 'Patient ID manquant'})
+    
+    patient = get_object_or_404(Patient, id=patient_id, type_patient='femme')
+    
+    try:
+        # Récupérer ou créer les données de grossesse
+        donnees, created = DonneesGrossesse.objects.get_or_create(patient=patient)
+        
+        # Obstétrique
+        donnees.gestite_parite = request.POST.get('gestite_parite', '')
+        donnees.facteurs_risque = request.POST.get('facteurs_risque', '')
+        donnees.lieu_accouchement = request.POST.get('lieu_accouchement', '')
+        
+        # Analyses de base
+        donnees.gs_rh = request.POST.get('gs_rh', '')
+        donnees.rai = request.POST.get('rai', '')
+        donnees.ht21 = request.POST.get('ht21', '')
+        donnees.dpni = request.POST.get('dpni', '')
+        
+        # Sérologies
+        donnees.toxo = request.POST.get('toxo', '')
+        donnees.rub = request.POST.get('rub', '')
+        donnees.ag_hbs = request.POST.get('ag_hbs', '')
+        donnees.ac_anti_hbs = request.POST.get('ac_anti_hbs', '')
+        donnees.vih = request.POST.get('vih', '')
+        donnees.tpha_vdrl = request.POST.get('tpha_vdrl', '')
+        
+        # Analyses complémentaires
+        donnees.glyc_jeun = request.POST.get('glyc_jeun', '')
+        donnees.hgpo = request.POST.get('hgpo', '')
+        donnees.hb = request.POST.get('hb', '')
+        donnees.plaq = request.POST.get('plaq', '')
+        donnees.pv = request.POST.get('pv', '')
+        donnees.ecbu = request.POST.get('ecbu', '')
+        
+        donnees.save()
+        
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 

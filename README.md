@@ -88,6 +88,11 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Calendrier de grossesse intelligent** : Calcul automatique des jalons médicaux (HT21, MST2, échographies, HGPO, Rophylac)
 - **Gestion DDG dynamique** : Modification de la date de début de grossesse avec synchronisation temps réel
 - **Mise à jour sans rechargement** : Interface AJAX pour maintenir l'utilisateur sur l'onglet actuel
+- **Données médicales de grossesse** : Formulaire complet avec 3 sections (Obstétrique, Sérologies & Dépistages, Analyses complémentaires)
+- **Code couleur médical** : Système intelligent de coloration (vert/orange/rouge) pour surveillance des résultats critiques
+- **Auto-sauvegarde** : Sauvegarde automatique des données médicales avec feedback visuel utilisateur
+- **Listes déroulantes standardisées** : Valeurs pré-définies pour analyses médicales (GS/Rh, sérologies, etc.)
+- **Layout optimisé** : Organisation en 2 lignes de 5 éléments pour la section Sérologies & Dépistages
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
