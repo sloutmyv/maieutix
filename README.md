@@ -6,7 +6,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 908+ tests passent (100% ✅) - Couverture complète avec 210 nouveaux tests (patients + consultations gynécologiques)
+- **Tests** : 1000+ tests passent (100% ✅) - Couverture complète avec 300+ nouveaux tests (patients + consultations gynécologiques + consultations obstétricales)
 - **Gestion Patients** : Système complet avec tests exhaustifs (model/form/view/admin/intégration)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
@@ -72,6 +72,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Gestion des patients inactifs** : Affichage grisé avec possibilité de réactivation
 - **Interface moderne** : Design cohérent avec système de formulaires conditionnels et modales
 - **Tests complets** : 104 tests exhaustifs (19 modèles + 19 formulaires + 27 vues + 27 admin + 12 intégration)
+- **Consultations obstétricales complètes** : 93 tests dédiés (25 modèles + 20 formulaires + 15 vues + 18 admin + 15 intégration)
 - **Validation robuste** : Règles métier strictes avec validation des numéros de téléphone français
 - **API REST** : Endpoints pour recherche de mères et récupération de détails pour pré-remplissage
 - **Dossiers médicaux complets** : Page de détail avec onglets organisés (Informations, Historique, Échographie, Dossier)
@@ -101,6 +102,8 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Calcul automatique SA** ✨ NOUVEAU : Semaines d'Aménorrhée calculées automatiquement à partir de la DDG
 - **Affichage SA intégré** : Badge SA visible dans l'historique, détails consultation et interface admin
 - **Traçabilité temporelle** : SA enregistrée à chaque consultation pour suivi précis de l'évolution
+- **Interface admin réorganisée** : "6.1.3.2 Consultations Obstétricales" et "6.1.3.1 Données de grossesse" (sections renommées)
+- **Tests exhaustifs** : 93 tests dédiés couvrant modèles, formulaires, vues, admin et intégration complète
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -176,7 +179,10 @@ maieutix/
 │   │   ├── condition_paiement.py  # Gestion des conditions de paiement
 │   │   ├── caisse.py             # Gestion des caisses
 │   │   ├── patient.py            # Gestion des patients
-│   │   └── antecedents.py        # Gestion des antécédents médicaux
+│   │   ├── antecedents.py        # Gestion des antécédents médicaux
+│   │   ├── consultation_gynecologique.py  # Gestion des consultations gynécologiques
+│   │   ├── consultation_obstetricale.py   # Gestion des consultations obstétricales ✨ NOUVEAU
+│   │   └── donnees_grossesse.py           # Gestion des données médicales de grossesse
 │   ├── views/                     # Vues organisées par domaine
 │   │   ├── administration.py      # Interface d'administration
 │   │   └── home.py               # Page d'accueil
@@ -190,7 +196,10 @@ maieutix/
 │   │   ├── condition_paiement.py  # Admin Conditions de paiement
 │   │   ├── caisse.py             # Admin Caisses
 │   │   ├── patient.py            # Admin Patients
-│   │   └── antecedents.py        # Admin Antécédents médicaux
+│   │   ├── antecedents.py        # Admin Antécédents médicaux
+│   │   ├── consultation_gynecologique.py  # Admin Consultations gynécologiques
+│   │   ├── consultation_obstetricale.py   # Admin Consultations obstétricales ✨ NOUVEAU
+│   │   └── donnees_grossesse.py           # Admin Données de grossesse
 │   ├── tests/                     # Tests organisés (908+ tests ✅)
 │   │   ├── models/                # Tests des modèles (144+ tests)
 │   │   │   ├── test_patient.py    # 19 tests modèle Patient ✨
@@ -394,27 +403,38 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **908+ tests** tous passent - +210 tests patients et consultations gynécologiques ajoutés
+- **1000+ tests** tous passent - +300 tests patients, consultations gynécologiques et obstétricales ajoutés
 - **Tests unitaires** : Modèles, vues, admin, formulaires
 - **Tests d'intégration** : Templates, navigation, API, workflows complets
 - **Tests fonctionnels** : Authentification, permissions à deux niveaux
 - **Tests de validation** : Règles métier strictes, contraintes DB, validation téléphone français
 - **Tests patients exhaustifs** : Création/modification/suppression femmes et bébés, relations mère-enfant
 - **Tests consultations gynécologiques** : 106 tests complets (modèles, formulaires, vues, admin, intégration)
+- **Tests consultations obstétricales** : 93 tests dédiés avec calcul automatique SA (25 modèles + 20 formulaires + 15 vues + 18 admin + 15 intégration)
 
 ### Organisation des Tests
 ```
 core/tests/
-├── models/                    # Tests des modèles (120+ tests)
-│   └── test_patient.py        # 19 tests Patient ✨ NOUVEAU
-├── views/                     # Tests des vues (130+ tests)
-│   └── test_patient_views.py  # 27 tests vues Patient ✨ NOUVEAU
-├── admin/                     # Tests de l'admin (50+ tests)
-│   └── test_patient_admin.py  # 27 tests admin Patient ✨ NOUVEAU
-├── forms/                     # Tests des formulaires ✨ NOUVEAU
-│   └── test_patient_forms.py  # 19 tests formulaires Patient
-└── integration/              # Tests d'intégration (40+ tests)
-    └── test_patient_integration.py  # 12 tests intégration Patient ✨ NOUVEAU
+├── models/                    # Tests des modèles (140+ tests)
+│   ├── test_patient.py        # 19 tests Patient ✨
+│   ├── test_consultation_gynecologique.py  # 24 tests Consultations gynéco ✨
+│   └── test_consultation_obstetricale.py   # 25 tests Consultations obstétricales ✨ NOUVEAU
+├── views/                     # Tests des vues (150+ tests)
+│   ├── test_patient_views.py  # 27 tests vues Patient ✨
+│   ├── test_consultation_gynecologique_views.py  # 22 tests vues Consultations gynéco ✨
+│   └── test_consultation_obstetricale_views.py     # 15 tests vues Consultations obstétricales ✨ NOUVEAU
+├── admin/                     # Tests de l'admin (70+ tests)
+│   ├── test_patient_admin.py  # 27 tests admin Patient ✨
+│   ├── test_consultation_gynecologique_admin.py   # 27 tests admin Consultations gynéco ✨
+│   └── test_consultation_obstetricale_admin.py     # 18 tests admin Consultations obstétricales ✨ NOUVEAU
+├── forms/                     # Tests des formulaires ✨
+│   ├── test_patient_forms.py  # 19 tests formulaires Patient
+│   ├── test_consultation_gynecologique_forms.py   # 20 tests formulaires Consultations gynéco ✨
+│   └── test_consultation_obstetricale_forms.py     # 20 tests formulaires Consultations obstétricales ✨ NOUVEAU
+└── integration/              # Tests d'intégration (60+ tests)
+    ├── test_patient_integration.py  # 12 tests intégration Patient ✨
+    ├── test_consultation_gynecologique_integration.py  # 13 tests intégration Consultations gynéco ✨
+    └── test_consultation_obstetricale_integration_simple.py  # 15 tests intégration Consultations obstétricales ✨ NOUVEAU
 authentication/tests.py        # Tests d'authentification (28 tests)
 ```
 

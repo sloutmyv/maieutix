@@ -388,6 +388,15 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 - **Accessibilité** : Standards ARIA, navigation clavier
 - **Performance** : Chargement rapide, interactions fluides
 
+### ✅ Consultations Obstétricales ✨ NOUVEAU
+- **Suivi de grossesse complet** : Motif, examen obstétrical, prescription spécialisée
+- **Calcul automatique SA** : Semaines d'aménorrhée calculées automatiquement à partir de la DDG
+- **Interface admin réorganisée** : "6.1.3.2 Consultations Obstétricales" et "6.1.3.1 Données de grossesse"
+- **Affichage différencié** : Badges SA verts en admin, indigo en interface utilisateur
+- **Validation obstétricale** : Contrôles de cohérence DDG/date consultation
+- **Intégration médicale** : Calculs IMC obstétricaux avec antécédents
+- **Tests exhaustifs** : 93 tests couvrant tous les aspects (TDD complet)
+
 ## 📈 Métriques de Qualité
 
 ### Couverture de Code

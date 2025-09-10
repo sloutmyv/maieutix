@@ -78,7 +78,7 @@ class ConsultationObstetricale(models.Model):
     
     # SA (Semaines d'Aménorrhée)
     semaines_amenorrhee = models.CharField(
-        max_length=20,
+        max_length=50,
         blank=True,
         verbose_name="SA (Semaines d'Aménorrhée)",
         help_text="Semaines d'aménorrhée au moment de la consultation (calculé automatiquement)"
@@ -217,41 +217,53 @@ class ConsultationObstetricale(models.Model):
         """
         Calcule les semaines d'aménorrhée à la date de consultation
         """
-        if (self.patient and 
-            self.patient.type_patient == 'femme' and 
-            self.patient.date_debut_grossesse and 
-            self.date_consultation):
-            
-            delta = self.date_consultation - self.patient.date_debut_grossesse
-            jours_grossesse = delta.days
-            
-            if jours_grossesse < 0:
-                return "Grossesse pas encore commencée"
-            
-            semaines = jours_grossesse // 7
-            jours_reste = jours_grossesse % 7
-            
-            if semaines == 0:
-                if jours_reste == 0:
-                    return "Début de grossesse"
-                elif jours_reste == 1:
-                    return "1 jour"
+        try:
+            # Vérifier que tous les éléments nécessaires sont présents
+            if not (self.patient_id and self.date_consultation):
+                return None
+                
+            # Accéder au patient de manière sécurisée
+            patient = getattr(self, 'patient', None)
+            if not patient:
+                return None
+                
+            if (patient.type_patient == 'femme' and 
+                patient.date_debut_grossesse):
+                
+                delta = self.date_consultation - patient.date_debut_grossesse
+                jours_grossesse = delta.days
+                
+                if jours_grossesse < 0:
+                    return "Grossesse pas encore commencée"
+                
+                semaines = jours_grossesse // 7
+                jours_reste = jours_grossesse % 7
+                
+                if semaines == 0:
+                    if jours_reste == 0:
+                        return "Début de grossesse"
+                    elif jours_reste == 1:
+                        return "1 jour"
+                    else:
+                        return f"{jours_reste} jours"
+                elif semaines == 1:
+                    if jours_reste == 0:
+                        return "1 SA"
+                    elif jours_reste == 1:
+                        return "1 SA + 1j"
+                    else:
+                        return f"1 SA + {jours_reste}j"
                 else:
-                    return f"{jours_reste} jours"
-            elif semaines == 1:
-                if jours_reste == 0:
-                    return "1 SA"
-                elif jours_reste == 1:
-                    return "1 SA + 1j"
-                else:
-                    return f"1 SA + {jours_reste}j"
-            else:
-                if jours_reste == 0:
-                    return f"{semaines} SA"
-                elif jours_reste == 1:
-                    return f"{semaines} SA + 1j"
-                else:
-                    return f"{semaines} SA + {jours_reste}j"
+                    if jours_reste == 0:
+                        return f"{semaines} SA"
+                    elif jours_reste == 1:
+                        return f"{semaines} SA + 1j"
+                    else:
+                        return f"{semaines} SA + {jours_reste}j"
+        except Exception:
+            # En cas d'erreur, retourner None silencieusement
+            pass
+            
         return None
 
     def save(self, *args, **kwargs):
