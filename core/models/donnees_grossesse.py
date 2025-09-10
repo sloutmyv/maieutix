@@ -163,8 +163,8 @@ class DonneesGrossesse(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = "Données de grossesse"
-        verbose_name_plural = "Données de grossesse"
+        verbose_name = "6.1.3.1 Données de grossesse"
+        verbose_name_plural = "6.1.3.1 Données de grossesse"
         ordering = ['-updated_at']
     
     def __str__(self):

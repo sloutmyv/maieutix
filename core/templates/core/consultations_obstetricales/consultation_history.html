@@ -8,6 +8,11 @@
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                             {{ consultation.date_consultation|date:"d/m/Y" }}
                         </span>
+                        {% if consultation.semaines_amenorrhee %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                {{ consultation.semaines_amenorrhee }}
+                            </span>
+                        {% endif %}
                         {% if consultation.tension_complete %}
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
                                 {% if 'normale' in consultation.tension_interpretation|lower %}bg-green-100 text-green-800

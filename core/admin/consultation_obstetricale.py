@@ -17,6 +17,7 @@ class ConsultationObstetricaleAdmin(admin.ModelAdmin):
     list_display = [
         'patient_link',
         'date_consultation_formatted',
+        'sa_affichage',
         'motif_court',
         'tension_affichage',
         'poids_affichage',
@@ -40,6 +41,7 @@ class ConsultationObstetricaleAdmin(admin.ModelAdmin):
     ordering = ['-date_consultation', '-created_at']
     
     readonly_fields = [
+        'semaines_amenorrhee',
         'tension_interpretation_display',
         'imc_display',
         'resume_consultation_display',
@@ -49,7 +51,7 @@ class ConsultationObstetricaleAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Informations générales', {
-            'fields': ('patient', 'date_consultation')
+            'fields': ('patient', 'date_consultation', 'semaines_amenorrhee')
         }),
         ('Constantes vitales', {
             'fields': (
@@ -105,6 +107,17 @@ class ConsultationObstetricaleAdmin(admin.ModelAdmin):
         return "-"
     date_consultation_formatted.short_description = "Date"
     date_consultation_formatted.admin_order_field = 'date_consultation'
+    
+    def sa_affichage(self, obj):
+        """Affichage de la SA (Semaines d'Aménorrhée)"""
+        if obj.semaines_amenorrhee:
+            return format_html(
+                '<span style="background-color: #e8f5e8; padding: 2px 8px; border-radius: 3px; font-weight: bold;">{}</span>',
+                obj.semaines_amenorrhee
+            )
+        return "-"
+    sa_affichage.short_description = "SA"
+    sa_affichage.admin_order_field = 'semaines_amenorrhee'
     
     def motif_court(self, obj):
         """Motif tronqué pour la liste"""

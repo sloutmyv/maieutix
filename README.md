@@ -98,6 +98,9 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Historique complet** : Affichage chronologique avec détails (TA, poids, IMC, motif, examen, prescription)
 - **Actions CRUD complètes** : Création, lecture, modification et suppression avec confirmations utilisateur
 - **Différenciation visuelle** : Code couleur violet pour distinguer des consultations gynécologiques (rose)
+- **Calcul automatique SA** ✨ NOUVEAU : Semaines d'Aménorrhée calculées automatiquement à partir de la DDG
+- **Affichage SA intégré** : Badge SA visible dans l'historique, détails consultation et interface admin
+- **Traçabilité temporelle** : SA enregistrée à chaque consultation pour suivi précis de l'évolution
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage

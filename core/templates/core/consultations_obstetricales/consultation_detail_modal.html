@@ -31,6 +31,13 @@
                     <p class="text-sm text-gray-900">{{ consultation.date_consultation|date:"d/m/Y" }}</p>
                 </div>
 
+                {% if consultation.semaines_amenorrhee %}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">SA (Semaines d'Aménorrhée)</label>
+                    <p class="text-sm text-gray-900 font-medium text-indigo-600">{{ consultation.semaines_amenorrhee }}</p>
+                </div>
+                {% endif %}
+
                 {% if consultation.tension_complete %}
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">Tension artérielle</label>

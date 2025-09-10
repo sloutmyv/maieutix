@@ -76,6 +76,14 @@ class ConsultationObstetricale(models.Model):
         help_text="Prescription médicamenteuse ou recommandations"
     )
     
+    # SA (Semaines d'Aménorrhée)
+    semaines_amenorrhee = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name="SA (Semaines d'Aménorrhée)",
+        help_text="Semaines d'aménorrhée au moment de la consultation (calculé automatiquement)"
+    )
+    
     # Notes additionnelles
     notes = models.TextField(
         blank=True,
@@ -104,8 +112,8 @@ class ConsultationObstetricale(models.Model):
     )
     
     class Meta:
-        verbose_name = "6.2.2 Consultation Obstétricale"
-        verbose_name_plural = "6.2.2 Consultations Obstétricales"
+        verbose_name = "6.1.3.2 Consultation Obstétricale"
+        verbose_name_plural = "6.1.3.2 Consultations Obstétricales"
         ordering = ['-date_consultation', '-created_at']
         
     def __str__(self):
@@ -205,7 +213,53 @@ class ConsultationObstetricale(models.Model):
             
         return resume
     
+    def calculer_sa(self):
+        """
+        Calcule les semaines d'aménorrhée à la date de consultation
+        """
+        if (self.patient and 
+            self.patient.type_patient == 'femme' and 
+            self.patient.date_debut_grossesse and 
+            self.date_consultation):
+            
+            delta = self.date_consultation - self.patient.date_debut_grossesse
+            jours_grossesse = delta.days
+            
+            if jours_grossesse < 0:
+                return "Grossesse pas encore commencée"
+            
+            semaines = jours_grossesse // 7
+            jours_reste = jours_grossesse % 7
+            
+            if semaines == 0:
+                if jours_reste == 0:
+                    return "Début de grossesse"
+                elif jours_reste == 1:
+                    return "1 jour"
+                else:
+                    return f"{jours_reste} jours"
+            elif semaines == 1:
+                if jours_reste == 0:
+                    return "1 SA"
+                elif jours_reste == 1:
+                    return "1 SA + 1j"
+                else:
+                    return f"1 SA + {jours_reste}j"
+            else:
+                if jours_reste == 0:
+                    return f"{semaines} SA"
+                elif jours_reste == 1:
+                    return f"{semaines} SA + 1j"
+                else:
+                    return f"{semaines} SA + {jours_reste}j"
+        return None
+
     def save(self, *args, **kwargs):
-        """Validation avant sauvegarde"""
+        """Validation et calcul automatique de la SA avant sauvegarde"""
+        # Calculer automatiquement la SA
+        sa_calculee = self.calculer_sa()
+        if sa_calculee:
+            self.semaines_amenorrhee = sa_calculee
+        
         self.full_clean()
         super().save(*args, **kwargs)
