@@ -311,5 +311,5 @@ class EntretienPrenatalPrecoceSearchForm(forms.Form):
         # Charger les sages-femmes actives
         from core.models import SageFemme
         self.fields['sage_femme'].queryset = SageFemme.objects.filter(
-            est_active=True
+            is_active=True
         ).order_by('nom', 'prenom')
