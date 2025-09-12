@@ -18,6 +18,11 @@ from core.views.consultation_obstetricale import (
     consultation_obstetricale_detail, consultation_obstetricale_quick_form, save_quick_consultation_obstetricale, 
     delete_consultation_obstetricale
 )
+from core.views.entretien_prenatal_precoce import (
+    patient_entretiens_prenataux_precoces, entretien_prenatal_precoce_modal, save_entretien_prenatal_precoce,
+    entretien_prenatal_precoce_detail, entretien_prenatal_precoce_quick_form, save_quick_entretien_prenatal_precoce,
+    delete_entretien_prenatal_precoce
+)
 
 app_name = 'patients'
 
@@ -59,6 +64,15 @@ urlpatterns = [
     path('consultation-obstetricale/save/', save_consultation_obstetricale, name='save_consultation_obstetricale'),
     path('consultation-obstetricale/<int:consultation_id>/', consultation_obstetricale_detail, name='consultation_obstetricale_detail'),
     path('consultation-obstetricale/<int:consultation_id>/delete/', delete_consultation_obstetricale, name='delete_consultation_obstetricale'),
+    
+    # Entretiens prénataux précoces
+    path('<int:patient_id>/entretiens-prenataux-precoces/', patient_entretiens_prenataux_precoces, name='patient_entretiens_prenataux_precoces'),
+    path('<int:patient_id>/entretien-prenatal-precoce/modal/', entretien_prenatal_precoce_modal, name='entretien_prenatal_precoce_modal'),
+    path('<int:patient_id>/entretien-prenatal-precoce/quick-form/', entretien_prenatal_precoce_quick_form, name='entretien_prenatal_precoce_quick_form'),
+    path('<int:patient_id>/entretien-prenatal-precoce/save-quick/', save_quick_entretien_prenatal_precoce, name='save_quick_entretien_prenatal_precoce'),
+    path('entretien-prenatal-precoce/save/', save_entretien_prenatal_precoce, name='save_entretien_prenatal_precoce'),
+    path('entretien-prenatal-precoce/<int:entretien_id>/', entretien_prenatal_precoce_detail, name='entretien_prenatal_precoce_detail'),
+    path('entretien-prenatal-precoce/<int:entretien_id>/delete/', delete_entretien_prenatal_precoce, name='delete_entretien_prenatal_precoce'),
     
     path('search-meres/', search_meres, name='search_meres'),
 ]

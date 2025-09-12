@@ -1,0 +1,229 @@
+<!-- Formulaire inline rapide pour entretien prénatal précoce -->
+{% if error %}
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-red-800">{{ error }}</p>
+            </div>
+        </div>
+    </div>
+{% elif form %}
+    <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="text-lg font-semibold text-purple-900 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Nouvel Entretien Prénatal Précoce
+            </h4>
+            <button 
+                type="button"
+                onclick="document.getElementById('entretien-prenatal-form-container').classList.add('hidden'); document.getElementById('entretien-prenatal-form-container').innerHTML = '';"
+                class="text-purple-600 hover:text-purple-800 p-1"
+                title="Fermer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form 
+            hx-post="{% url 'patients:save_quick_entretien_prenatal_precoce' patient.id %}"
+            hx-target="#entretiens-prenataux-history"
+            hx-swap="innerHTML"
+            hx-on::after-request="if(event.detail.successful) { document.getElementById('entretien-prenatal-form-container').classList.add('hidden'); document.getElementById('entretien-prenatal-form-container').innerHTML = ''; }"
+            class="space-y-4">
+            {% csrf_token %}
+            
+            <!-- Date et calcul SA -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label for="{{ form.date_entretien.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.date_entretien.label }} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.date_entretien }}
+                    {% if form.date_entretien.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.date_entretien.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                        SA calculée automatiquement
+                    </label>
+                    <div id="sa-display" class="text-xs text-purple-800">
+                        {% if patient.date_debut_grossesse %}
+                            <span id="sa-text">Sélectionnez une date pour calculer la SA</span>
+                            <span class="text-purple-700 ml-2">• DDG: {{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
+                        {% else %}
+                            DDG non définie
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Présence conjoint et lieu d'accouchement -->
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="flex items-center">
+                    <div class="flex items-center h-5">
+                        {{ form.conjoint_present }}
+                        <label for="{{ form.conjoint_present.id_for_label }}" class="ml-2 text-xs font-medium text-gray-700">
+                            {{ form.conjoint_present.label }}
+                        </label>
+                    </div>
+                    {% if form.conjoint_present.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.conjoint_present.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.lieu_accouchement_prevu.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ form.lieu_accouchement_prevu.label }}
+                    </label>
+                    {{ form.lieu_accouchement_prevu }}
+                    {% if form.lieu_accouchement_prevu.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.lieu_accouchement_prevu.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Champs principaux en deux colonnes -->
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Colonne gauche -->
+                <div class="space-y-3">
+                    <!-- ATCD marquants et santé globale -->
+                    <div>
+                        <label for="{{ form.atcd_marquants_sante.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                            {{ form.atcd_marquants_sante.label }}
+                        </label>
+                        {{ form.atcd_marquants_sante }}
+                        {% if form.atcd_marquants_sante.errors %}
+                            <p class="mt-1 text-xs text-red-600">{{ form.atcd_marquants_sante.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Projet de naissance et de parentalité -->
+                    <div>
+                        <label for="{{ form.projet_naissance_parentalite.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                            {{ form.projet_naissance_parentalite.label }}
+                        </label>
+                        {{ form.projet_naissance_parentalite }}
+                        {% if form.projet_naissance_parentalite.errors %}
+                            <p class="mt-1 text-xs text-red-600">{{ form.projet_naissance_parentalite.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Propositions/liens -->
+                    <div>
+                        <label for="{{ form.propositions_liens.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                            {{ form.propositions_liens.label }}
+                        </label>
+                        {{ form.propositions_liens }}
+                        {% if form.propositions_liens.errors %}
+                            <p class="mt-1 text-xs text-red-600">{{ form.propositions_liens.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Colonne droite -->
+                <div class="space-y-3">
+                    <!-- Environnement social et familial -->
+                    <div>
+                        <label for="{{ form.environnement_social_familial.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                            {{ form.environnement_social_familial.label }}
+                        </label>
+                        {{ form.environnement_social_familial }}
+                        {% if form.environnement_social_familial.errors %}
+                            <p class="mt-1 text-xs text-red-600">{{ form.environnement_social_familial.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Ressenti -->
+                    <div>
+                        <label for="{{ form.ressenti.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1">
+                            {{ form.ressenti.label }}
+                        </label>
+                        {{ form.ressenti }}
+                        {% if form.ressenti.errors %}
+                            <p class="mt-1 text-xs text-red-600">{{ form.ressenti.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Erreurs générales -->
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 rounded-md p-3">
+                    {% for error in form.non_field_errors %}
+                        <p class="text-sm text-red-800">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Boutons d'action -->
+            <div class="flex justify-end space-x-2 mt-4 pt-3 border-t border-purple-200">
+                <button 
+                    type="button"
+                    onclick="document.getElementById('entretien-prenatal-form-container').classList.add('hidden'); document.getElementById('entretien-prenatal-form-container').innerHTML = '';"
+                    class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all">
+                    Annuler
+                </button>
+                <button 
+                    type="submit"
+                    class="px-3 py-1.5 text-xs font-medium text-white border border-transparent rounded hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all bg-purple-600">
+                    Enregistrer l'EPP
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Script pour calcul automatique de la SA -->
+    {% if patient.date_debut_grossesse %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('{{ form.date_entretien.id_for_label }}');
+            const saText = document.getElementById('sa-text');
+            const ddgDate = new Date('{{ patient.date_debut_grossesse|date:"Y-m-d" }}');
+            
+            function calculerSA(dateEntretien) {
+                if (!dateEntretien) return 'Sélectionnez une date pour calculer la SA';
+                
+                const entretienDate = new Date(dateEntretien);
+                const diffTime = entretienDate.getTime() - ddgDate.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays < 0) {
+                    return 'Date antérieure au début de grossesse';
+                }
+                
+                const semaines = Math.floor(diffDays / 7);
+                const joursRestants = diffDays % 7;
+                
+                if (joursRestants === 0) {
+                    return semaines + ' SA';
+                } else {
+                    return semaines + ' SA + ' + joursRestants + 'j';
+                }
+            }
+            
+            // Calcul initial si une date est déjà présente
+            if (dateInput && dateInput.value) {
+                saText.textContent = calculerSA(dateInput.value);
+            }
+            
+            // Mise à jour en temps réel quand la date change
+            if (dateInput) {
+                dateInput.addEventListener('change', function() {
+                    saText.textContent = calculerSA(this.value);
+                });
+            }
+        });
+    </script>
+    {% endif %}
+{% endif %}

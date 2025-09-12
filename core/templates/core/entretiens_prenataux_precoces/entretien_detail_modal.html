@@ -1,0 +1,133 @@
+<!-- Modal pour les détails de l'entretien prénatal précoce -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+     onclick="closeModal()">
+    
+    <div class="bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-[85vh] overflow-y-auto"
+         onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-3 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-900">
+                Entretien du {{ entretien.date_entretien|date:"d/m/Y" }}
+            </h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Patiente</label>
+                    <p class="text-sm text-gray-900">{{ entretien.patient.nom_complet }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Date d'entretien</label>
+                    <p class="text-sm text-gray-900">{{ entretien.date_entretien|date:"d/m/Y" }}</p>
+                </div>
+
+                {% if entretien.semaines_amenorrhee %}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">SA (Semaines d'Aménorrhée)</label>
+                    <p class="text-sm text-gray-900 font-medium text-purple-600">{{ entretien.semaines_amenorrhee }}</p>
+                </div>
+                {% endif %}
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Conjoint présent</label>
+                    <p class="text-sm text-gray-900">
+                        {% if entretien.conjoint_present %}
+                            <span class="text-green-600">Oui</span>
+                        {% else %}
+                            <span class="text-gray-500">Non</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if entretien.lieu_accouchement_prevu %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Lieu d'accouchement prévu</label>
+                    <p class="text-sm text-gray-900">{{ entretien.lieu_accouchement_prevu }}</p>
+                </div>
+                {% endif %}
+
+                {% if entretien.atcd_marquants_sante %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">ATCD marquants et santé globale</label>
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ entretien.atcd_marquants_sante }}</p>
+                </div>
+                {% endif %}
+
+                {% if entretien.environnement_social_familial %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Environnement social et familial</label>
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ entretien.environnement_social_familial }}</p>
+                </div>
+                {% endif %}
+
+                {% if entretien.projet_naissance_parentalite %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Projet de naissance et de parentalité</label>
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ entretien.projet_naissance_parentalite }}</p>
+                </div>
+                {% endif %}
+
+                {% if entretien.ressenti %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Ressenti</label>
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ entretien.ressenti }}</p>
+                </div>
+                {% endif %}
+
+                {% if entretien.propositions_liens %}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Propositions/liens</label>
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ entretien.propositions_liens }}</p>
+                </div>
+                {% endif %}
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Créé le</label>
+                    <p class="text-sm text-gray-900">{{ entretien.created_at|date:"d/m/Y à H:i" }}</p>
+                </div>
+
+                {% if entretien.sage_femme %}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Créé par</label>
+                    <p class="text-sm text-gray-900">{{ entretien.sage_femme.prenom }} {{ entretien.sage_femme.nom }}</p>
+                </div>
+                {% endif %}
+
+                {% if entretien.updated_at != entretien.created_at %}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Modifié le</label>
+                    <p class="text-sm text-gray-900">{{ entretien.updated_at|date:"d/m/Y à H:i" }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-2 mt-4 pt-3 border-t border-gray-200">
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+</script>

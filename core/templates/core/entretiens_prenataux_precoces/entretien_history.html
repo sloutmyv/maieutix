@@ -1,0 +1,112 @@
+<!-- Historique des entretiens prénataux précoces -->
+{% if entretiens %}
+    <div class="space-y-3">
+        {% for entretien in entretiens %}
+            <div class="bg-gray-100 border border-gray-300 rounded-lg p-3 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            {{ entretien.date_entretien|date:"d/m/Y" }}
+                        </span>
+                        {% if entretien.semaines_amenorrhee %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                {{ entretien.semaines_amenorrhee }}
+                            </span>
+                        {% endif %}
+                        {% if entretien.conjoint_present %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Conjoint présent
+                            </span>
+                        {% endif %}
+                        {% if entretien.lieu_accouchement_prevu %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ entretien.lieu_accouchement_prevu|truncatechars:20 }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button 
+                            hx-get="{% url 'patients:entretien_prenatal_precoce_detail' entretien.id %}"
+                            hx-target="#modal-container"
+                            hx-swap="innerHTML"
+                            class="text-gray-500 hover:text-gray-700 transition-colors p-1 rounded hover:bg-gray-200"
+                            title="Voir détails"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                        <button 
+                            hx-post="{% url 'patients:delete_entretien_prenatal_precoce' entretien.id %}"
+                            hx-target="#entretiens-prenataux-history"
+                            hx-swap="innerHTML"
+                            hx-confirm="Êtes-vous sûr de vouloir supprimer cet entretien du {{ entretien.date_entretien|date:'d/m/Y' }} ?"
+                            class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
+                            title="Supprimer entretien"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                {% if entretien.atcd_marquants_sante %}
+                    <div class="text-sm text-gray-900 mb-2">
+                        <strong>ATCD marquants et santé globale:</strong> {{ entretien.atcd_marquants_sante|truncatechars:80 }}
+                    </div>
+                {% endif %}
+                
+                {% if entretien.environnement_social_familial %}
+                    <div class="text-xs text-gray-600 mb-1">
+                        <strong>Environnement social et familial:</strong> {{ entretien.environnement_social_familial|truncatechars:100 }}
+                    </div>
+                {% endif %}
+                
+                {% if entretien.projet_naissance_parentalite %}
+                    <div class="text-xs text-gray-600 mb-1">
+                        <strong>Projet de naissance et de parentalité:</strong> {{ entretien.projet_naissance_parentalite|truncatechars:100 }}
+                    </div>
+                {% endif %}
+                
+                {% if entretien.ressenti %}
+                    <div class="text-xs text-gray-600 mb-1">
+                        <strong>Ressenti:</strong> {{ entretien.ressenti|truncatechars:100 }}
+                    </div>
+                {% endif %}
+                
+                {% if entretien.propositions_liens %}
+                    <div class="text-xs text-gray-600 mb-1">
+                        <strong>Propositions/liens:</strong> {{ entretien.propositions_liens|truncatechars:100 }}
+                    </div>
+                {% endif %}
+                
+                <div class="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-300">
+                    Créé le {{ entretien.created_at|date:"d/m/Y à H:i" }}{% if entretien.sage_femme %} par {{ entretien.sage_femme.prenom }} {{ entretien.sage_femme.nom }}{% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-8">
+        <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
+        <h3 class="text-sm font-medium text-gray-900 mb-1">Aucun entretien</h3>
+        <p class="text-xs text-gray-500 mb-4">Aucun entretien prénatal précoce enregistré pour cette patiente.</p>
+        <button 
+            hx-get="{% url 'patients:entretien_prenatal_precoce_quick_form' patient.id %}"
+            hx-target="#entretien-prenatal-form-container"
+            hx-swap="innerHTML"
+            onclick="document.getElementById('entretien-prenatal-form-container').classList.remove('hidden')"
+            style="background-color: #7C3AED;"
+            class="inline-flex items-center px-3 py-2 text-xs font-medium text-white rounded hover:opacity-90"
+        >
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Ajouter le premier entretien
+        </button>
+    </div>
+{% endif %}
