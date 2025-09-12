@@ -89,24 +89,36 @@
         {% endfor %}
     </div>
 {% else %}
-    <div class="text-center py-8">
-        <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-        </svg>
-        <h3 class="text-sm font-medium text-gray-900 mb-1">Aucun entretien</h3>
-        <p class="text-xs text-gray-500 mb-4">Aucun entretien prénatal précoce enregistré pour cette patiente.</p>
-        <button 
-            hx-get="{% url 'patients:entretien_prenatal_precoce_quick_form' patient.id %}"
-            hx-target="#entretien-prenatal-form-container"
-            hx-swap="innerHTML"
-            onclick="document.getElementById('entretien-prenatal-form-container').classList.remove('hidden')"
-            style="background-color: #7C3AED;"
-            class="inline-flex items-center px-3 py-2 text-xs font-medium text-white rounded hover:opacity-90"
-        >
-            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    {% if error %}
+        <div class="text-center py-8">
+            <svg class="w-12 h-12 mx-auto text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
             </svg>
-            Ajouter le premier entretien
-        </button>
-    </div>
+            <h3 class="text-sm font-medium text-red-900 mb-1">Accès restreint</h3>
+            <p class="text-xs text-red-500 mb-4">{{ error }}</p>
+        </div>
+    {% else %}
+        <div class="text-center py-8">
+            <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            <h3 class="text-sm font-medium text-gray-900 mb-1">Aucun entretien</h3>
+            <p class="text-xs text-gray-500 mb-4">Aucun entretien prénatal précoce enregistré pour cette patiente.</p>
+            {% if patient %}
+            <button 
+                hx-get="{% url 'patients:entretien_prenatal_precoce_quick_form' patient.id %}"
+                hx-target="#entretien-prenatal-form-container"
+                hx-swap="innerHTML"
+                onclick="document.getElementById('entretien-prenatal-form-container').classList.remove('hidden')"
+                style="background-color: #7C3AED;"
+                class="inline-flex items-center px-3 py-2 text-xs font-medium text-white rounded hover:opacity-90"
+            >
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Ajouter le premier entretien
+            </button>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endif %}

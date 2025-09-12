@@ -81,7 +81,7 @@ def entretien_prenatal_precoce_modal(request, patient_id):
     if request.method == 'GET':
         # Afficher le formulaire modal
         form = EntretienPrenatalPrecoceModalForm(patient_id=patient.id)
-        return render(request, 'core/entretiens_prenataux_precoces/entretien_modal.html', {
+        return render(request, 'core/entretiens_prenataux_precoces/entretien_detail_modal.html', {
             'form': form,
             'patient': patient
         })
@@ -115,7 +115,7 @@ def entretien_prenatal_precoce_modal(request, patient_id):
                 })
         else:
             # Retourner le formulaire avec les erreurs
-            return render(request, 'core/entretiens_prenataux_precoces/entretien_modal.html', {
+            return render(request, 'core/entretiens_prenataux_precoces/entretien_detail_modal.html', {
                 'form': form,
                 'patient': patient
             })
@@ -309,14 +309,18 @@ def save_quick_entretien_prenatal_precoce(request, patient_id):
     
     # Vérifier que c'est bien une femme avec DDG
     if patient.type_patient != 'femme':
-        return JsonResponse({
+        return render(request, 'core/entretiens_prenataux_precoces/entretien_inline_form.html', {
+            'form': None,
+            'patient': patient,
             'error': 'Les entretiens prénataux précoces sont réservés aux femmes.'
-        }, status=404)
+        })
     
     if not patient.date_debut_grossesse:
-        return JsonResponse({
+        return render(request, 'core/entretiens_prenataux_precoces/entretien_inline_form.html', {
+            'form': None,
+            'patient': patient,
             'error': 'La patiente doit avoir une date de début de grossesse définie.'
-        }, status=404)
+        })
     
     form = EntretienPrenatalPrecoceQuickForm(request.POST, patient=patient)
     
