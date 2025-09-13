@@ -1,4 +1,4 @@
-<!-- Modal pour les détails de la consultation obstétricale -->
+<!-- Modal pour les détails de la consultation de préparation à la naissance -->
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
      onclick="closeModal()">
     
@@ -34,68 +34,39 @@
                 {% if consultation.semaines_amenorrhee %}
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">SA (Semaines d'Aménorrhée)</label>
-                    <p class="text-sm text-gray-900 font-medium text-blue-600">{{ consultation.semaines_amenorrhee }}</p>
+                    <p class="text-sm text-gray-900 font-medium text-purple-600">{{ consultation.semaines_amenorrhee }}</p>
                 </div>
                 {% endif %}
 
-                {% if consultation.tension_complete %}
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Tension artérielle</label>
-                    <p class="text-sm text-gray-900">{{ consultation.tension_complete }}</p>
-                    {% if consultation.tension_interpretation %}
-                        <p class="text-xs text-gray-600">{{ consultation.tension_interpretation }}</p>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                {% if consultation.poids %}
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Poids{% if consultation.imc %} / IMC{% endif %}</label>
-                    <p class="text-sm text-gray-900">{{ consultation.poids }}kg{% if consultation.imc %} (IMC: {{ consultation.imc }}){% endif %}</p>
-                </div>
-                {% endif %}
-
+                {% if consultation.theme_aborde %}
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Motif de la consultation</label>
-                    <p class="text-sm text-gray-900">{{ consultation.motif }}</p>
-                </div>
-
-                {% if consultation.examen %}
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Examen clinique</label>
-                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ consultation.examen }}</p>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Thème(s) abordé(s)</label>
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ consultation.theme_aborde }}</p>
                 </div>
                 {% endif %}
 
-                {% if consultation.prescription %}
+                {% if consultation.a_prevoir %}
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Prescription</label>
-                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ consultation.prescription }}</p>
-                </div>
-                {% endif %}
-
-                {% if consultation.notes %}
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Notes complémentaires</label>
-                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ consultation.notes }}</p>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">À prévoir</label>
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ consultation.a_prevoir }}</p>
                 </div>
                 {% endif %}
 
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Créée le</label>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Créé le</label>
                     <p class="text-sm text-gray-900">{{ consultation.created_at|date:"d/m/Y à H:i" }}</p>
                 </div>
 
                 {% if consultation.created_by %}
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Créée par</label>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Créé par</label>
                     <p class="text-sm text-gray-900">{{ consultation.created_by.prenom }} {{ consultation.created_by.nom }}</p>
                 </div>
                 {% endif %}
 
                 {% if consultation.updated_at != consultation.created_at %}
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Modifiée le</label>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Modifié le</label>
                     <p class="text-sm text-gray-900">{{ consultation.updated_at|date:"d/m/Y à H:i" }}</p>
                 </div>
                 {% endif %}

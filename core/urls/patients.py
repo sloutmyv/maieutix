@@ -23,6 +23,11 @@ from core.views.entretien_prenatal_precoce import (
     entretien_prenatal_precoce_detail, entretien_prenatal_precoce_quick_form, save_quick_entretien_prenatal_precoce,
     delete_entretien_prenatal_precoce
 )
+from core.views.consultation_preparation_naissance import (
+    patient_consultations_preparation_naissance, consultation_preparation_naissance_modal, save_consultation_preparation_naissance,
+    consultation_preparation_naissance_detail, consultation_preparation_naissance_quick_form, save_quick_consultation_preparation_naissance,
+    delete_consultation_preparation_naissance
+)
 
 app_name = 'patients'
 
@@ -73,6 +78,15 @@ urlpatterns = [
     path('entretien-prenatal-precoce/save/', save_entretien_prenatal_precoce, name='save_entretien_prenatal_precoce'),
     path('entretien-prenatal-precoce/<int:entretien_id>/', entretien_prenatal_precoce_detail, name='entretien_prenatal_precoce_detail'),
     path('entretien-prenatal-precoce/<int:entretien_id>/delete/', delete_entretien_prenatal_precoce, name='delete_entretien_prenatal_precoce'),
+    
+    # Consultations préparation naissance
+    path('<int:patient_id>/consultations-preparation-naissance/', patient_consultations_preparation_naissance, name='patient_consultations_preparation_naissance'),
+    path('<int:patient_id>/consultation-preparation-naissance/modal/', consultation_preparation_naissance_modal, name='consultation_preparation_naissance_modal'),
+    path('<int:patient_id>/consultation-preparation-naissance/quick-form/', consultation_preparation_naissance_quick_form, name='consultation_preparation_naissance_quick_form'),
+    path('<int:patient_id>/consultation-preparation-naissance/save-quick/', save_quick_consultation_preparation_naissance, name='save_quick_consultation_preparation_naissance'),
+    path('consultation-preparation-naissance/save/', save_consultation_preparation_naissance, name='save_consultation_preparation_naissance'),
+    path('consultation-preparation-naissance/<int:consultation_id>/', consultation_preparation_naissance_detail, name='consultation_preparation_naissance_detail'),
+    path('consultation-preparation-naissance/<int:consultation_id>/delete/', delete_consultation_preparation_naissance, name='delete_consultation_preparation_naissance'),
     
     path('search-meres/', search_meres, name='search_meres'),
 ]

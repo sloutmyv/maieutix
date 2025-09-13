@@ -166,40 +166,40 @@ class EntretienPrenatalPrecoceQuickForm(forms.ModelForm):
         widgets = {
             'date_entretien': forms.DateInput(attrs={
                 'type': 'date',
-                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm',
+                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm',
                 'max': timezone.now().date(),
                 'required': True,
             }),
             'conjoint_present': forms.CheckboxInput(attrs={
-                'class': 'rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-500 focus:ring-purple-500',
+                'class': 'rounded border-gray-300 text-green-600 shadow-sm focus:border-green-500 focus:ring-green-500',
             }),
             'lieu_accouchement_prevu': forms.TextInput(attrs={
-                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm',
+                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm',
                 'placeholder': 'Lieu d\'accouchement prévu...',
                 'maxlength': 200,
             }),
             'atcd_marquants_sante': forms.Textarea(attrs={
-                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm',
+                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm',
                 'rows': 4,
                 'placeholder': 'ATCD marquants et santé globale...',
             }),
             'environnement_social_familial': forms.Textarea(attrs={
-                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm',
+                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm',
                 'rows': 4,
                 'placeholder': 'Environnement social et familial...',
             }),
             'projet_naissance_parentalite': forms.Textarea(attrs={
-                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm',
+                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm',
                 'rows': 4,
                 'placeholder': 'Projet de naissance et de parentalité...',
             }),
             'ressenti': forms.Textarea(attrs={
-                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm',
+                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm',
                 'rows': 4,
                 'placeholder': 'Ressenti...',
             }),
             'propositions_liens': forms.Textarea(attrs={
-                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm',
+                'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm',
                 'rows': 4,
                 'placeholder': 'Propositions/liens...',
             }),

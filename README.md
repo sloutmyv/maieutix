@@ -98,12 +98,18 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Interface unifiée** : Formulaires inline identiques aux consultations gynécologiques pour cohérence UX
 - **Historique complet** : Affichage chronologique avec détails (TA, poids, IMC, motif, examen, prescription)
 - **Actions CRUD complètes** : Création, lecture, modification et suppression avec confirmations utilisateur
-- **Différenciation visuelle** : Code couleur violet pour distinguer des consultations gynécologiques (rose)
 - **Calcul automatique SA** ✨ NOUVEAU : Semaines d'Aménorrhée calculées automatiquement à partir de la DDG
 - **Affichage SA intégré** : Badge SA visible dans l'historique, détails consultation et interface admin
 - **Traçabilité temporelle** : SA enregistrée à chaque consultation pour suivi précis de l'évolution
 - **Interface admin réorganisée** : "6.1.3.2 Consultations Obstétricales" et "6.1.3.1 Données de grossesse" (sections renommées)
 - **Tests exhaustifs** : 93 tests dédiés couvrant modèles, formulaires, vues, admin et intégration complète
+- **Harmonisation visuelle complète** ✨ NOUVEAU : Système de couleurs cohérent par spécialité médicale
+- **Code couleurs par section** : Rose pour gynécologique, bleu pour obstétrical, vert pour EPP, violet pour préparation naissance
+- **Interface unifiée** : Boutons, formulaires, badges et fonds harmonisés avec les couleurs des logos respectifs
+- **Cohérence UX** : Même couleur pour tous les éléments d'une section (boutons, focus, spinners, badges)
+- **Entretiens prénataux précoces (EPP)** ✨ NOUVEAU : Système complet de gestion des entretiens prénataux
+- **Formulaires EPP** : Interface complète avec calcul automatique SA et validation métier
+- **Consultation préparation naissance** ✨ NOUVEAU : Gestion des consultations de préparation à la naissance
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -298,6 +304,14 @@ maieutix/
 - `POST /patients/consultation/{id}/delete/` - API pour suppression de consultation avec confirmation
 - `POST /patients/{id}/update-ddg/` - API AJAX pour mise à jour de la date de début de grossesse ✨ NOUVEAU
 - `GET /patients/{id}/reload-pregnancy-calendar/` - API pour rechargement du calendrier de grossesse ✨ NOUVEAU
+- `GET /patients/{id}/consultation-obstetricale/quick-form/` - API pour formulaire consultation obstétricale inline ✨ NOUVEAU
+- `POST /patients/{id}/consultation-obstetricale/save-quick/` - API AJAX pour sauvegarde consultation obstétricale ✨ NOUVEAU
+- `GET /patients/consultation-obstetricale/{id}/` - API pour détail modal consultation obstétricale ✨ NOUVEAU
+- `POST /patients/consultation-obstetricale/{id}/delete/` - API pour suppression consultation obstétricale ✨ NOUVEAU
+- `GET /patients/{id}/entretien-prenatal-precoce/quick-form/` - API pour formulaire EPP inline ✨ NOUVEAU
+- `POST /patients/{id}/entretien-prenatal-precoce/save-quick/` - API AJAX pour sauvegarde EPP ✨ NOUVEAU
+- `GET /patients/entretien-prenatal-precoce/{id}/` - API pour détail modal EPP ✨ NOUVEAU
+- `POST /patients/entretien-prenatal-precoce/{id}/delete/` - API pour suppression EPP ✨ NOUVEAU
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire
@@ -461,6 +475,13 @@ Pour plus de détails, voir `tests_readme.md`.
 - **Accent** : #99B4BF (Bleu clair)
 - **Highlight** : #D9BA23 (Jaune)
 - **Warning** : #BF8D30 (Orange)
+
+### Système de Couleurs par Spécialité ✨ NOUVEAU
+- **Consultations gynécologiques** : Rose (#ec4899) - Couleur chaude et féminine
+- **Consultations obstétricales** : Bleu (#3b82f6) - Couleur professionnelle et apaisante
+- **Entretiens prénataux précoces** : Vert (#16a34a) - Couleur de vie et de croissance
+- **Consultations préparation naissance** : Violet (#7c3aed) - Couleur de transformation et préparation
+- **Harmonisation complète** : Boutons, formulaires, badges, focus, spinners coordonnés par spécialité
 
 ### Composants UI
 - **Navigation** : Navbar responsive avec logo

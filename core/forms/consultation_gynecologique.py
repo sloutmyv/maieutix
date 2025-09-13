@@ -192,7 +192,7 @@ class ConsultationGynecologiqueModalForm(ConsultationGynecologiqueForm):
                 if 'form-control' not in current_class:
                     field.widget.attrs['class'] = current_class.replace(
                         'focus:ring-primary focus:border-primary',
-                        'focus:ring-blue-500 focus:border-blue-500'
+                        'focus:ring-pink-500 focus:border-pink-500'
                     )
         
         # Pour le modal, cacher le champ patient car il sera fourni via le contexte
@@ -221,42 +221,42 @@ class ConsultationGynecologiqueQuickForm(forms.ModelForm):
         widgets = {
             'date_consultation': forms.DateInput(attrs={
                 'type': 'date',
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 h-8',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 h-8',
             }),
             'tension_systolique': forms.NumberInput(attrs={
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 h-8',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 h-8',
                 'placeholder': '120',
                 'min': '80',
                 'max': '250'
             }),
             'tension_diastolique': forms.NumberInput(attrs={
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 h-8',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 h-8',
                 'placeholder': '80',
                 'min': '40',
                 'max': '150'
             }),
             'poids': forms.NumberInput(attrs={
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 h-8',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 h-8',
                 'placeholder': '65.5',
                 'step': '0.1',
                 'min': '30',
                 'max': '200'
             }),
             'motif': forms.Textarea(attrs={
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500',
                 'style': 'height: 88px;',
                 'placeholder': 'Motif de la consultation...'
             }),
             'examen': forms.Textarea(attrs={
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 h-16',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 h-16',
                 'placeholder': 'Résultats de l\'examen gynécologique...'
             }),
             'prescription': forms.Textarea(attrs={
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 h-16',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 h-16',
                 'placeholder': 'Prescription médicamenteuse ou recommandations...'
             }),
             'notes': forms.Textarea(attrs={
-                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 h-16',
+                'class': 'mt-1 block w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 h-16',
                 'placeholder': 'Notes additionnelles...'
             })
         }

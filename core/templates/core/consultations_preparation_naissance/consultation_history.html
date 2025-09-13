@@ -1,0 +1,96 @@
+<!-- Historique des consultations de préparation à la naissance -->
+{% if consultations %}
+    <div class="space-y-3">
+        {% for consultation in consultations %}
+            <div class="bg-gray-100 border border-gray-300 rounded-lg p-3 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            {{ consultation.date_consultation|date:"d/m/Y" }}
+                        </span>
+                        {% if consultation.semaines_amenorrhee %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                {{ consultation.semaines_amenorrhee }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button 
+                            hx-get="{% url 'patients:consultation_preparation_naissance_detail' consultation.id %}"
+                            hx-target="#modal-container"
+                            hx-swap="innerHTML"
+                            class="text-gray-500 hover:text-gray-700 transition-colors p-1 rounded hover:bg-gray-200"
+                            title="Voir détails"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                        <button 
+                            hx-post="{% url 'patients:delete_consultation_preparation_naissance' consultation.id %}"
+                            hx-target="#consultations-preparation-history"
+                            hx-swap="innerHTML"
+                            hx-confirm="Êtes-vous sûr de vouloir supprimer cette consultation du {{ consultation.date_consultation|date:'d/m/Y' }} ?"
+                            class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
+                            title="Supprimer consultation"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                {% if consultation.theme_aborde %}
+                    <div class="text-sm text-gray-900 mb-2">
+                        <strong>Thème(s) abordé(s):</strong> {{ consultation.theme_aborde|truncatechars:120 }}
+                    </div>
+                {% endif %}
+                
+                {% if consultation.a_prevoir %}
+                    <div class="text-xs text-gray-600 mb-1">
+                        <strong>À prévoir:</strong> {{ consultation.a_prevoir|truncatechars:120 }}
+                    </div>
+                {% endif %}
+                
+                <div class="text-xs text-gray-500 mt-2 pt-2 border-t border-green-200">
+                    Créé le {{ consultation.created_at|date:"d/m/Y à H:i" }}{% if consultation.created_by %} par {{ consultation.created_by.prenom }} {{ consultation.created_by.nom }}{% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    {% if error %}
+        <div class="text-center py-8">
+            <svg class="w-12 h-12 mx-auto text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <h3 class="text-sm font-medium text-red-900 mb-1">Accès restreint</h3>
+            <p class="text-xs text-red-500 mb-4">{{ error }}</p>
+        </div>
+    {% else %}
+        <div class="text-center py-8">
+            <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            <h3 class="text-sm font-medium text-gray-900 mb-1">Aucune consultation</h3>
+            <p class="text-xs text-gray-500 mb-4">Aucune consultation de préparation à la naissance enregistrée pour cette patiente.</p>
+            {% if patient %}
+            <button 
+                hx-get="{% url 'patients:consultation_preparation_naissance_quick_form' patient.id %}"
+                hx-target="#consultation-preparation-form-container"
+                hx-swap="innerHTML"
+                onclick="document.getElementById('consultation-preparation-form-container').classList.remove('hidden')"
+                style="background-color: #9333ea;"
+                class="inline-flex items-center px-3 py-2 text-xs font-medium text-white rounded hover:opacity-90"
+            >
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Ajouter la première consultation
+            </button>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}

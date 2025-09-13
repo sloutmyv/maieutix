@@ -1,0 +1,125 @@
+<!-- Modal pour créer/éditer une consultation de préparation à la naissance -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeModal()">
+    <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Nouvelle consultation préparation naissance</h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form hx-post="{% url 'patients:consultation_preparation_naissance_modal' patient.id %}"
+              hx-target="#modal-container"
+              hx-swap="innerHTML">
+            
+            <div class="p-4 space-y-4">
+                
+                <!-- Patient info (read-only) -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-green-800">{{ patient.nom_complet }}</span>
+                        {% if patient.date_debut_grossesse %}
+                            <span class="text-xs text-green-600">DDG: {{ patient.date_debut_grossesse|date:"d/m/Y" }}</span>
+                        {% endif %}
+                    </div>
+                    {% if patient.date_debut_grossesse %}
+                        <p class="text-xs text-green-600 mt-1">SA calculée automatiquement</p>
+                    {% else %}
+                        <p class="text-xs text-orange-600 mt-1">Aucune DDG définie - SA non calculées</p>
+                    {% endif %}
+                </div>
+
+                <!-- Date de consultation -->
+                <div>
+                    <label for="{{ form.date_consultation.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.date_consultation.label }}
+                    </label>
+                    {{ form.date_consultation }}
+                    {% if form.date_consultation.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.date_consultation.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.date_consultation.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.date_consultation.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Thème(s) abordé(s) -->
+                <div>
+                    <label for="{{ form.theme_aborde.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.theme_aborde.label }}
+                    </label>
+                    {{ form.theme_aborde }}
+                    {% if form.theme_aborde.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.theme_aborde.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.theme_aborde.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.theme_aborde.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- À prévoir -->
+                <div>
+                    <label for="{{ form.a_prevoir.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.a_prevoir.label }}
+                    </label>
+                    {{ form.a_prevoir }}
+                    {% if form.a_prevoir.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.a_prevoir.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.a_prevoir.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.a_prevoir.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Erreurs générales du formulaire -->
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                        {% for error in form.non_field_errors %}
+                            <p class="text-sm text-red-800">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end space-x-3 px-4 py-3 bg-gray-50 rounded-b-lg border-t border-gray-200">
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                        style="background-color: #22c55e;"
+                        class="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+
+// Auto-fermeture du modal en cas de succès
+document.body.addEventListener('htmx:afterRequest', function(event) {
+    if (event.detail.xhr.status === 200 && event.detail.xhr.responseText.includes('"success": true')) {
+        closeModal();
+        // Rafraîchir l'historique
+        htmx.trigger('#consultations-preparation-history', 'refresh');
+    }
+});
+</script>
