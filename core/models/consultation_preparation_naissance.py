@@ -79,7 +79,7 @@ class ConsultationPreparationNaissance(models.Model):
     
     def __str__(self):
         """Représentation textuelle de la consultation"""
-        return f"Préparation naissance - {self.patient.nom_complet} du {self.date_consultation.strftime('%d/%m/%Y')}"
+        return f"Préparation naissance - {str(self.patient)} du {self.date_consultation.strftime('%d/%m/%Y')}"
     
     def clean(self):
         """Validation du modèle"""
@@ -119,7 +119,10 @@ class ConsultationPreparationNaissance(models.Model):
         Calcule les semaines d'aménorrhée à partir de la DDG
         Format : "XX SA" ou "XX SA + Yj"
         """
-        if not self.patient or not self.patient.date_debut_grossesse:
+        try:
+            if not self.patient or not self.patient.date_debut_grossesse:
+                return None
+        except:
             return None
         
         # Calcul des jours écoulés depuis la DDG

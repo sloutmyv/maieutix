@@ -24,31 +24,23 @@ def patient_consultations_preparation_naissance(request, patient_id):
     """
     Vue pour récupérer et afficher les consultations de préparation à la naissance d'une patiente
     """
-    try:
-        patient = get_object_or_404(Patient, pk=patient_id)
-        
-        # Vérifier que c'est bien une femme
-        if patient.type_patient != 'femme':
-            return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
-                'consultations': [],
-                'patient': patient,
-                'error': 'Les consultations de préparation à la naissance sont réservées aux femmes.'
-            })
-        
-        # Récupérer les consultations ordonnées par date décroissante
-        consultations = patient.consultations_preparation_naissance.select_related('created_by').all()
-        
-        return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
-            'consultations': consultations,
-            'patient': patient
-        })
-        
-    except Exception as e:
+    patient = get_object_or_404(Patient, pk=patient_id)
+    
+    # Vérifier que c'est bien une femme
+    if patient.type_patient != 'femme':
         return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
             'consultations': [],
-            'patient': None,
-            'error': f'Erreur lors de la récupération des consultations: {str(e)}'
+            'patient': patient,
+            'error': 'Les consultations de préparation à la naissance sont réservées aux femmes.'
         })
+    
+    # Récupérer les consultations ordonnées par date décroissante
+    consultations = patient.consultations_preparation_naissance.select_related('created_by').all()
+    
+    return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
+        'consultations': consultations,
+        'patient': patient
+    })
 
 
 @login_required
@@ -83,8 +75,24 @@ def consultation_preparation_naissance_modal(request, patient_id):
                     consultation = form.save(commit=False)
                     consultation.patient = patient
                     # Associer la sage-femme connectée
-                    if hasattr(request.user, 'sagefemme'):
-                        consultation.created_by = request.user.sagefemme
+                    from core.models import SageFemme
+                    try:
+                        # Essayer d'abord l'attribut direct
+                        if hasattr(request.user, 'sagefemme') and request.user.sagefemme:
+                            consultation.created_by = request.user.sagefemme
+                        else:
+                            # Fallback: chercher la sage-femme par l'utilisateur
+                            sage_femme = SageFemme.objects.filter(user=request.user).first()
+                            if sage_femme:
+                                consultation.created_by = sage_femme
+                    except Exception:
+                        # Dernier recours: chercher par email si c'est un super utilisateur
+                        try:
+                            sage_femme = SageFemme.objects.filter(email=request.user.email).first()
+                            if sage_femme:
+                                consultation.created_by = sage_femme
+                        except:
+                            pass
                     consultation.save()
                     
                     return JsonResponse({
@@ -95,10 +103,11 @@ def consultation_preparation_naissance_modal(request, patient_id):
             except Exception as e:
                 form.add_error(None, f'Erreur lors de la sauvegarde: {str(e)}')
         
-        # Retourner le formulaire avec les erreurs
-        return render(request, 'core/consultations_preparation_naissance/consultation_modal.html', {
-            'form': form,
-            'patient': patient
+        # Retourner une réponse JSON avec les erreurs
+        return JsonResponse({
+            'success': False,
+            'error': 'Formulaire invalide',
+            'errors': form.errors
         })
 
 
@@ -131,8 +140,24 @@ def save_consultation_preparation_naissance(request):
             consultation = ConsultationPreparationNaissance(patient=patient)
             
             # Associer la sage-femme connectée
-            if hasattr(request.user, 'sagefemme'):
-                consultation.created_by = request.user.sagefemme
+            from core.models import SageFemme
+            try:
+                # Essayer d'abord l'attribut direct
+                if hasattr(request.user, 'sagefemme') and request.user.sagefemme:
+                    consultation.created_by = request.user.sagefemme
+                else:
+                    # Fallback: chercher la sage-femme par l'utilisateur
+                    sage_femme = SageFemme.objects.filter(user=request.user).first()
+                    if sage_femme:
+                        consultation.created_by = sage_femme
+            except Exception:
+                # Dernier recours: chercher par email si c'est un super utilisateur
+                try:
+                    sage_femme = SageFemme.objects.filter(email=request.user.email).first()
+                    if sage_femme:
+                        consultation.created_by = sage_femme
+                except:
+                    pass
             
             # Date de consultation (par défaut aujourd'hui)
             date_consultation_str = request.POST.get('date_consultation')
@@ -184,32 +209,24 @@ def delete_consultation_preparation_naissance(request, consultation_id):
     """
     Vue pour supprimer une consultation de préparation à la naissance
     """
-    try:
-        consultation = get_object_or_404(ConsultationPreparationNaissance, pk=consultation_id)
-        patient = consultation.patient
-        
-        # Vérifier que c'est bien une femme
-        if patient.type_patient != 'femme':
-            return JsonResponse({
-                'error': 'Les consultations de préparation à la naissance sont réservées aux femmes.'
-            }, status=404)
-        
-        # Supprimer la consultation
-        consultation.delete()
-        
-        # Retourner l'historique mis à jour
-        consultations = patient.consultations_preparation_naissance.select_related('created_by').all()
-        return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
-            'consultations': consultations,
-            'patient': patient
-        })
-        
-    except Exception as e:
-        return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
-            'consultations': [],
-            'patient': None,
-            'error': f'Erreur lors de la suppression: {str(e)}'
-        })
+    consultation = get_object_or_404(ConsultationPreparationNaissance, pk=consultation_id)
+    patient = consultation.patient
+    
+    # Vérifier que c'est bien une femme
+    if patient.type_patient != 'femme':
+        return JsonResponse({
+            'error': 'Les consultations de préparation à la naissance sont réservées aux femmes.'
+        }, status=404)
+    
+    # Supprimer la consultation
+    consultation.delete()
+    
+    # Retourner l'historique mis à jour
+    consultations = patient.consultations_preparation_naissance.select_related('created_by').all()
+    return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
+        'consultations': consultations,
+        'patient': patient
+    })
 
 
 @login_required
@@ -218,19 +235,11 @@ def consultation_preparation_naissance_detail(request, consultation_id):
     """
     Vue pour afficher les détails d'une consultation dans un modal
     """
-    try:
-        consultation = get_object_or_404(ConsultationPreparationNaissance, pk=consultation_id)
-        
-        return render(request, 'core/consultations_preparation_naissance/consultation_detail_modal.html', {
-            'consultation': consultation
-        })
-        
-    except Exception as e:
-        return render(request, 'core/consultations_preparation_naissance/consultation_history.html', {
-            'consultations': [],
-            'patient': None,
-            'error': f'Erreur lors de la récupération: {str(e)}'
-        })
+    consultation = get_object_or_404(ConsultationPreparationNaissance, pk=consultation_id)
+    
+    return render(request, 'core/consultations_preparation_naissance/consultation_detail_modal.html', {
+        'consultation': consultation
+    })
 
 
 @login_required
@@ -280,8 +289,24 @@ def save_quick_consultation_preparation_naissance(request, patient_id):
             with transaction.atomic():
                 consultation = form.save(commit=False)
                 # Associer la sage-femme connectée
-                if hasattr(request.user, 'sagefemme'):
-                    consultation.created_by = request.user.sagefemme
+                from core.models import SageFemme
+                try:
+                    # Essayer d'abord l'attribut direct
+                    if hasattr(request.user, 'sagefemme') and request.user.sagefemme:
+                        consultation.created_by = request.user.sagefemme
+                    else:
+                        # Fallback: chercher la sage-femme par l'utilisateur
+                        sage_femme = SageFemme.objects.filter(user=request.user).first()
+                        if sage_femme:
+                            consultation.created_by = sage_femme
+                except Exception:
+                    # Dernier recours: chercher par email si c'est un super utilisateur
+                    try:
+                        sage_femme = SageFemme.objects.filter(email=request.user.email).first()
+                        if sage_femme:
+                            consultation.created_by = sage_femme
+                    except:
+                        pass
                 consultation.save()
                 
                 # Retourner directement l'historique mis à jour

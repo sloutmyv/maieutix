@@ -90,7 +90,7 @@ class ConsultationPreparationNaissanceAdmin(admin.ModelAdmin):
             url = reverse('admin:core_patient_change', args=[obj.patient.pk])
             return format_html(
                 '<a href="{}" target="_blank" title="Voir la fiche patiente">{}</a>',
-                url, obj.patient.nom_complet
+                url, str(obj.patient)
             )
         return "-"
     patient_link.short_description = "Patiente"

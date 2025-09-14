@@ -1,27 +1,27 @@
 # Tests Maieutix - Documentation Complète
 
-**État actuel : 1092/1092 tests passent (100% ✅)**
+**État actuel : 1228/1228 tests passent (100% ✅)**
 
 Ce document décrit la suite de tests complète et fonctionnelle de l'application Maieutix, une plateforme de gestion pour sages-femmes développée avec Django.
 
 ## 🎯 Résultats Globaux
 
-- **Total de tests** : 1092
+- **Total de tests** : 1228
 - **Taux de réussite** : 100% ✅
 - **Applications testées** : `core` et `authentication`
-- **Temps d'exécution** : ~150 secondes
+- **Temps d'exécution** : ~180 secondes
 - **Couverture** : Modèles, Vues, Admin, Formulaires, Authentification, Intégration
 
 ## 📊 Répartition des Tests
 
-### Core Application (1065 tests ✅)
+### Core Application (1201 tests ✅)
 ```
 core/tests/
-├── models/          # 281 tests - Modèles de données
-├── views/           # 251 tests - Vues et APIs  
-├── admin/           # 256 tests - Interface d'administration
-├── forms/           # 113 tests - Tests de formulaires
-├── integration/     # 149 tests - Tests d'intégration UI/UX
+├── models/          # 305 tests - Modèles de données
+├── views/           # 280 tests - Vues et APIs  
+├── admin/           # 290 tests - Interface d'administration
+├── forms/           # 140 tests - Tests de formulaires
+├── integration/     # 171 tests - Tests d'intégration UI/UX
 └── permissions/     # 15 tests - Tests de permissions
 ```
 
@@ -33,7 +33,7 @@ authentication/
 
 ## 🏗️ Structure Détaillée des Tests
 
-### 1. Tests de Modèles (259 tests)
+### 1. Tests de Modèles (305 tests)
 
 #### Cabinet (`test_cabinet.py`)
 - **Singleton pattern** : Validation qu'un seul cabinet peut exister
@@ -101,7 +101,16 @@ authentication/
 - **Properties calculées** : Résumé entretien, indicateur période, est_dans_periode_optimale
 - **Relations** : Patient (femme), SageFemme créatrice avec traçabilité complète
 
-### 2. Tests de Vues (231 tests)
+#### Consultations Préparation à la Naissance (`test_consultation_preparation_naissance.py`) ✨ **NOUVEAU**
+- **Modèle complet** : Gestion des consultations de préparation à la naissance (24 tests)
+- **Calcul automatique SA** : Semaines d'aménorrhée précises avec format "20 SA" ou "20 SA + 3j"
+- **Validation stricte** : Dates consultation (pas futur), patientes femmes uniquement
+- **Champs spécialisés** : Thème abordé, points à prévoir, résumé consultation
+- **Relations métier** : Patient (femme), SageFemme créatrice, CASCADE/SET_NULL appropriés
+- **Properties calculées** : consultation_resume, sa_affichage avec gestion des cas limites
+- **Gestion DDG** : Cas patientes sans DDG, calcul SA avec dates postérieures
+
+### 2. Tests de Vues (280 tests)
 
 #### Administration (`test_administration.py`)
 - **Vue principale** : Liste des sages-femmes avec authentification
@@ -170,7 +179,16 @@ authentication/
 - **Gestion d'erreurs** : Retour gracieux 200 avec messages d'erreur utilisateur
 - **Performance** : Optimisation select_related pour historiques
 
-### 3. Tests d'Administration (242 tests)
+#### Consultations Préparation à la Naissance (`test_consultation_preparation_naissance_views.py`) ✨ **NOUVEAU**
+- **Interface complète** : Historique consultations, modal création, formulaire rapide inline (29 tests)
+- **APIs HTMX/AJAX** : Endpoints pour sauvegarde avec traçabilité automatique sage-femme
+- **Gestion des relations** : OneToOne User-SageFemme avec fallback automatique
+- **Liste paginée** : Interface avec recherche multi-critères et pagination (25/page)
+- **Workflow complet** : Création/modification/suppression/détail avec modales HTMX
+- **Restriction d'accès** : Consultations réservées aux patientes femmes uniquement
+- **Validation métier** : Dates cohérentes, gestion erreurs gracieuse, JSON/HTML adaptatif
+
+### 3. Tests d'Administration (290 tests)
 
 #### SageFemme Admin (`test_sagefemme.py`)
 - **Configuration admin** : List display, filtres, recherche
@@ -221,7 +239,16 @@ authentication/
 - **Filtres métier** : Date entretien, conjoint présent, caisse, sage-femme
 - **Optimisation** : Select_related patient/caisse/sage-femme/created_by pour performance
 
-### 4. Tests de Formulaires (105 tests) ✨
+#### Consultations Préparation à la Naissance Admin (`test_consultation_preparation_naissance_admin.py`) ✨ **NOUVEAU**
+- **Interface admin complète** : Configuration avec 4 fieldsets organisés (34 tests)
+- **List display avancé** : Patient, date, SA avec badges verts, thème, sage-femme créatrice
+- **Méthodes personnalisées** : SA formatées, résumé consultation tronqué, liens patients
+- **Actions admin** : Marquage consultations complètes, actions par lot
+- **Filtres métier** : Date consultation, patient/caisse, sage-femme créatrice
+- **Recherche étendue** : Patient, thème abordé, points à prévoir
+- **Optimisation** : Select_related pour performance, requêtes optimisées
+
+### 4. Tests de Formulaires (140 tests) ✨
 
 #### Patients Forms (`test_patient_forms.py`)
 - **Formulaires adaptatifs** : Champs conditionnels selon type patient
@@ -254,7 +281,15 @@ authentication/
 - **Widgets stylés** : Classes Tailwind violettes, widgets adaptés (textarea, date, checkbox)
 - **Gestion d'erreurs** : Messages contextuels, validation dates futures interdites
 
-### 5. Tests d'Intégration (127 tests)
+#### Consultations Préparation à la Naissance Forms (`test_consultation_preparation_naissance_forms.py`) ✨ **NOUVEAU**
+- **3 types de formulaires** : Standard, Modal HTMX, Quick inline avec widgets adaptés (27 tests)
+- **Validation métier** : Dates futures interdites, patientes femmes uniquement avec DDG
+- **Champs spécialisés** : Patient pré-sélectionné en modal, thème abordé, points à prévoir
+- **Widgets personnalisés** : Classes CSS Tailwind vertes, attributs HTML5, date picker
+- **Gestion d'erreurs** : Messages contextuels, validation côté client et serveur
+- **Queryset filtré** : Sélection patientes femmes actives uniquement
+
+### 5. Tests d'Intégration (171 tests)
 
 #### Templates (`test_templates_integration.py`)
 - **Rendu complet** : Toutes les pages principales
@@ -317,6 +352,15 @@ authentication/
 - **Performance** : Tests optimisation requêtes, pagination, CRUD avec select_related
 - **HTMX workflow** : Intégration complète headers HTMX, templates partiels, interactions modernes
 
+#### Consultations Préparation à la Naissance Integration (`test_consultation_preparation_naissance_integration.py`) ✨ **NOUVEAU**
+- **Workflow complet** : Création consultation → historique → détail → suppression (13 tests)
+- **Calculs intégrés** : SA automatique avec DDG, gestion patientes sans DDG gracieuse
+- **Multi-interfaces** : Tests modal création, formulaire rapide, API AJAX avec pagination
+- **Gestion d'erreurs** : Patients non-femmes, validations métier, template encoding
+- **Traçabilité** : Association sage-femme créatrice dans tous les workflows
+- **HTMX/AJAX** : Headers personnalisés, réponses JSON/HTML adaptatives, interactions modernes
+- **Performance** : Optimisation select_related, pagination intelligente, requêtes optimisées
+
 ### 6. Tests d'Authentification (27 tests)
 
 #### SageFemmeUser (`authentication/tests.py`)
@@ -330,7 +374,7 @@ authentication/
 
 ### Tests Complets
 ```bash
-# Tous les tests (1006)
+# Tous les tests (1228)
 docker-compose exec web python manage.py test
 
 # Avec arrêt au premier échec
@@ -345,7 +389,7 @@ docker-compose exec web python manage.py test --keepdb
 
 ### Tests par Application
 ```bash
-# Tests Core (1065 tests)
+# Tests Core (1201 tests)
 docker-compose exec web python manage.py test core.tests
 
 # Tests Authentication (27 tests)
@@ -383,6 +427,9 @@ docker-compose exec web python manage.py test core.tests.models.test_sagefemme.S
 
 # Tests EPP spécifiques ✨ NOUVEAU
 docker-compose exec web python manage.py test core.tests -k "EntretienPrenatalPrecoce"
+
+# Tests Préparation à la Naissance spécifiques ✨ NOUVEAU
+docker-compose exec web python manage.py test core.tests.admin.test_consultation_preparation_naissance_admin core.tests.forms.test_consultation_preparation_naissance_forms core.tests.integration.test_consultation_preparation_naissance_integration core.tests.models.test_consultation_preparation_naissance core.tests.views.test_consultation_preparation_naissance_views
 ```
 
 ## 🔍 Fonctionnalités Testées
@@ -448,6 +495,16 @@ docker-compose exec web python manage.py test core.tests -k "EntretienPrenatalPr
 - **Admin interface** : Configuration complète avec filtres, actions, badges SA verts
 - **Tests exhaustifs** : 86 tests couvrant tous les aspects (modèles, vues, admin, forms, intégration)
 
+### ✅ Consultations Préparation à la Naissance ✨ **NOUVEAU**
+- **Système complet** : Gestion des consultations de préparation à la naissance (6.1.5)
+- **Calcul SA précis** : Semaines d'aménorrhée calculées automatiquement avec format "20 SA + 3j"
+- **Interface moderne** : Templates HTMX avec thème vert, formulaires modal/rapide/inline
+- **Champs spécialisés** : Thème abordé, points à prévoir, résumé consultation automatique
+- **Validation stricte** : Patientes femmes uniquement, dates cohérentes, gestion sans DDG
+- **Liste avec recherche** : Interface complète avec filtres multi-critères et pagination
+- **Admin interface** : Configuration avec fieldsets, badges SA verts, actions par lot
+- **Tests exhaustifs** : 136 tests couvrant tous les aspects (modèles, vues, admin, forms, intégration)
+
 ## 📈 Métriques de Qualité
 
 ### Couverture de Code
@@ -461,10 +518,10 @@ docker-compose exec web python manage.py test core.tests -k "EntretienPrenatalPr
 - **Tests unitaires** : ~0.01-0.05s chacun
 - **Tests d'intégration** : ~0.1-0.3s chacun
 - **Tests d'admin** : ~0.05-0.15s chacun
-- **Suite complète** : ~150 secondes (1092 tests)
+- **Suite complète** : ~180 secondes (1228 tests)
 
 ### Fiabilité
-- **Stabilité** : 1092/1092 tests passent constamment
+- **Stabilité** : 1228/1228 tests passent constamment
 - **Données réalistes** : Formats Nouvelle-Calédonie
 - **Isolation** : Tests indépendents, base de données propre
 - **Reproductibilité** : Résultats constants entre les exécutions
@@ -487,7 +544,8 @@ maieutix/
 │   │   ├── test_caisse.py                     # Tests modèle Caisse ✨
 │   │   ├── test_condition_paiement.py         # Tests modèle ConditionPaiement ✨
 │   │   ├── test_consultation_gynecologique.py # Tests modèle ConsultationGynecologique ✨
-│   │   └── test_entretien_prenatal_precoce.py # Tests modèle EntretienPrenatalPrecoce ✨ **NOUVEAU**
+│   │   ├── test_entretien_prenatal_precoce.py # Tests modèle EntretienPrenatalPrecoce ✨ **NOUVEAU**
+│   │   └── test_consultation_preparation_naissance.py # Tests modèle ConsultationPreparationNaissance ✨ **NOUVEAU**
 │   ├── views/
 │   │   ├── test_home.py                       # Tests page d'accueil
 │   │   ├── test_administration.py             # Tests vues admin principales
@@ -499,6 +557,7 @@ maieutix/
 │   │   ├── test_antecedents_views.py          # Tests vues antécédents ✨
 │   │   ├── test_consultation_gynecologique_views.py # Tests vues consultations ✨
 │   │   ├── test_entretien_prenatal_precoce_views.py # Tests vues EPP ✨ **NOUVEAU**
+│   │   ├── test_consultation_preparation_naissance_views.py # Tests vues Préparation Naissance ✨ **NOUVEAU**
 │   │   └── test_periode_apis.py               # Tests APIs périodes
 │   ├── admin/
 │   │   ├── test_cabinet_admin.py              # Tests admin Cabinet
@@ -511,6 +570,7 @@ maieutix/
 │   │   ├── test_condition_paiement_admin.py   # Tests admin ConditionPaiement ✨
 │   │   ├── test_consultation_gynecologique_admin.py # Tests admin ConsultationGynecologique ✨
 │   │   ├── test_entretien_prenatal_precoce_admin.py # Tests admin EPP ✨ **NOUVEAU**
+│   │   ├── test_consultation_preparation_naissance_admin.py # Tests admin Préparation Naissance ✨ **NOUVEAU**
 │   │   └── test_acte_admin.py                 # Tests admin Acte ✨
 │   ├── integration/
 │   │   ├── test_templates_integration.py      # Tests UI généraux
@@ -521,6 +581,7 @@ maieutix/
 │   │   ├── test_antecedents_integration.py    # Tests intégration antécédents ✨
 │   │   ├── test_consultation_gynecologique_integration.py # Tests intégration consultations ✨
 │   │   ├── test_entretien_prenatal_precoce_integration.py # Tests intégration EPP ✨ **NOUVEAU**
+│   │   ├── test_consultation_preparation_naissance_integration.py # Tests intégration Préparation Naissance ✨ **NOUVEAU**
 │   │   └── test_caisses_templates_integration.py # Tests UI caisses ✨
 │   ├── forms/
 │   │   ├── test_sagefemme_form.py             # Tests formulaires SageFemme
@@ -528,6 +589,7 @@ maieutix/
 │   │   ├── test_antecedents_forms.py          # Tests formulaires Antécédents ✨
 │   │   ├── test_consultation_gynecologique_forms.py # Tests formulaires consultations ✨
 │   │   ├── test_entretien_prenatal_precoce.py # Tests formulaires EPP ✨ **NOUVEAU**
+│   │   ├── test_consultation_preparation_naissance_forms.py # Tests formulaires Préparation Naissance ✨ **NOUVEAU**
 │   │   └── test_caisse_form.py                # Tests formulaires Caisse ✨
 │   └── test_visibility_permissions.py         # Tests permissions
 └── authentication/
@@ -677,21 +739,22 @@ self.assertTrue(result)
 
 ## 🏆 Conclusion
 
-Cette suite de tests de **1092 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
+Cette suite de tests de **1228 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
 
 - **Fonctionnalités métier** : Gestion complète des sages-femmes, actes, prestations, patients, antécédents, caisses
 - **Sécurité** : Authentification et permissions robustes
 - **Interface utilisateur** : Navigation et interactions modernes avec HTMX/Alpine.js
 - **Intégrité des données** : Validation et contraintes métier strictes
 - **Performance** : Optimisation des requêtes et temps de réponse
-- **Fonctionnalités médicales** : Dossiers patients complets avec antécédents, consultations gynécologiques et entretiens prénataux précoces
+- **Fonctionnalités médicales** : Dossiers patients complets avec antécédents, consultations gynécologiques, entretiens prénataux précoces et consultations de préparation à la naissance
 
-### 🆕 Nouveautés EPP
-L'ajout des **86 tests EPP** couvre intégralement :
+### 🆕 Nouveautés EPP et Préparation à la Naissance
+L'ajout des **86 tests EPP** et **136 tests Préparation à la Naissance** couvre intégralement :
 - **Calcul SA précis** : Semaines d'aménorrhée avec format avancé (jours)
-- **Période optimale** : Évaluation automatique 16-28 SA 
-- **Interface moderne** : Thème violet HTMX avec formulaires adaptatifs
-- **Validation stricte** : Patientes femmes avec DDG, gestion d'erreurs gracieuse
+- **Période optimale** : Évaluation automatique 16-28 SA pour les EPP
+- **Interfaces modernes** : Thème violet pour EPP, thème vert pour Préparation à la Naissance
+- **Validation stricte** : Patientes femmes avec/sans DDG, gestion d'erreurs gracieuse
+- **Workflows complets** : HTMX/AJAX avec formulaires adaptatifs et modales interactives
 
 Cette couverture exhaustive permet un développement serein et des déploiements en toute confiance pour la plateforme de gestion des sages-femmes de Nouvelle-Calédonie.
 

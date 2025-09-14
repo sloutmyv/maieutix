@@ -84,10 +84,6 @@ class ConsultationPreparationNaissanceForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         
-        # Associer la patiente
-        if self.patient:
-            instance.patient = self.patient
-        
         if commit:
             instance.save()
             
@@ -189,18 +185,6 @@ class ConsultationPreparationNaissanceQuickForm(forms.ModelForm):
             )
         
         return date_consultation
-    
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        
-        # Associer la patiente
-        if self.patient:
-            instance.patient = self.patient
-        
-        if commit:
-            instance.save()
-            
-        return instance
     
     def save(self, commit=True):
         """Sauvegarde avec assignation du patient"""
