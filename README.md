@@ -110,6 +110,13 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Entretiens prénataux précoces (EPP)** ✨ NOUVEAU : Système complet de gestion des entretiens prénataux
 - **Formulaires EPP** : Interface complète avec calcul automatique SA et validation métier
 - **Consultation préparation naissance** ✨ NOUVEAU : Gestion des consultations de préparation à la naissance
+- **Rééducation du périnée** ✨ NOUVEAU : Module complet de gestion des séances de rééducation périnéale
+- **Interface harmonisée** : Présentation identique aux autres sections avec fond gris et polices cohérentes
+- **Gestion des séances** : Numérotation automatique, calcul du prochain numéro, traçabilité complète
+- **CRUD complet** : Création, consultation, modification et suppression des séances avec confirmations
+- **Modal HTMX** : Interface fluide sans rechargement de page pour toutes les opérations
+- **Validation métier** : Restriction aux femmes, dates non futures, numéros de séance ≥ 1
+- **Historique détaillé** : Affichage chronologique avec badges de séances et informations complètes
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -312,6 +319,11 @@ maieutix/
 - `POST /patients/{id}/entretien-prenatal-precoce/save-quick/` - API AJAX pour sauvegarde EPP ✨ NOUVEAU
 - `GET /patients/entretien-prenatal-precoce/{id}/` - API pour détail modal EPP ✨ NOUVEAU
 - `POST /patients/entretien-prenatal-precoce/{id}/delete/` - API pour suppression EPP ✨ NOUVEAU
+- `GET /reeducation-perinee/modal/{patient_id}/` - API pour formulaire modal rééducation périnée ✨ NOUVEAU
+- `POST /reeducation-perinee/save/` - API AJAX pour sauvegarde séances rééducation périnée ✨ NOUVEAU
+- `GET /patients/{id}/reeducations-perinee/` - API pour historique rééducation d'une patiente ✨ NOUVEAU
+- `GET /reeducation-perinee/{id}/` - API pour détail modal séance rééducation ✨ NOUVEAU
+- `POST /reeducation-perinee/{id}/delete/` - API pour suppression séance avec confirmation ✨ NOUVEAU
 
 ### Tarifs et Conventions
 - `POST /administration/actes/{id}/ajouter-tarif/` - Ajouter période tarifaire
@@ -481,6 +493,7 @@ Pour plus de détails, voir `tests_readme.md`.
 - **Consultations obstétricales** : Bleu (#3b82f6) - Couleur professionnelle et apaisante
 - **Entretiens prénataux précoces** : Vert (#16a34a) - Couleur de vie et de croissance
 - **Consultations préparation naissance** : Violet (#7c3aed) - Couleur de transformation et préparation
+- **Rééducation du périnée** : Bleu (#2563eb) - Couleur médicale et technique pour la rééducation
 - **Harmonisation complète** : Boutons, formulaires, badges, focus, spinners coordonnés par spécialité
 
 ### Composants UI

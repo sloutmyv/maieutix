@@ -1,0 +1,197 @@
+<!-- Template pour la liste des séances de rééducation du périnée -->
+<div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Rééducations du Périnée</h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    Gestion des séances de rééducation du périnée
+                </p>
+            </div>
+            <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <button type="button" 
+                        class="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        onclick="window.location.href='/admin/core/reeducationperinee/add/'">
+                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Nouvelle séance
+                </button>
+            </div>
+        </div>
+
+        <!-- Formulaire de recherche -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <form method="get" class="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-4 sm:gap-4">
+                <div>
+                    {{ form.recherche.label_tag }}
+                    {{ form.recherche }}
+                </div>
+                <div>
+                    {{ form.date_debut.label_tag }}
+                    {{ form.date_debut }}
+                </div>
+                <div>
+                    {{ form.date_fin.label_tag }}
+                    {{ form.date_fin }}
+                </div>
+                <div>
+                    {{ form.numero_seance.label_tag }}
+                    {{ form.numero_seance }}
+                </div>
+                <div class="sm:col-span-4 flex justify-end space-x-2">
+                    <button type="submit" 
+                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        <svg class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Rechercher
+                    </button>
+                    <a href="{% url 'liste_reeducations_perinee' %}" 
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Résultats -->
+        <div class="flex items-center justify-between mb-4">
+            <p class="text-sm text-gray-700">
+                <span class="font-medium">{{ total_seances }}</span>
+                séance{{ total_seances|pluralize }} trouvée{{ total_seances|pluralize }}
+            </p>
+        </div>
+
+        <!-- Tableau des séances -->
+        <div class="mt-4 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Patiente
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Séance
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Examen / Travail
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Sage-femme
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for seance in seances %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">
+                                {{ seance.patient.nom_complet }}
+                            </div>
+                            {% if seance.patient.caisse %}
+                            <div class="text-sm text-gray-500">
+                                {{ seance.patient.caisse.nom }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ seance.date_consultation|date:"d/m/Y" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                Séance {{ seance.numero_seance }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900 max-w-xs truncate" title="{{ seance.examen_clinique_travail }}">
+                                {% if seance.examen_clinique_travail %}
+                                    {{ seance.examen_clinique_travail|truncatechars:80 }}
+                                {% else %}
+                                    <em class="text-gray-500">Non renseigné</em>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if seance.created_by %}
+                                {{ seance.created_by.prenom }} {{ seance.created_by.nom }}
+                            {% else %}
+                                <em>Non renseignée</em>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center space-x-2">
+                                <a href="{% url 'admin:core_reeducationperinee_change' seance.pk %}"
+                                   class="text-blue-600 hover:text-blue-900" title="Modifier">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <div class="text-gray-500">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune séance trouvée</h3>
+                                <p class="mt-1 text-sm text-gray-500">Commencez par ajouter une nouvelle séance de rééducation.</p>
+                                <div class="mt-6">
+                                    <button type="button" 
+                                            onclick="window.location.href='/admin/core/reeducationperinee/add/'"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Nouvelle séance
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if seances.has_other_pages %}
+        <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6" aria-label="Pagination">
+            <div class="hidden sm:block">
+                <p class="text-sm text-gray-700">
+                    Affichage de
+                    <span class="font-medium">{{ seances.start_index }}</span>
+                    à
+                    <span class="font-medium">{{ seances.end_index }}</span>
+                    sur
+                    <span class="font-medium">{{ seances.paginator.count }}</span>
+                    résultats
+                </p>
+            </div>
+            <div class="flex-1 flex justify-between sm:justify-end">
+                {% if seances.has_previous %}
+                    <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ seances.previous_page_number }}" 
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Précédent
+                    </a>
+                {% endif %}
+                {% if seances.has_next %}
+                    <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ seances.next_page_number }}" 
+                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Suivant
+                    </a>
+                {% endif %}
+            </div>
+        </nav>
+        {% endif %}
+    </div>
+</div>

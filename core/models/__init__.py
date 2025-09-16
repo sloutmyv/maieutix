@@ -13,6 +13,7 @@ from .consultation_obstetricale import ConsultationObstetricale
 from .donnees_grossesse import DonneesGrossesse
 from .entretien_prenatal_precoce import EntretienPrenatalPrecoce
 from .consultation_preparation_naissance import ConsultationPreparationNaissance
+from .reeducation_perinee import ReeducationPerinee
 # from .user import SageFemmeUser
 
-__all__ = ['Cabinet', 'SageFemme', 'PeriodeActivite', 'Acte', 'TarifPeriode', 'CadreExercice', 'Prestation', 'ConditionPaiement', 'Caisse', 'Patient', 'Antecedents', 'FrottisCV', 'ConsultationGynecologique', 'ConsultationObstetricale', 'DonneesGrossesse', 'EntretienPrenatalPrecoce', 'ConsultationPreparationNaissance']  # , 'SageFemmeUser']
+__all__ = ['Cabinet', 'SageFemme', 'PeriodeActivite', 'Acte', 'TarifPeriode', 'CadreExercice', 'Prestation', 'ConditionPaiement', 'Caisse', 'Patient', 'Antecedents', 'FrottisCV', 'ConsultationGynecologique', 'ConsultationObstetricale', 'DonneesGrossesse', 'EntretienPrenatalPrecoce', 'ConsultationPreparationNaissance', 'ReeducationPerinee']  # , 'SageFemmeUser']

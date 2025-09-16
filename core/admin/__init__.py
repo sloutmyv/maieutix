@@ -13,5 +13,6 @@ from .consultation_obstetricale import ConsultationObstetricaleAdmin
 from .donnees_grossesse import DonneesGrossesseAdmin
 from .entretien_prenatal_precoce import EntretienPrenatalPrecoceAdmin
 from .consultation_preparation_naissance import ConsultationPreparationNaissanceAdmin
+from .reeducation_perinee import ReeducationPerineeAdmin
 
-__all__ = ['CabinetAdmin', 'SageFemmeAdmin', 'PeriodeActiviteAdmin', 'PeriodeActiviteInline', 'ActeAdmin', 'TarifPeriodeAdmin', 'CadreExerciceAdmin', 'PrestationAdmin', 'ConditionPaiementAdmin', 'CaisseAdmin', 'PatientAdmin', 'AntecedentsAdmin', 'FrottisCVAdmin', 'ConsultationGynecologiqueAdmin', 'ConsultationObstetricaleAdmin', 'DonneesGrossesseAdmin', 'EntretienPrenatalPrecoceAdmin', 'ConsultationPreparationNaissanceAdmin']
+__all__ = ['CabinetAdmin', 'SageFemmeAdmin', 'PeriodeActiviteAdmin', 'PeriodeActiviteInline', 'ActeAdmin', 'TarifPeriodeAdmin', 'CadreExerciceAdmin', 'PrestationAdmin', 'ConditionPaiementAdmin', 'CaisseAdmin', 'PatientAdmin', 'AntecedentsAdmin', 'FrottisCVAdmin', 'ConsultationGynecologiqueAdmin', 'ConsultationObstetricaleAdmin', 'DonneesGrossesseAdmin', 'EntretienPrenatalPrecoceAdmin', 'ConsultationPreparationNaissanceAdmin', 'ReeducationPerineeAdmin']

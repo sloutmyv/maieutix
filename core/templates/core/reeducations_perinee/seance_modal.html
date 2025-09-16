@@ -1,0 +1,154 @@
+<!-- Modal pour ajouter une séance de rééducation du périnée -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+     onclick="closeModal()">
+    
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+         onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center p-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">
+                Nouvelle séance de rééducation du périnée
+            </h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form hx-post="{% url 'reeducation_perinee_modal' patient.id %}"
+              hx-target="#modal-container">
+            <div class="p-6 space-y-6">
+                
+                <!-- Patient Info -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <svg class="h-8 w-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">Patiente</h3>
+                            <p class="text-sm text-blue-600">{{ patient.nom_complet }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient field (hidden) -->
+                {{ form.patient }}
+
+                <!-- Date de la séance -->
+                <div>
+                    <label for="{{ form.date_consultation.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.date_consultation.label }}
+                    </label>
+                    {{ form.date_consultation }}
+                    {% if form.date_consultation.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.date_consultation.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.date_consultation.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.date_consultation.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Numéro de séance -->
+                <div>
+                    <label for="{{ form.numero_seance.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.numero_seance.label }}
+                    </label>
+                    {{ form.numero_seance }}
+                    {% if form.numero_seance.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.numero_seance.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.numero_seance.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.numero_seance.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Examen clinique / Travail de rééducation -->
+                <div>
+                    <label for="{{ form.examen_clinique_travail.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.examen_clinique_travail.label }}
+                    </label>
+                    {{ form.examen_clinique_travail }}
+                    {% if form.examen_clinique_travail.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.examen_clinique_travail.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.examen_clinique_travail.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.examen_clinique_travail.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- À prévoir -->
+                <div>
+                    <label for="{{ form.a_prevoir.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ form.a_prevoir.label }}
+                    </label>
+                    {{ form.a_prevoir }}
+                    {% if form.a_prevoir.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.a_prevoir.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.a_prevoir.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.a_prevoir.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Messages d'erreur généraux -->
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-200 rounded-md p-4">
+                        {% for error in form.non_field_errors %}
+                            <p class="text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 rounded-b-lg">
+                <button type="button" 
+                        onclick="closeModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Enregistrer la séance
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function closeModal() {
+    const modalContainer = document.getElementById('modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+}
+
+// Gestion de la réponse HTMX
+document.body.addEventListener('htmx:afterRequest', function(event) {
+    if (event.detail.xhr.status === 200) {
+        try {
+            const response = JSON.parse(event.detail.xhr.response);
+            if (response.success) {
+                // Fermer le modal
+                closeModal();
+                
+                // Recharger l'historique des séances
+                htmx.trigger('#reeducations-perinee-history', 'refresh');
+                
+                // Déclencher un événement personnalisé pour recharger l'historique
+                window.dispatchEvent(new CustomEvent('reeducation-perinee-added'));
+                
+                // Afficher un message de succès
+                showNotification('Séance de rééducation enregistrée avec succès', 'success');
+            }
+        } catch (e) {
+            // Si ce n'est pas du JSON, c'est probablement le HTML du formulaire avec des erreurs
+        }
+    }
+});
+</script>
