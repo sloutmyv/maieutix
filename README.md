@@ -6,7 +6,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 
 ## Statut du Projet ✅
 
-- **Tests** : 1000+ tests passent (100% ✅) - Couverture complète avec 300+ nouveaux tests (patients + consultations gynécologiques + consultations obstétricales)
+- **Tests** : 1135+ tests passent (100% ✅) - Couverture complète avec 435+ nouveaux tests (patients + consultations + rééducation périnée)
 - **Gestion Patients** : Système complet avec tests exhaustifs (model/form/view/admin/intégration)
 - **Authentification** : Système complet avec gestion des périodes d'activité
 - **Interface** : Design moderne avec Tailwind CSS + HTMX + Alpine.js
@@ -117,6 +117,7 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Modal HTMX** : Interface fluide sans rechargement de page pour toutes les opérations
 - **Validation métier** : Restriction aux femmes, dates non futures, numéros de séance ≥ 1
 - **Historique détaillé** : Affichage chronologique avec badges de séances et informations complètes
+- **Tests exhaustifs** : 135 tests dédiés couvrant modèles, formulaires, vues, admin et intégration complète
 
 ### 💰 Gestion des Caisses et Conditions de Paiement
 - **Conditions de paiement personnalisables** : Définition de conditions avec désignation et pourcentage
@@ -429,7 +430,7 @@ environment:
 ## Tests et Qualité
 
 ### Couverture de Tests : 100% ✅
-- **1000+ tests** tous passent - +300 tests patients, consultations gynécologiques et obstétricales ajoutés
+- **1135+ tests** tous passent - +435 tests patients, consultations gynécologiques, obstétricales et rééducation périnée ajoutés
 - **Tests unitaires** : Modèles, vues, admin, formulaires
 - **Tests d'intégration** : Templates, navigation, API, workflows complets
 - **Tests fonctionnels** : Authentification, permissions à deux niveaux
@@ -437,30 +438,36 @@ environment:
 - **Tests patients exhaustifs** : Création/modification/suppression femmes et bébés, relations mère-enfant
 - **Tests consultations gynécologiques** : 106 tests complets (modèles, formulaires, vues, admin, intégration)
 - **Tests consultations obstétricales** : 93 tests dédiés avec calcul automatique SA (25 modèles + 20 formulaires + 15 vues + 18 admin + 15 intégration)
+- **Tests rééducation périnée** : 135 tests complets (28 modèles + 38 formulaires + 26 vues + 32 admin + 11 intégration)
 
 ### Organisation des Tests
 ```
 core/tests/
-├── models/                    # Tests des modèles (140+ tests)
+├── models/                    # Tests des modèles (168+ tests)
 │   ├── test_patient.py        # 19 tests Patient ✨
 │   ├── test_consultation_gynecologique.py  # 24 tests Consultations gynéco ✨
-│   └── test_consultation_obstetricale.py   # 25 tests Consultations obstétricales ✨ NOUVEAU
-├── views/                     # Tests des vues (150+ tests)
+│   ├── test_consultation_obstetricale.py   # 25 tests Consultations obstétricales ✨
+│   └── test_reeducation_perinee.py         # 28 tests Rééducation périnée ✨ NOUVEAU
+├── views/                     # Tests des vues (176+ tests)
 │   ├── test_patient_views.py  # 27 tests vues Patient ✨
 │   ├── test_consultation_gynecologique_views.py  # 22 tests vues Consultations gynéco ✨
-│   └── test_consultation_obstetricale_views.py     # 15 tests vues Consultations obstétricales ✨ NOUVEAU
-├── admin/                     # Tests de l'admin (70+ tests)
+│   ├── test_consultation_obstetricale_views.py     # 15 tests vues Consultations obstétricales ✨
+│   └── test_reeducation_perinee_views.py           # 26 tests vues Rééducation périnée ✨ NOUVEAU
+├── admin/                     # Tests de l'admin (104+ tests)
 │   ├── test_patient_admin.py  # 27 tests admin Patient ✨
 │   ├── test_consultation_gynecologique_admin.py   # 27 tests admin Consultations gynéco ✨
-│   └── test_consultation_obstetricale_admin.py     # 18 tests admin Consultations obstétricales ✨ NOUVEAU
+│   ├── test_consultation_obstetricale_admin.py     # 18 tests admin Consultations obstétricales ✨
+│   └── test_reeducation_perinee_admin.py           # 32 tests admin Rééducation périnée ✨ NOUVEAU
 ├── forms/                     # Tests des formulaires ✨
 │   ├── test_patient_forms.py  # 19 tests formulaires Patient
 │   ├── test_consultation_gynecologique_forms.py   # 20 tests formulaires Consultations gynéco ✨
-│   └── test_consultation_obstetricale_forms.py     # 20 tests formulaires Consultations obstétricales ✨ NOUVEAU
-└── integration/              # Tests d'intégration (60+ tests)
+│   ├── test_consultation_obstetricale_forms.py     # 20 tests formulaires Consultations obstétricales ✨
+│   └── test_reeducation_perinee_forms.py           # 38 tests formulaires Rééducation périnée ✨ NOUVEAU
+└── integration/              # Tests d'intégration (71+ tests)
     ├── test_patient_integration.py  # 12 tests intégration Patient ✨
     ├── test_consultation_gynecologique_integration.py  # 13 tests intégration Consultations gynéco ✨
-    └── test_consultation_obstetricale_integration_simple.py  # 15 tests intégration Consultations obstétricales ✨ NOUVEAU
+    ├── test_consultation_obstetricale_integration_simple.py  # 15 tests intégration Consultations obstétricales ✨
+    └── test_reeducation_perinee_integration.py          # 11 tests intégration Rééducation périnée ✨ NOUVEAU
 authentication/tests.py        # Tests d'authentification (28 tests)
 ```
 

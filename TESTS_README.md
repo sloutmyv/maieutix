@@ -1,27 +1,27 @@
 # Tests Maieutix - Documentation Complète
 
-**État actuel : 1228/1228 tests passent (100% ✅)**
+**État actuel : 1363/1363 tests passent (100% ✅)**
 
 Ce document décrit la suite de tests complète et fonctionnelle de l'application Maieutix, une plateforme de gestion pour sages-femmes développée avec Django.
 
 ## 🎯 Résultats Globaux
 
-- **Total de tests** : 1228
+- **Total de tests** : 1363
 - **Taux de réussite** : 100% ✅
 - **Applications testées** : `core` et `authentication`
-- **Temps d'exécution** : ~180 secondes
+- **Temps d'exécution** : ~200 secondes
 - **Couverture** : Modèles, Vues, Admin, Formulaires, Authentification, Intégration
 
 ## 📊 Répartition des Tests
 
-### Core Application (1201 tests ✅)
+### Core Application (1336 tests ✅)
 ```
 core/tests/
-├── models/          # 305 tests - Modèles de données
-├── views/           # 280 tests - Vues et APIs  
-├── admin/           # 290 tests - Interface d'administration
-├── forms/           # 140 tests - Tests de formulaires
-├── integration/     # 171 tests - Tests d'intégration UI/UX
+├── models/          # 333 tests - Modèles de données
+├── views/           # 306 tests - Vues et APIs  
+├── admin/           # 322 tests - Interface d'administration
+├── forms/           # 178 tests - Tests de formulaires
+├── integration/     # 182 tests - Tests d'intégration UI/UX
 └── permissions/     # 15 tests - Tests de permissions
 ```
 
@@ -33,7 +33,7 @@ authentication/
 
 ## 🏗️ Structure Détaillée des Tests
 
-### 1. Tests de Modèles (305 tests)
+### 1. Tests de Modèles (333 tests)
 
 #### Cabinet (`test_cabinet.py`)
 - **Singleton pattern** : Validation qu'un seul cabinet peut exister
@@ -110,7 +110,16 @@ authentication/
 - **Properties calculées** : consultation_resume, sa_affichage avec gestion des cas limites
 - **Gestion DDG** : Cas patientes sans DDG, calcul SA avec dates postérieures
 
-### 2. Tests de Vues (280 tests)
+#### Rééducation du Périnée (`test_reeducation_perinee.py`) ✨ **NOUVEAU**
+- **Modèle complet** : Gestion des séances de rééducation périnéale (28 tests)
+- **Numérotation séances** : Validation numéros séances positifs et cohérents
+- **Validation stricte** : Dates consultation (pas futur), patientes femmes uniquement
+- **Champs spécialisés** : Examen clinique/travail, points à prévoir pour prochaine séance
+- **Relations métier** : Patient (femme), SageFemme créatrice, CASCADE/SET_NULL appropriés
+- **Properties calculées** : seance_resume pour affichage, statistiques par patiente
+- **Gestion métier** : Traçabilité complète, calcul automatique prochain numéro séance
+
+### 2. Tests de Vues (306 tests)
 
 #### Administration (`test_administration.py`)
 - **Vue principale** : Liste des sages-femmes avec authentification
@@ -188,7 +197,16 @@ authentication/
 - **Restriction d'accès** : Consultations réservées aux patientes femmes uniquement
 - **Validation métier** : Dates cohérentes, gestion erreurs gracieuse, JSON/HTML adaptatif
 
-### 3. Tests d'Administration (290 tests)
+#### Rééducation du Périnée (`test_reeducation_perinee_views.py`) ✨ **NOUVEAU**
+- **Interface complète** : Historique séances, modal création, formulaire rapide inline (26 tests)
+- **APIs HTMX/AJAX** : Endpoints pour sauvegarde avec traçabilité automatique sage-femme
+- **Calcul automatique** : Numéro séance suivant calculé automatiquement par patiente
+- **Restriction d'accès** : Séances réservées aux patientes femmes uniquement
+- **Workflow complet** : Création/modification/suppression/détail avec modales HTMX
+- **API REST** : Endpoints pour sauvegarde directe et gestion des séances
+- **Validation stricte** : Numéros séances ≥ 1, dates cohérentes, gestion d'erreurs JSON
+
+### 3. Tests d'Administration (322 tests)
 
 #### SageFemme Admin (`test_sagefemme.py`)
 - **Configuration admin** : List display, filtres, recherche
@@ -248,7 +266,16 @@ authentication/
 - **Recherche étendue** : Patient, thème abordé, points à prévoir
 - **Optimisation** : Select_related pour performance, requêtes optimisées
 
-### 4. Tests de Formulaires (140 tests) ✨
+#### Rééducation du Périnée Admin (`test_reeducation_perinee_admin.py`) ✨ **NOUVEAU**
+- **Interface admin complète** : Configuration avec 4 fieldsets organisés (32 tests)
+- **List display avancé** : Patient, date, numéro séance avec badges bleus, examen résumé
+- **Méthodes personnalisées** : Badges séances colorés, résumé examen tronqué, liens patients
+- **Actions admin** : Marquage séances complètes, actions par lot personnalisées
+- **Filtres métier** : Date consultation, patient/caisse, sage-femme créatrice, numéro séance
+- **Recherche étendue** : Patient, examen clinique, points à prévoir, sage-femme
+- **Optimisation** : Select_related pour performance, requêtes optimisées patient/caisse/sage-femme
+
+### 4. Tests de Formulaires (178 tests) ✨
 
 #### Patients Forms (`test_patient_forms.py`)
 - **Formulaires adaptatifs** : Champs conditionnels selon type patient
@@ -289,7 +316,15 @@ authentication/
 - **Gestion d'erreurs** : Messages contextuels, validation côté client et serveur
 - **Queryset filtré** : Sélection patientes femmes actives uniquement
 
-### 5. Tests d'Intégration (171 tests)
+#### Rééducation du Périnée Forms (`test_reeducation_perinee_forms.py`) ✨ **NOUVEAU**
+- **4 types de formulaires** : Base, Modal HTMX, Quick inline, Search avec widgets adaptés (38 tests)
+- **Validation métier** : Numéros séances ≥ 1, dates futures interdites, patientes femmes uniquement
+- **Calcul automatique** : Prochain numéro séance calculé par patiente dans formulaire modal
+- **Widgets personnalisés** : Classes CSS Tailwind bleues, attributs HTML5, textarea auto-resize
+- **Gestion d'erreurs** : Messages contextuels, validation côté client et serveur
+- **Recherche avancée** : Formulaire de recherche avec critères multiples (patient, dates, numéro)
+
+### 5. Tests d'Intégration (182 tests)
 
 #### Templates (`test_templates_integration.py`)
 - **Rendu complet** : Toutes les pages principales
@@ -351,6 +386,14 @@ authentication/
 - **Filtrage patients** : Validation stricte femmes avec DDG, gestion erreurs gracieuses
 - **Performance** : Tests optimisation requêtes, pagination, CRUD avec select_related
 - **HTMX workflow** : Intégration complète headers HTMX, templates partiels, interactions modernes
+
+#### Rééducation du Périnée Integration (`test_reeducation_perinee_integration.py`) ✨ **NOUVEAU**
+- **Workflow complet** : Création séance → historique → détail → suppression (11 tests)
+- **Numérotation automatique** : Tests calcul prochain numéro, séances multiples, ordre chronologique
+- **Multi-interfaces** : Tests modal création, API sauvegarde directe, recherche avec pagination
+- **Validation métier** : Restriction femmes, règles business, gestion erreurs gracieuses
+- **Traçabilité** : Association sage-femme créatrice dans tous les workflows
+- **Performance** : Tests authentification, gestion erreurs réseau, statistiques compteurs
 
 #### Consultations Préparation à la Naissance Integration (`test_consultation_preparation_naissance_integration.py`) ✨ **NOUVEAU**
 - **Workflow complet** : Création consultation → historique → détail → suppression (13 tests)
@@ -739,22 +782,23 @@ self.assertTrue(result)
 
 ## 🏆 Conclusion
 
-Cette suite de tests de **1228 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
+Cette suite de tests de **1363 tests (100% passent)** garantit la qualité, la fiabilité et la maintenabilité de l'application Maieutix. Elle couvre tous les aspects critiques du système :
 
 - **Fonctionnalités métier** : Gestion complète des sages-femmes, actes, prestations, patients, antécédents, caisses
 - **Sécurité** : Authentification et permissions robustes
 - **Interface utilisateur** : Navigation et interactions modernes avec HTMX/Alpine.js
 - **Intégrité des données** : Validation et contraintes métier strictes
 - **Performance** : Optimisation des requêtes et temps de réponse
-- **Fonctionnalités médicales** : Dossiers patients complets avec antécédents, consultations gynécologiques, entretiens prénataux précoces et consultations de préparation à la naissance
+- **Fonctionnalités médicales** : Dossiers patients complets avec antécédents, consultations gynécologiques, entretiens prénataux précoces, consultations de préparation à la naissance et rééducation du périnée
 
-### 🆕 Nouveautés EPP et Préparation à la Naissance
-L'ajout des **86 tests EPP** et **136 tests Préparation à la Naissance** couvre intégralement :
+### 🆕 Nouveautés EPP, Préparation à la Naissance et Rééducation du Périnée
+L'ajout des **86 tests EPP**, **136 tests Préparation à la Naissance** et **135 tests Rééducation du Périnée** couvre intégralement :
 - **Calcul SA précis** : Semaines d'aménorrhée avec format avancé (jours)
 - **Période optimale** : Évaluation automatique 16-28 SA pour les EPP
-- **Interfaces modernes** : Thème violet pour EPP, thème vert pour Préparation à la Naissance
-- **Validation stricte** : Patientes femmes avec/sans DDG, gestion d'erreurs gracieuse
+- **Interfaces modernes** : Thème violet pour EPP, thème vert pour Préparation à la Naissance, thème bleu pour Rééducation du Périnée
+- **Validation stricte** : Patientes femmes avec/sans DDG, numérotation séances, gestion d'erreurs gracieuse
 - **Workflows complets** : HTMX/AJAX avec formulaires adaptatifs et modales interactives
+- **Numérotation intelligente** : Calcul automatique des numéros de séances pour la rééducation périnéale
 
 Cette couverture exhaustive permet un développement serein et des déploiements en toute confiance pour la plateforme de gestion des sages-femmes de Nouvelle-Calédonie.
 
