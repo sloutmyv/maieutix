@@ -114,9 +114,13 @@ Un projet Django moderne pour la gestion des activités professionnelles des sag
 - **Interface harmonisée** : Présentation identique aux autres sections avec fond gris et polices cohérentes
 - **Gestion des séances** : Numérotation automatique, calcul du prochain numéro, traçabilité complète
 - **CRUD complet** : Création, consultation, modification et suppression des séances avec confirmations
-- **Modal HTMX** : Interface fluide sans rechargement de page pour toutes les opérations
+- **Formulaire inline intégré** ✨ NOUVEAU : Plus de modal, formulaire directement intégré dans la page patient
+- **Fond bleu cohérent** : Interface avec couleur bleue assortie au logo de rééducation périnéale
+- **HTMX optimisé** : Interface fluide sans rechargement de page pour toutes les opérations
 - **Validation métier** : Restriction aux femmes, dates non futures, numéros de séance ≥ 1
 - **Historique détaillé** : Affichage chronologique avec badges de séances et informations complètes
+- **Terminologie mise à jour** ✨ NOUVEAU : "Assuré principal" remplace "Titulaire" dans toute l'interface
+- **Cohérence terminologique** : Uniformisation des libellés dans formulaires, pages de détail et administration
 - **Tests exhaustifs** : 135 tests dédiés couvrant modèles, formulaires, vues, admin et intégration complète
 
 ### 💰 Gestion des Caisses et Conditions de Paiement

@@ -30,7 +30,7 @@ class PatientAdmin(admin.ModelAdmin):
         ('Assurance', {
             'fields': ('est_assure_titulaire', 'caisse'),
         }),
-        ('Informations assuré titulaire', {
+        ('Informations assuré principal', {
             'fields': ('nom_assure', 'prenom_assure', 'date_naissance_assure'),
             'classes': ('collapse',)
         }),

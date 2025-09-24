@@ -32,7 +32,9 @@ from core.views.reeducation_perinee import (
     reeducation_perinee_detail,
     delete_reeducation_perinee,
     patient_reeducations_perinee,
-    reeducation_perinee_modal
+    reeducation_perinee_modal,
+    reeducation_perinee_quick_form,
+    save_quick_reeducation_perinee
 )
 
 urlpatterns = [
@@ -50,6 +52,8 @@ urlpatterns = [
     path('reeducation-perinee/<int:seance_id>/delete/', delete_reeducation_perinee, name='delete_reeducation_perinee'),
     path('patients/<int:patient_id>/reeducations-perinee/', patient_reeducations_perinee, name='patient_reeducations_perinee'),
     path('reeducation-perinee/modal/<int:patient_id>/', reeducation_perinee_modal, name='reeducation_perinee_modal'),
+    path('reeducation-perinee/quick-form/<int:patient_id>/', reeducation_perinee_quick_form, name='reeducation_perinee_quick_form'),
+    path('reeducation-perinee/save-quick/<int:patient_id>/', save_quick_reeducation_perinee, name='save_quick_reeducation_perinee'),
     path('outils/', outils_view, name='outils'),
     path('statistiques/', statistiques_view, name='statistiques'),
     path('administration/', include('core.urls.administration', namespace='administration')),

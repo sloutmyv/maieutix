@@ -67,7 +67,7 @@ class Patient(models.Model):
     # Gestion de l'assurance
     est_assure_titulaire = models.BooleanField(
         default=True,
-        verbose_name="Assuré titulaire"
+        verbose_name="Assuré principal"
     )
     
     # Informations de l'assuré titulaire (si différent du patient)
